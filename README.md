@@ -21,6 +21,7 @@ O servidor em Java terá o papel de **intermediário entre o aplicativo e o banc
 O aplicativo móvel não se comunicará diretamente com o banco, mas sim com o servidor, que expõe uma API REST para troca de informações.
 
 Quando o app precisar realizar uma operação (como registrar presença, criar turmas ou consultar relatórios), ele fará uma **requisição ao servidor**.
+A biblioteca MongoDB Java Driver será utilizada.
 
 ---
 
