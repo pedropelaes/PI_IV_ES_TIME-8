@@ -11,6 +11,19 @@ Ele substitui a chamada oral tradicional — que consome em média **13% do temp
 
 ---
 
+## 🛠️ Tecnologias  
+- **Frontend/Backend:** Flutter (Dart)  
+- **Servidor:** Java  
+- **Banco de Dados:** MongoDB  
+- **Testes:** JUnit  
+
+O servidor em Java terá o papel de **intermediário entre o aplicativo e o banco de dados**.
+O aplicativo móvel não se comunicará diretamente com o banco, mas sim com o servidor, que expõe uma API REST para troca de informações.
+
+Quando o app precisar realizar uma operação (como registrar presença, criar turmas ou consultar relatórios), ele fará uma **requisição ao servidor**.
+
+---
+
 ## ✨ Funcionalidades  
 
 👩‍🏫 **Para Professores**  
@@ -29,14 +42,6 @@ Ele substitui a chamada oral tradicional — que consome em média **13% do temp
 - Limite de tempo para registro  
 - Armazenamento automático em banco de dados  
 - Suporte a modo offline  
-
----
-
-## 🛠️ Tecnologias  
-- **Frontend/Backend:** Flutter (Dart)  
-- **Servidor:** Java  
-- **Banco de Dados:** MongoDB  
-- **Testes:** JUnit  
 
 ---
 
