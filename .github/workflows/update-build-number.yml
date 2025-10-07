@@ -5,13 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "lib/**"
-      - "assets/**"
-      - "pubspec.yaml"
-      - "pubspec.lock"
-      - "android/**"
-      - "ios/**"
-      - "web/**"
+      "app/vocatio/**"
 
 jobs:
   build:
