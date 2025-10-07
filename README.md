@@ -1,6 +1,6 @@
-# 📌 Vocatio – Registro de Presença Inteligente  
+---
 
-(logo)
+![Logo Vocatio](vocatio_res/logo_vocatio_transparente.png)
 
 ---
 
