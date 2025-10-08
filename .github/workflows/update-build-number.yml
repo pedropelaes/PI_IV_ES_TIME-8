@@ -1,6 +1,8 @@
 name: Flutter Build
-
+permissions:
+    contents: write
 on:
+  
   push:
     branches:
       - main
