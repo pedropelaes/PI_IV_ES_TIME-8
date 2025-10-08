@@ -19,14 +19,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.35.5'
-
-      - name: Testar PAT
-        run: |
-          echo "Token length: ${#PAT_TOKEN}"
-        env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-
-
+          
       - name: Install dependencies
         working-directory: app/vocatio
         run: flutter pub get
@@ -59,9 +52,10 @@ jobs:
         run: |
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
+          git remote set-url origin https://$PAT_TOKEN@github.com/pedropelaes/Vocatio-PI4.git
           git add pubspec.yaml
           git commit -m "chore: update build number to $BUILD_NUMBER" || echo "No changes to commit"
-          git push https://$PAT_TOKEN@github.com/pedropelaes/Vocatio-PI4.git main
+          git push origin main
 
 
 
