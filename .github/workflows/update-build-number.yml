@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - "app/vocatio/**"
-
+  workflow_dispatch:
 jobs:
   build:
     if: github.actor != 'github-actions[bot]'
@@ -57,3 +57,4 @@ jobs:
 
       - name: Display build result
         run: echo "Build #$BUILD_NUMBER successfully registered and committed!"
+        
