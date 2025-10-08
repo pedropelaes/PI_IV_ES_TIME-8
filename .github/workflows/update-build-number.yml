@@ -60,10 +60,3 @@ jobs:
           git add pubspec.yaml
           git commit -m "chore: update build number to $BUILD_NUMBER" || echo "No changes to commit"
           git push origin main
-
-
-
-
-      - name: Display build result
-        run: echo "Build #$BUILD_NUMBER successfully registered and committed!"
-        

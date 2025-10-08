@@ -1,3 +1,4 @@
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:vocatio/screens/login_screen.dart';
@@ -11,10 +12,14 @@ class SignupScreen extends StatefulWidget{
   State<SignupScreen> createState() => _SignupScreenState();
 }
 
+enum AccountType { aluno, professor}
+
 class _SignupScreenState extends State<SignupScreen> {
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController idController = TextEditingController();
   @override
   void dispose(){
     emailController.dispose();
@@ -23,10 +28,13 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
+  Set<AccountType> _typeSelector = {AccountType.aluno};
+
   @override
   Widget build(BuildContext context){
     final ThemeData theme = Theme.of(context);
     final TextTheme textTheme = theme.textTheme;
+    String PouA = _typeSelector.contains(AccountType.aluno)?'aluno!' : 'professor!';
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -42,10 +50,41 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   SizedBox(height: 15,),
                   Text(
-                    'Crie agora sua conta',
+                    'Crie agora sua conta, $PouA',
+                    textAlign: TextAlign.center,
                     style: textTheme.headlineSmall,
                   ),
-                  SizedBox(height: 35,),
+                  SizedBox(height: 13,),
+                  SegmentedButton(
+                    segments: [
+                      ButtonSegment(
+                        value: AccountType.aluno,
+                        icon: Icon(Icons.school_outlined),
+                        tooltip: 'Aluno'
+                      ),
+                      ButtonSegment(
+                        value: AccountType.professor,
+                        icon: Icon(Icons.co_present_outlined),
+                        tooltip: 'Professor'
+                      ),
+                    ], 
+                    selected: _typeSelector,
+                    onSelectionChanged: (Set<AccountType> newSelection){
+                      setState(() {
+                        _typeSelector = newSelection;
+                      });
+                    },
+                    multiSelectionEnabled: false,
+                    emptySelectionAllowed: false,
+                  ),
+                  SizedBox(height: 13,),
+                  TextFieldDesign(controller: nameController, hintText: 'Nome', context: context),
+                  if (_typeSelector.contains(AccountType.aluno))
+                    ...[
+                      SizedBox(height: 13,),
+                      TextFieldDesign(controller: idController, hintText: 'Número de identificação', context: context),
+                    ],
+                  SizedBox(height: 17,),
                   TextFieldDesign(controller: emailController, hintText: 'E-mail', context: context),
                   SizedBox(height: 17.0,),
                   TextFieldDesign(controller: passwordController, hintText: 'Senha', context: context),
@@ -57,7 +96,7 @@ class _SignupScreenState extends State<SignupScreen> {
               
                     }
                   ),
-                  SizedBox(height: 70,),
+                  SizedBox(height: 60,),
                   Text(
                     'Já possui conta?',
                     style: textTheme.bodyLarge,
