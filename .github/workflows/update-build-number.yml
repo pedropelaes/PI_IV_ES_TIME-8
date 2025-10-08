@@ -20,6 +20,13 @@ jobs:
         with:
           flutter-version: '3.35.5'
 
+      - name: Testar PAT
+        run: |
+          echo "Token length: ${#PAT_TOKEN}"
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+
       - name: Install dependencies
         working-directory: app/vocatio
         run: flutter pub get
