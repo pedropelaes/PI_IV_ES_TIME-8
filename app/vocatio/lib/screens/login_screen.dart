@@ -1,30 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:vocatio/screens/login_screen.dart';
+import 'package:vocatio/screens/signUp_screen.dart';
 import 'package:vocatio/widgets/button_design.dart';
 import 'package:vocatio/widgets/text_field.dart';
 
-class SignupScreen extends StatefulWidget{
-  const SignupScreen({super.key});
+class LoginScreen extends StatefulWidget{
+  const LoginScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  State<StatefulWidget> createState() => _LoginScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _LoginScreenState extends State<LoginScreen>{
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+
   @override
   void dispose(){
     emailController.dispose();
     passwordController.dispose();
-    confirmPasswordController.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final TextTheme textTheme = theme.textTheme;
     return Scaffold(
@@ -42,38 +41,46 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   SizedBox(height: 15,),
                   Text(
-                    'Crie agora sua conta',
+                    'Faça login em sua conta',
                     style: textTheme.headlineSmall,
                   ),
                   SizedBox(height: 35,),
                   TextFieldDesign(controller: emailController, hintText: 'E-mail', context: context),
                   SizedBox(height: 17.0,),
                   TextFieldDesign(controller: passwordController, hintText: 'Senha', context: context),
-                  SizedBox(height: 17.0,),
-                  TextFieldDesign(controller: confirmPasswordController, hintText: 'Confirmar Senha', context: context),
+                  SizedBox(height: 13.0,),
+                  PlatformTextButton(
+                    child: Text('Esqueceu sua senha?',style: textTheme.bodyLarge?.copyWith(color: theme.colorScheme.primary, 
+                      decoration: TextDecoration.underline, decorationColor: theme.colorScheme.primary),
+                    ),
+                    onPressed: (){
+
+                    },
+                  ),
                   SizedBox(height: 30,),
-                  ButtonDesign(context: context, childText: 'Criar', 
+                  ButtonDesign(context: context, childText: 'Entrar', 
                     onPressed: (){
               
                     }
                   ),
                   SizedBox(height: 70,),
                   Text(
-                    'Já possui conta?',
+                    'Não possui conta?',
                     style: textTheme.bodyLarge,
                   ),
                   PlatformTextButton(
-                      child: Text('Entrar',style: textTheme.bodyLarge?.copyWith(color: theme.colorScheme.primary)),
-                      onPressed: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => LoginScreen()));
-                      },
-                  )
+                    child: Text('Cadastre-se',style: textTheme.bodyLarge?.copyWith(color: theme.colorScheme.primary)),
+                    onPressed: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => SignupScreen()));
+                    },
+                  ),    
                 ],
               ),
             ),
           ),
-        ),
-      )
+        )
+      ),
     );
   }
+  
 }

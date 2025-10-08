@@ -1,6 +1,7 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vocatio/screens/login_screen.dart';
 import 'package:vocatio/screens/signUp_screen.dart';
 import 'package:vocatio/theme/theme.dart';
 import 'package:vocatio/theme/theme_notifier.dart';
@@ -37,7 +38,7 @@ class MainApp extends StatelessWidget {
       theme: isHighContrast ? lightScheme.lightHighContrast() : lightScheme.light(), 
       darkTheme: isHighContrast ? darkScheme.darkHighContrast() : darkScheme.dark(), 
       themeMode: themeNotifier.themeMode, 
-      home: SignupScreen()
+      home: LoginScreen()
     );
   }
 }
