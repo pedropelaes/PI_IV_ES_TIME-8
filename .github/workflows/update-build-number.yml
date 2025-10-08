@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      "app/vocatio/**"
+      - "app/vocatio/**"
 
 jobs:
   build:
@@ -21,9 +21,11 @@ jobs:
           flutter-version: '3.13.0'
 
       - name: Install dependencies
+        working-directory: app/vocatio
         run: flutter pub get
 
       - name: Get current build number
+        working-directory: app/vocatio
         id: build_number
         run: |
           CURRENT=$(grep '^version:' pubspec.yaml | cut -d'+' -f2)
@@ -36,6 +38,7 @@ jobs:
           echo "New build number: $BUILD_NUMBER"
 
       - name: Update pubspec.yaml
+        working-directory: app/vocatio
         run: |
           VERSION_BASE=$(grep '^version:' pubspec.yaml | cut -d'+' -f1)
           sed -i "s/^version:.*/${VERSION_BASE}+$BUILD_NUMBER/" pubspec.yaml
@@ -43,11 +46,13 @@ jobs:
           grep '^version:' pubspec.yaml
 
       - name: Commit updated pubspec.yaml
+        working-directory: app/vocatio
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git add pubspec.yaml
           git commit -m "chore: update build number to $BUILD_NUMBER"
+          cd ../..
           git push origin main
 
       - name: Display build result
