@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:vocatio/screens/signUp_screen.dart';
+import 'package:vocatio/screens/reset_password_screen.dart';
+import 'package:vocatio/screens/signup_screen.dart';
 import 'package:vocatio/widgets/button_design.dart';
 import 'package:vocatio/widgets/text_field.dart';
 
@@ -54,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen>{
                       decoration: TextDecoration.underline, decorationColor: theme.colorScheme.primary),
                     ),
                     onPressed: (){
-
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => ResetPassowordScreen()));
                     },
                   ),
                   SizedBox(height: 30,),
