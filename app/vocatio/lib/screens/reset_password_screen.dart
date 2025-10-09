@@ -24,7 +24,7 @@ class _ResetPasswordScreenState extends State<ResetPassowordScreen>{
     final ThemeData theme = Theme.of(context);
     final TextTheme textTheme = theme.textTheme;
     return PlatformScaffold(
-      appBar: PlatformAppBar(),
+      appBar: PlatformAppBar(title: Text('Voltar'),),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
