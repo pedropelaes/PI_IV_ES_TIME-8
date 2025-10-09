@@ -5,7 +5,7 @@
 ---
 
 ## 📖 Sobre o Projeto  
-O **Vocatio** é um aplicativo multiplataforma criado para otimizar o **registro de presença em salas de aula universitárias**.  
+O **Vocattio** é um aplicativo multiplataforma criado para otimizar o **registro de presença em salas de aula universitárias**.  
 
 Ele substitui a chamada oral tradicional — que consome em média **13% do tempo da aula** e é suscetível a falhas — por um processo **rápido, automatizado e confiável**, baseado em QR Code, geolocalização e autenticação biométrica.  
 
