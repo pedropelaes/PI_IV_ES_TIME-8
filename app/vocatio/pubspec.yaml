@@ -30,7 +30,8 @@ flutter:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/logo_vocatio_pequena_fundo_branco.png"
+  remove_alpha_ios: true
+  image_path: "assets/images/logo_vocatio_ios.png"
 
   adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: "assets/images/logo_vocatio_pequena_transparente.png"
@@ -51,5 +52,5 @@ flutter_launcher_icons:
 
 flutter_native_splash:
   color: "#FFFFFF" 
-  image: assets/images/logo_vocatio_pequena_fundo_branco.png 
+  image: assets/images/logo_vocatio_pequena_transparente.png 
   
