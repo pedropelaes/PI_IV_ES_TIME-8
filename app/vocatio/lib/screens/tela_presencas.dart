@@ -1,7 +1,48 @@
 import 'package:flutter/material.dart';
 
-class PresencasScreen extends StatelessWidget {
+class PresencasScreen extends StatefulWidget {
   const PresencasScreen({super.key});
+
+  @override
+  State<PresencasScreen> createState() => _PresencasScreenState();
+}
+
+class _PresencasScreenState extends State<PresencasScreen> {
+  DateTime? _selectedDate;
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: Color(0xFFE94057),
+              onPrimary: Colors.white,
+              surface: Color(0xFF2C2C2E),
+              onSurface: Colors.white,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
+
+  String _getDateText() {
+    if (_selectedDate == null) {
+      return 'Selecione a Data';
+    }
+    return '${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +89,9 @@ class PresencasScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () => _selectDate(context),
               icon: const Icon(Icons.calendar_today, color: Colors.white),
-              label: const Text('Selecione a Data', style: TextStyle(color: Colors.white)),
+              label: Text(_getDateText(), style: const TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2C2C2E),
                 minimumSize: const Size(double.infinity, 50),
