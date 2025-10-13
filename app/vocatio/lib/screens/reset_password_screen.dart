@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:vocatio/widgets/button_design.dart';
-import 'package:vocatio/widgets/text_field.dart';
+import 'package:vocattio/widgets/button_design.dart';
+import 'package:vocattio/widgets/text_field.dart';
 
 class ResetPassowordScreen extends StatefulWidget{
   const ResetPassowordScreen({super.key});

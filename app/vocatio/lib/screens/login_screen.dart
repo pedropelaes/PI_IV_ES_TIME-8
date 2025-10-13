@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:vocatio/screens/reset_password_screen.dart';
-import 'package:vocatio/screens/signup_screen.dart';
-import 'package:vocatio/widgets/button_design.dart';
-import 'package:vocatio/widgets/text_field.dart';
+import 'package:vocattio/screens/reset_password_screen.dart';
+import 'package:vocattio/screens/signup_screen.dart';
+import 'package:vocattio/widgets/button_design.dart';
+import 'package:vocattio/widgets/text_field.dart';
 
 class LoginScreen extends StatefulWidget{
   const LoginScreen({super.key});
