@@ -1,10 +1,10 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vocatio/screens/login_screen.dart';
-import 'package:vocatio/theme/theme.dart';
-import 'package:vocatio/theme/theme_notifier.dart';
-import 'package:vocatio/theme/util.dart';
+import 'package:vocattio/screens/login_screen.dart';
+import 'package:vocattio/theme/theme.dart';
+import 'package:vocattio/theme/theme_notifier.dart';
+import 'package:vocattio/theme/util.dart';
 
 void main() {
   final themeNotifier = ThemeNotifier();
