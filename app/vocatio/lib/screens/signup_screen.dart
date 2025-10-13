@@ -2,7 +2,7 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:vocatio/screens/login_screen.dart';
-import 'package:vocatio/teste_servidor.dart';
+import 'package:vocatio/connection.dart';
 import 'package:vocatio/widgets/button_design.dart';
 import 'package:vocatio/widgets/text_field.dart';
 
@@ -94,7 +94,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   SizedBox(height: 30,),
                   ButtonDesign(context: context, childText: 'Criar', 
                     onPressed: (){
-                      conectar();
+                      conect();
                     }
                   ),
                   SizedBox(height: 60,),
