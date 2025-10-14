@@ -32,9 +32,10 @@ class _LoginScreenState extends State<LoginScreen>{
     final TextTheme textTheme = theme.textTheme;
     TargetPlatform platform = theme.platform;                                                             // remover em produção
     return Scaffold(
-      body: surfaceGradientHorizontalContainer(
+      body: surfaceGradientContainer(
         context: context,
         child: SafeArea(
+          bottom: false,
           child:  Platform.isAndroid || Platform.isIOS || platform == TargetPlatform.android || platform == TargetPlatform.iOS ? 
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -54,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen>{
                           ),
                           TextSpan(
                             text: 'em sua\nconta!',
-                            style: textTheme.headlineMedium?.copyWith(color: theme.colorScheme.primary),
+                            style: textTheme.headlineMedium?.copyWith(color: theme.colorScheme.onSurface),
                           )
                         ],
                         ),

@@ -42,9 +42,10 @@ class _SignupScreenState extends State<SignupScreen> {
     TargetPlatform platform = theme.platform;                                                             // remover em produção
     String PouA = (_typeSelector.contains(AccountType.aluno)?'aluno!' : 'professor!').capitalize();
     return Scaffold(
-      body: surfaceGradientHorizontalContainer(
+      body: surfaceGradientContainer(
         context: context,
         child: SafeArea(
+          bottom: false,
           child: Platform.isAndroid || Platform.isIOS || platform == TargetPlatform.android || platform == TargetPlatform.iOS ? 
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
