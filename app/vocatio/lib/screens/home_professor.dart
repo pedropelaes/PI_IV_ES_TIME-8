@@ -3,6 +3,8 @@ import 'package:vocatio/widgets/app_header.dart';
 import 'package:vocatio/widgets/app_drawer.dart';
 import 'package:vocatio/widgets/custom_fab.dart';
 import 'package:vocatio/widgets/turma_card.dart';
+import 'package:vocatio/screens/detalhes_turma.dart';
+import 'package:vocatio/utils/responsive_helper.dart';
 
 class HomeProfessorScreen extends StatefulWidget {
   const HomeProfessorScreen({super.key});
@@ -40,55 +42,68 @@ class _HomeProfessorScreenState extends State<HomeProfessorScreen> {
       ),
       drawer: AppDrawer(),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Saudação
-              Text(
-                'Olá, (NOME)',
-                style: textTheme.headlineSmall?.copyWith(
-                  color: theme.colorScheme.onSurface,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 24),
-              
-              // Grid de turmas
-              Expanded(
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 0.85,
+        child: Center(
+          child: Container(
+            constraints: BoxConstraints(
+              maxWidth: ResponsiveHelper.getMaxWidth(context),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(ResponsiveHelper.getResponsivePadding(context)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Saudação
+                  Text(
+                    'Olá, (NOME)',
+                    style: textTheme.headlineSmall?.copyWith(
+                      color: theme.colorScheme.onSurface,
+                      fontWeight: FontWeight.w500,
+                      fontSize: ResponsiveHelper.getResponsiveFontSize(context, 24),
+                    ),
                   ),
-                  itemCount: turmas.length,
-                  itemBuilder: (context, index) {
-                    final turma = turmas[index];
-                    return TurmaCard(
-                      nomeTurma: turma['nome'],
-                      descricao: turma['descricao'],
-                      numeroAlunos: turma['alunos'],
-                    );
-                  },
-                ),
+                  const SizedBox(height: 24),
+                  
+                  // Grid de turmas
+                  Expanded(
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: ResponsiveHelper.getGridCrossAxisCount(context),
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: ResponsiveHelper.isDesktop(context) ? 1.0 : 0.85,
+                      ),
+                      itemCount: turmas.length,
+                      itemBuilder: (context, index) {
+                        final turma = turmas[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetalhesTurmaScreen(
+                                  nomeTurma: turma['nome'],
+                                  descricao: turma['descricao'],
+                                  numeroAlunos: turma['alunos'],
+                                ),
+                              ),
+                            );
+                          },
+                          child: TurmaCard(
+                            nomeTurma: turma['nome'],
+                            descricao: turma['descricao'],
+                            numeroAlunos: turma['alunos'],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
-      floatingActionButton: CustomFAB(
-        onPressed: () {
-          // Adicionar nova turma
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Funcionalidade de adicionar turma será implementada'),
-            ),
-          );
-        },
-      ),
+      floatingActionButton: const CustomFAB(),
     );
   }
 }
