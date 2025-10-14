@@ -51,7 +51,7 @@ class _SignupScreenState extends State<SignupScreen> {
             children: [
               // regiao superior
               Padding(
-                padding: EdgeInsetsGeometry.symmetric(horizontal: 24.0 , vertical: 32.0),
+                padding: EdgeInsetsGeometry.directional(start: 24.0, end: 24.0, bottom: 24.0, top: 12.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -167,7 +167,7 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
           ButtonSegment(
             value: AccountType.professor,
-            icon: Icon(Icons.co_present_outlined),
+            icon: Icon(Icons.co_present_outlined,),
             tooltip: 'Professor',
           ),
         ],
