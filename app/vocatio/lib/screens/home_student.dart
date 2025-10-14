@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:vocatio/widgets/button_class_student.dart';
 
-class HomeStudentScreen extends StatefulWidget{
+class HomeStudentScreen extends StatefulWidget {
   const HomeStudentScreen({super.key});
 
   @override
@@ -9,37 +9,67 @@ class HomeStudentScreen extends StatefulWidget{
 }
 
 class _HomeStudentScreenState extends State<HomeStudentScreen> {
- @override
+  @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final TextTheme textTheme = theme.textTheme;
 
-    return PlatformScaffold(
+    return Scaffold(
       body: SafeArea(
         child: Stack(
           children: [
             Padding(
               padding: const EdgeInsets.all(24.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 15),
-                    Text(
-                      'Turmas',
-                      style: textTheme.headlineSmall,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 15),
+                  Text(
+                    'Turmas',
+                    style: textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Grade com 2 colunas de botões quadrados
+                  Expanded(
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      children: [
+                        TurmaButton(
+                          nomeTurma: 'Turma A',
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Clicou em Turma A')),
+                            );
+                          },
+                        ),
+                        TurmaButton(
+                          nomeTurma: 'Turma B',
+                          subtitulo: 'PPOO',
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Clicou em Turma B')),
+                            );
+                          },
+                        ),
+                        TurmaButton(
+                          nomeTurma: 'Turma C',
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Clicou em Turma C')),
+                            );
+                          },
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 30),
-                    _buildTurmaButton('Turma A'),
-                    const SizedBox(height: 10),
-                    _buildTurmaButton('Turma B'),
-                    const SizedBox(height: 80), // espaço pro botão flutuante
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
 
-            // Botão de adicionar turma no canto inferior direito
+            // Botão de adicionar turma flutuante no canto inferior direito
             Positioned(
               bottom: 20,
               right: 20,
@@ -48,7 +78,8 @@ class _HomeStudentScreenState extends State<HomeStudentScreen> {
                   context: context,
                   builder: (context) => AlertDialog(
                     title: const Text('Nova Turma'),
-                    content: const Text('Aqui você pode criar uma nova turma!'),
+                    content:
+                        const Text('Aqui você pode criar uma nova turma!'),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
@@ -65,66 +96,31 @@ class _HomeStudentScreenState extends State<HomeStudentScreen> {
     );
   }
 
-  Widget _buildTurmaButton(String text) {
-    return SizedBox(
-      width: double.infinity,
-      child: PlatformElevatedButton(
-        onPressed: () {
-          // ação ao clicar na turma
-        },
-        color: const Color(0xFF5C4A8A),
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        material: (_, __) => MaterialElevatedButtonData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF5C4A8A),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
-            elevation: 0,
-          ),
-        ),
-        cupertino: (_, __) => CupertinoElevatedButtonData(
-        color: const Color(0xFF5C4A8A),
-        borderRadius: BorderRadius.circular(6),
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        ),
-        child: Align(
-        alignment: Alignment.centerLeft, // Alinha o texto à esquerda
-        child: Text(
-          text,
-          style: const TextStyle(color: Colors.white, fontSize: 13),
-        ),
-      ),
-    ),
-  );
-}
-Widget _buildAddTurmaButton(VoidCallback onPressed) {
-    return SizedBox(
-      width: 60,
-      height: 60,
-      child: PlatformElevatedButton(
-        onPressed: onPressed,
-        color: const Color(0xFF5C4A8A),
-        material: (_, __) => MaterialElevatedButtonData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF5C4A8A),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            padding: EdgeInsets.zero,
-            elevation: 3,
-          ),
-        ),
-        cupertino: (_, __) => CupertinoElevatedButtonData(
-          color: const Color(0xFF5C4A8A),
+
+
+  /// Botão flutuante de adicionar turma
+  Widget _buildAddTurmaButton(VoidCallback onPressed) {
+    final ThemeData theme = Theme.of(context);
+    final TextTheme textTheme = theme.textTheme;
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(10),
+      splashColor: Colors.white24,
+      child: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primaryContainer,
           borderRadius: BorderRadius.circular(10),
-          padding: EdgeInsets.zero,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 4,
+              offset: const Offset(2, 2),
+            ),
+          ],
         ),
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-          size: 30,
-        ),
+        child: Icon(Icons.add, color: theme.colorScheme.onPrimaryContainer, size: 30),
       ),
     );
   }
