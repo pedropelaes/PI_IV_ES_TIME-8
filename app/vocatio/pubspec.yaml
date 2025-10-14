@@ -53,4 +53,7 @@ flutter_launcher_icons:
 flutter_native_splash:
   color: "#FFFFFF" 
   image: assets/images/logo_vocatio_pequena_transparente.png 
+
+  color_dark: "#000000"  
+  image_dark: assets/images/logo_vocatio_pequena_transparente.png 
   
