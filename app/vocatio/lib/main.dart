@@ -14,7 +14,7 @@ void main() {
         ChangeNotifierProvider<ThemeNotifier>.value(value: themeNotifier,)
       ],
       child: DevicePreview(
-      enabled: true,                                                                // desabilitar para builds distribuiveis
+      enabled: false,                                                                // desabilitar para builds distribuiveis
       builder: (context) => const MainApp()
       ),
     )
@@ -32,7 +32,7 @@ class MainApp extends StatelessWidget {
     final themeNotifier = Provider.of<ThemeNotifier>(context); 
     final isHighContrast = themeNotifier.isHighContrast;
 
-    return MaterialApp(
+    return MaterialApp( // provavelmente sera preciso trocar para PlatformApp na build final
       builder: DevicePreview.appBuilder,
       theme: isHighContrast ? lightScheme.lightHighContrast() : lightScheme.light(), 
       darkTheme: isHighContrast ? darkScheme.darkHighContrast() : darkScheme.dark(), 

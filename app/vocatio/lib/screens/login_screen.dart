@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen>{
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding: EdgeInsetsGeometry.symmetric(horizontal: 24.0 , vertical: 32.0),
+                padding: EdgeInsetsGeometry.directional(start: 24.0, end: 24.0, bottom: 24.0, top: 12.0),
                 child: RichText(
                        text: TextSpan(
                         children: [
