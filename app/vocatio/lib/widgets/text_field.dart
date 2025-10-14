@@ -7,7 +7,7 @@ Widget TextFieldDesign({
 }){
   final theme = Theme.of(context);
   return ConstrainedBox(
-    constraints: BoxConstraints(maxWidth: 400),
+    constraints: BoxConstraints(maxWidth: 400, maxHeight: 40),
     child: TextField(
       decoration: InputDecoration(
         isDense: true,
