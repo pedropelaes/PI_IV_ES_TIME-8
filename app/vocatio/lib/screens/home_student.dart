@@ -74,22 +74,45 @@ class _HomeStudentScreenState extends State<HomeStudentScreen> {
               bottom: 20,
               right: 20,
               child: _buildAddTurmaButton(() {
+                final TextEditingController codigoController = TextEditingController();
+
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
                     title: const Text('Nova Turma'),
-                    content:
-                        const Text('Aqui você pode criar uma nova turma!'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min, // ajusta o tamanho ao conteúdo
+                      children: [
+                        const Text('Digite o código da nova turma:'),
+                        const SizedBox(height: 10),
+                        TextField(
+                          controller: codigoController,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Código da turma',
+                          ),
+                        ),
+                      ],
+                    ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text('Fechar'),
+                        child: const Text('Cancelar'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          final codigo = codigoController.text;
+                          // aqui você pode salvar ou processar o código
+                          print('Código digitado: $codigo');
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Salvar'),
                       ),
                     ],
                   ),
                 );
               }),
-            ),
+            )
           ],
         ),
       ),
