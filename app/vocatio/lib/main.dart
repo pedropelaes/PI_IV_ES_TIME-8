@@ -36,7 +36,7 @@ class MainApp extends StatelessWidget {
       builder: DevicePreview.appBuilder,
       theme: isHighContrast ? lightScheme.lightHighContrast() : lightScheme.light(), 
       darkTheme: isHighContrast ? darkScheme.darkHighContrast() : darkScheme.dark(), 
-      themeMode: themeNotifier.themeMode, 
+      themeMode: themeNotifier.themeMode,
       home: LoginScreen()
     );
   }
