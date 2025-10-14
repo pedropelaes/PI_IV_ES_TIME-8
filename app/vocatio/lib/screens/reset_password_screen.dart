@@ -28,9 +28,10 @@ class _ResetPasswordScreenState extends State<ResetPassowordScreen>{
     final TextTheme textTheme = theme.textTheme;
     return PlatformScaffold(
       appBar: PlatformAppBar(title: Text('Voltar', style: textTheme.headlineSmall?.copyWith(color: theme.colorScheme.onSurface),),),
-      body: surfaceGradientHorizontalContainer(
+      body: surfaceGradientContainer(
         context: context,
         child: SafeArea(
+          bottom: false,
           child: Platform.isAndroid || Platform.isIOS || platform == TargetPlatform.android || platform == TargetPlatform.iOS ? 
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
