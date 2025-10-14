@@ -1,150 +1,141 @@
 import 'package:flutter/material.dart';
+import 'package:vocatio/widgets/app_header.dart';
+import 'package:vocatio/widgets/app_drawer.dart';
+import 'package:vocatio/widgets/custom_fab.dart';
 import 'package:vocatio/widgets/button_class_student.dart';
 
 class HomeStudentScreen extends StatefulWidget {
   const HomeStudentScreen({super.key});
-
+  
   @override
   State<HomeStudentScreen> createState() => _HomeStudentScreenState();
 }
 
 class _HomeStudentScreenState extends State<HomeStudentScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  // Dados das turmas baseados na imagem
+  final List<Map<String, dynamic>> turmas = [
+    {'nome': 'Turma 1', 'descricao': 'Descrição *', 'alunos': 32},
+    {'nome': 'Turma 2', 'descricao': 'Descrição *', 'alunos': 51},
+    {'nome': 'Turma 3', 'descricao': 'Descrição *', 'alunos': 17},
+    {'nome': 'Turma 4', 'descricao': 'Descrição *', 'alunos': 30},
+    {'nome': 'Turma 5', 'descricao': 'Descrição *', 'alunos': 42},
+    {'nome': 'Turma 6', 'descricao': 'Descrição *', 'alunos': 0},
+  ];
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final TextTheme textTheme = theme.textTheme;
 
     return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: theme.colorScheme.surface,
+      appBar: AppHeader(
+        title: 'Turmas',
+        onMenuPressed: () {
+          _scaffoldKey.currentState?.openDrawer();
+        },
+      ),
+      drawer: AppDrawer(),
       body: SafeArea(
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Saudação
+              Text(
+                'Olá, (NOME)',
+                style: textTheme.headlineSmall?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 24),
+              
+              // Grid de turmas
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 0.85,
+                  ),
+                  itemCount: turmas.length,
+                  itemBuilder: (context, index) {
+                    final turma = turmas[index];
+                    return ButtonClassStudent(
+                      nomeTurma: turma['nome'],
+                      descricao: turma['descricao'],
+                      numeroAlunos: turma['alunos'],
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButton: CustomFAB(
+        onPressed: () {
+          final TextEditingController codigoController = TextEditingController();
+
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Entrar em uma turma'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 15),
-                  Text(
-                    'Turmas',
-                    style: textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 30),
-
-                  // Grade com 2 colunas de botões quadrados
-                  Expanded(
-                    child: GridView.count(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      children: [
-                        TurmaButton(
-                          nomeTurma: 'Turma A',
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Clicou em Turma A')),
-                            );
-                          },
-                        ),
-                        TurmaButton(
-                          nomeTurma: 'Turma B',
-                          subtitulo: 'PPOO',
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Clicou em Turma B')),
-                            );
-                          },
-                        ),
-                        TurmaButton(
-                          nomeTurma: 'Turma C',
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Clicou em Turma C')),
-                            );
-                          },
-                        ),
-                      ],
+                  const Text('Digite o código da turma para entrar:'),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: codigoController,
+                    decoration: InputDecoration(
+                      labelText: 'Código da turma',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
                 ],
               ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    final codigo = codigoController.text.trim();
+
+                    if (codigo.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Digite um código válido')),
+                      );
+                      return;
+                    }
+
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Código digitado: $codigo')),
+                    );
+
+                    // aqui você pode adicionar a lógica para validar o código
+                    // e adicionar o aluno à turma correspondente
+                  },
+                  child: const Text('Confirmar'),
+                ),
+              ],
             ),
-
-            // Botão de adicionar turma flutuante no canto inferior direito
-            Positioned(
-              bottom: 20,
-              right: 20,
-              child: _buildAddTurmaButton(() {
-                final TextEditingController codigoController = TextEditingController();
-
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Nova Turma'),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min, // ajusta o tamanho ao conteúdo
-                      children: [
-                        const Text('Digite o código da nova turma:'),
-                        const SizedBox(height: 10),
-                        TextField(
-                          controller: codigoController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Código da turma',
-                          ),
-                        ),
-                      ],
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Cancelar'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          final codigo = codigoController.text;
-                          // aqui você pode salvar ou processar o código
-                          print('Código digitado: $codigo');
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Salvar'),
-                      ),
-                    ],
-                  ),
-                );
-              }),
-            )
-          ],
-        ),
+          );
+        },
       ),
-    );
-  }
 
-
-
-  /// Botão flutuante de adicionar turma
-  Widget _buildAddTurmaButton(VoidCallback onPressed) {
-    final ThemeData theme = Theme.of(context);
-    final TextTheme textTheme = theme.textTheme;
-    return InkWell(
-      onTap: onPressed,
-      borderRadius: BorderRadius.circular(10),
-      splashColor: Colors.white24,
-      child: Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          color: theme.colorScheme.primaryContainer,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 4,
-              offset: const Offset(2, 2),
-            ),
-          ],
-        ),
-        child: Icon(Icons.add, color: theme.colorScheme.onPrimaryContainer, size: 30),
-      ),
     );
   }
 }

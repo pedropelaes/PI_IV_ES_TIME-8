@@ -1,62 +1,82 @@
 import 'package:flutter/material.dart';
 
-class TurmaButton extends StatelessWidget {
+class ButtonClassStudent extends StatelessWidget {
   final String nomeTurma;
-  final VoidCallback onTap;
-  final String? subtitulo; // opcional
+  final String descricao;
+  final int numeroAlunos;
 
-  const TurmaButton({
-    Key? key,
+  const ButtonClassStudent({
+    super.key,
     required this.nomeTurma,
-    required this.onTap,
-    this.subtitulo,
-  }) : super(key: key);
+    required this.descricao,
+    required this.numeroAlunos,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        width: 150,
-        height: 150,
-        padding: const EdgeInsets.all(12), // espaço interno
-        decoration: BoxDecoration(
-          color: theme.colorScheme.primaryContainer,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0xFF523C73),
+            Color(0xFF9B71D9),
           ],
         ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
               nomeTurma,
-              style: TextStyle(
-                color: theme.colorScheme.onPrimaryContainer,
-                fontSize: 18,
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            if (subtitulo != null) ...[
-              const SizedBox(height: 12),
-              Text(
-                subtitulo!,
-                style: TextStyle(
-                  color: theme.colorScheme.onPrimaryContainer.withOpacity(0.8),
-                  fontSize: 14,
-                ),
+            const SizedBox(height: 8),
+            Container(
+              height: 1,
+              width: double.infinity,
+              color: Colors.white.withOpacity(0.5),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              descricao,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: Colors.white.withOpacity(0.9),
               ),
-            ],
-            // você pode adicionar mais widgets aqui embaixo
+            ),
+            const Spacer(),
+            Row(
+              children: [
+                Icon(
+                  Icons.person,
+                  color: Colors.white,
+                  size: 16,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '$numeroAlunos Alunos',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: Colors.white.withOpacity(0.9),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
