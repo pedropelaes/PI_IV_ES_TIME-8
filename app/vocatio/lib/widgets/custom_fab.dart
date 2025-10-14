@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vocatio/screens/criar_turma_screen.dart';
 
 class CustomFAB extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -15,7 +16,12 @@ class CustomFAB extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     
     return FloatingActionButton(
-      onPressed: onPressed,
+      onPressed: onPressed ?? () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CriarTurmaScreen()),
+        );
+      },
       backgroundColor: theme.colorScheme.primary,
       foregroundColor: theme.colorScheme.onPrimary,
       elevation: 4,

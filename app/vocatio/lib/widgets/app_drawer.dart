@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vocatio/utils/responsive_helper.dart';
 
 class AppDrawer extends StatelessWidget {
   final List<String> turmas;
@@ -12,7 +13,11 @@ class AppDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final screenWidth = MediaQuery.of(context).size.width;
-    final drawerWidth = screenWidth * 0.5;
+    final drawerWidth = ResponsiveHelper.isDesktop(context) 
+        ? screenWidth * 0.3 
+        : ResponsiveHelper.isTablet(context) 
+            ? screenWidth * 0.4 
+            : screenWidth * 0.5;
 
     return Drawer(
       width: drawerWidth,
