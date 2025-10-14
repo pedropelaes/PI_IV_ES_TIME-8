@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vocatio/screens/login_screen.dart';
 import 'package:vocatio/screens/tela_presencas.dart';
+import 'package:vocatio/screens/home_professor.dart';
 import 'package:vocatio/theme/theme.dart';
 import 'package:vocatio/theme/theme_notifier.dart';
 import 'package:vocatio/theme/util.dart';
@@ -38,7 +39,7 @@ class MainApp extends StatelessWidget {
       theme: isHighContrast ? lightScheme.lightHighContrast() : lightScheme.light(), 
       darkTheme: isHighContrast ? darkScheme.darkHighContrast() : darkScheme.dark(), 
       themeMode: themeNotifier.themeMode, 
-      home: PresencasScreen()
+      home: HomeProfessorScreen()
     );
   }
 }
