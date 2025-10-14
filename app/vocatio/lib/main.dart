@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vocatio/screens/home_student.dart';
 import 'package:vocatio/screens/login_screen.dart';
+import 'package:vocatio/screens/validate_attendance_screen.dart';
 import 'package:vocatio/theme/theme.dart';
 import 'package:vocatio/theme/theme_notifier.dart';
 import 'package:vocatio/theme/util.dart';
@@ -39,7 +40,7 @@ class MainApp extends StatelessWidget {
       darkTheme: isHighContrast ? darkScheme.darkHighContrast() : darkScheme.dark(), 
       themeMode: themeNotifier.themeMode, 
       // home: LoginScreen()
-      home: HomeStudentScreen()
+      home: ValidateAttendanceScreen()
     );
   }
 }
