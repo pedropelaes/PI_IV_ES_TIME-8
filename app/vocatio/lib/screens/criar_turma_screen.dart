@@ -62,7 +62,7 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
                   // Logo centralizada
                   Center(
                     child: Image.asset(
-                      '../../vocatio_res/logo_vocatio_pequena_transparente.png',
+                      'assets/images/logo_vocatio_pequena_transparente.png',
                       height: ResponsiveHelper.isDesktop(context) ? 100 : 80,
                       width: ResponsiveHelper.isDesktop(context) ? 100 : 80,
                       fit: BoxFit.contain,
