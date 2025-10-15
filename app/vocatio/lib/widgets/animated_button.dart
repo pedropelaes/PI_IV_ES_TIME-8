@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vocatio/utils/responsive_helper.dart';
+import 'package:vocattio/utils/responsive_helper.dart';
 
 class AnimatedButton extends StatefulWidget {
   final String text;

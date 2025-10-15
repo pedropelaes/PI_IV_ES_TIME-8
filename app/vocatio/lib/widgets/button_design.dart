@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:vocatio/widgets/background_containers.dart';
+import 'package:vocattio/widgets/background_containers.dart';
 
 Widget ButtonDesign({
   required BuildContext context,

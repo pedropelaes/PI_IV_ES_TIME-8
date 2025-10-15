@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vocatio/screens/criar_turma_screen.dart';
+import 'package:vocattio/screens/criar_turma_screen.dart';
 
 class CustomFAB extends StatelessWidget {
   final VoidCallback? onPressed;

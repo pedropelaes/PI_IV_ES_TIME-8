@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:vocatio/screens/login_screen.dart';
-import 'package:vocatio/screens/signup_screen.dart';
-import 'package:vocatio/widgets/background_containers.dart';
-import 'package:vocatio/widgets/button_design.dart';
+import 'package:vocattio/screens/login_screen.dart';
+import 'package:vocattio/screens/signup_screen.dart';
+import 'package:vocattio/widgets/background_containers.dart';
+import 'package:vocattio/widgets/button_design.dart';
 
 class WelcomeScreen extends StatelessWidget{
   @override

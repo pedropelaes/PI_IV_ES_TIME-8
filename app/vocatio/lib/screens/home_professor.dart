@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:vocatio/widgets/app_header.dart';
-import 'package:vocatio/widgets/app_drawer.dart';
-import 'package:vocatio/widgets/custom_fab.dart';
-import 'package:vocatio/widgets/turma_card.dart';
-import 'package:vocatio/screens/detalhes_turma.dart';
-import 'package:vocatio/utils/responsive_helper.dart';
+import 'package:vocattio/widgets/app_header.dart';
+import 'package:vocattio/widgets/app_drawer.dart';
+import 'package:vocattio/widgets/custom_fab.dart';
+import 'package:vocattio/widgets/turma_card.dart';
+import 'package:vocattio/screens/detalhes_turma.dart';
+import 'package:vocattio/utils/responsive_helper.dart';
 
 class HomeProfessorScreen extends StatefulWidget {
   const HomeProfessorScreen({super.key});
