@@ -55,8 +55,10 @@ class WelcomeScreen extends StatelessWidget{
                           }
                         ),
                         SizedBox(height: smallSpacing,),
-                        bigPrimaryButtonDesign(
+                        primaryButtonDesign(
                           context: context, 
+                          width: 255.0,
+                          height: 55.0,
                           label: 'Cadastrar', 
                           onTap: (){
                             Navigator.push(context, MaterialPageRoute(builder: (_) => SignupScreen()));

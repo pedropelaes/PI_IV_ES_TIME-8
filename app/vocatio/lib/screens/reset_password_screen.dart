@@ -139,8 +139,12 @@ class _ResetPasswordScreenState extends State<ResetPassowordScreen>{
       SizedBox(height: largeSpacing,),
       TextFieldDesign(controller: emailController, hintText: 'E-mail', context: context),
       SizedBox(height: largeSpacing,),
-      ButtonDesign(context: context, childText: 'Enviar', 
-        onPressed: (){
+      primaryButtonDesign(
+        context: context, 
+        width: 140,
+        height: 45,
+        label: 'Enviar', 
+        onTap: (){
 
         }
       ),
