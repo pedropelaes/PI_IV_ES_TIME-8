@@ -1,11 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:vocatio/extensions/string_extensions.dart';
-import 'package:vocatio/screens/login_screen.dart';
-import 'package:vocatio/widgets/background_containers.dart';
-import 'package:vocatio/widgets/button_design.dart';
-import 'package:vocatio/widgets/text_field.dart';
+import 'package:vocattio/extensions/string_extensions.dart';
+import 'package:vocattio/screens/login_screen.dart';
+import 'package:vocattio/widgets/background_containers.dart';
+import 'package:vocattio/connection.dart';
+import 'package:vocattio/widgets/button_design.dart';
+import 'package:vocattio/widgets/text_field.dart';
 
 class SignupScreen extends StatefulWidget{
   const SignupScreen({super.key});
