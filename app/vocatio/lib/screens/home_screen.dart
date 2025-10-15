@@ -6,14 +6,14 @@ import 'package:vocattio/widgets/turma_card.dart';
 import 'package:vocattio/screens/detalhes_turma.dart';
 import 'package:vocattio/utils/responsive_helper.dart';
 
-class HomeProfessorScreen extends StatefulWidget {
-  const HomeProfessorScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<HomeProfessorScreen> createState() => _HomeProfessorScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeProfessorScreenState extends State<HomeProfessorScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   // Dados das turmas baseados na imagem
