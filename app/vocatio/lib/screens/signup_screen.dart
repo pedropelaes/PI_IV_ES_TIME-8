@@ -94,7 +94,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   SizedBox(height: 30,),
                   ButtonDesign(context: context, childText: 'Criar', 
                     onPressed: (){
-                      conect();
+                      connect();
                     }
                   ),
                   SizedBox(height: 60,),

@@ -59,20 +59,24 @@ public class SupervisoraDeConexao extends Thread
                 String tipo = obj.get("tipo").getAsString();
 
                 switch (tipo) {
-                    case "PedidoDeNumeroAleatorio":
-                        PedidoDeNumeroAleatorio pedidoNum = gson.fromJson(json, PedidoDeNumeroAleatorio.class);
-                        this.usuario.receba(new Resultado(pedidoNum.getValor()));
-                        break;
-                    case "PedidoDeResultado":
-                        PedidoDeResultado pedidoRes = gson.fromJson(json, PedidoDeResultado.class);
-                        this.usuario.receba(new Resultado(this.valor));
-                        break;
+                    //case "PedidoDeNumeroAleatorio":
+                     //   PedidoDeNumeroAleatorio pedidoNum = gson.fromJson(json, PedidoDeNumeroAleatorio.class);
+                     //   this.usuario.receba(new Resultado(pedidoNum.getValor()));
+                     //   break;
+                  //  case "PedidoDeResultado":
+                  //      PedidoDeResultado pedidoRes = gson.fromJson(json, PedidoDeResultado.class);
+                  //      this.usuario.receba(new Resultado(this.valor));
+                 //       break;
                     case "PedidoParaSair":
                         synchronized (this.usuarios) {
                             this.usuarios.remove(this.usuario);
                         }
                         this.usuario.adeus();
                         return;
+                    case "TesteMongo":
+                        TesteMongo teste = gson.fromJson(json, TesteMongo.class);
+                        this.usuario.receba(new Resultado(teste.criarDocumento()));
+                        break;
                     default:
                         System.err.println("Comunicado desconhecido: " + tipo);
                         break;

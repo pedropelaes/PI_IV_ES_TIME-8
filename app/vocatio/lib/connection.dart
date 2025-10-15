@@ -2,15 +2,18 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-Future<void> conect() async {
+Future<void> connect() async {
   if(kIsWeb){
     // WebSocket para conexão web
   }else{
-    final socket = await Socket.connect('192.168.0.5', 3000);
+    final socket = await Socket.connect('localhost', 3000);
     print('Conectado ao servidor');
 
     // Envia o comando R
-    final message = jsonEncode({"tipo": "PedidoDeResultado"});
+    final message = jsonEncode({"tipo": "TesteMongo",
+      "nome": "neguinho",
+      "email": "penery02@gmail.com",
+      "idade": 19});
     socket.write('$message\n');
 
     // Recebe a resposta
