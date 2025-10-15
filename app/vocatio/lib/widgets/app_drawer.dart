@@ -30,7 +30,7 @@ class AppDrawer extends StatelessWidget {
             width: double.infinity,
             child: Center(
               child: Image.asset(
-                '../../vocatio_res/logo_vocatio_pequena_transparente.png',
+                'assets/images/logo_vocatio_pequena_transparente.png',
                 height: 60,
                 width: 60,
                 fit: BoxFit.contain,

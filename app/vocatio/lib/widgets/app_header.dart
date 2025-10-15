@@ -37,7 +37,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
         Container(
           margin: const EdgeInsets.only(right: 16.0),
           child: Image.asset(
-            '../../vocatio_res/logo_vocatio_pequena_transparente.png',
+            'assets/images/logo_vocatio_pequena_transparente.png',
             height: 32,
             width: 32,
             fit: BoxFit.contain,
