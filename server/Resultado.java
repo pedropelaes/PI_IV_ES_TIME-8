@@ -1,13 +1,13 @@
 public class Resultado extends Comunicado
 {
-    private double valorResultante;
+    private boolean valorResultante;
 
-    public Resultado (double valorResultante)
+    public Resultado (boolean valorResultante)
     {
         this.valorResultante = valorResultante;
     }
 
-    public double getValorResultante ()
+    public boolean getValorResultante ()
     {
         return this.valorResultante;
     }
