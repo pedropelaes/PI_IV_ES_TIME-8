@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:vocatio/widgets/app_header.dart';
-import 'package:vocatio/widgets/app_drawer.dart';
-import 'package:vocatio/widgets/custom_fab.dart';
-import 'package:vocatio/widgets/button_class_student.dart';
+import 'package:vocattio/widgets/app_header.dart';
+import 'package:vocattio/widgets/app_drawer.dart';
+import 'package:vocattio/widgets/custom_fab.dart';
+import 'package:vocattio/widgets/button_class_student.dart';
 
 class HomeStudentScreen extends StatefulWidget {
   const HomeStudentScreen({super.key});

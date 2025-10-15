@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:vocatio/widgets/text_field.dart';
-import 'package:vocatio/widgets/animated_button.dart';
-import 'package:vocatio/utils/responsive_helper.dart';
+import 'package:vocattio/widgets/text_field.dart';
+import 'package:vocattio/widgets/animated_button.dart';
+import 'package:vocattio/utils/responsive_helper.dart';
 
 class CriarTurmaScreen extends StatefulWidget {
   const CriarTurmaScreen({super.key});

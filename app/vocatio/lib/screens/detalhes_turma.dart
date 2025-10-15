@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:vocatio/screens/tela_presencas.dart';
-import 'package:vocatio/screens/gerar_qrcode_screen.dart';
-import 'package:vocatio/widgets/delete_fab.dart';
-import 'package:vocatio/widgets/animated_button.dart';
-import 'package:vocatio/utils/responsive_helper.dart';
+import 'package:vocattio/screens/tela_presencas.dart';
+import 'package:vocattio/screens/gerar_qrcode_screen.dart';
+import 'package:vocattio/widgets/delete_fab.dart';
+import 'package:vocattio/widgets/animated_button.dart';
+import 'package:vocattio/utils/responsive_helper.dart';
 
 class DetalhesTurmaScreen extends StatefulWidget {
   final String nomeTurma;

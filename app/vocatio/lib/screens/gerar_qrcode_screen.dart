@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:vocatio/widgets/animated_button.dart';
-import 'package:vocatio/utils/responsive_helper.dart';
+import 'package:vocattio/widgets/animated_button.dart';
+import 'package:vocattio/utils/responsive_helper.dart';
 
 class GerarQRCodeScreen extends StatefulWidget {
   final String codigoTurma;

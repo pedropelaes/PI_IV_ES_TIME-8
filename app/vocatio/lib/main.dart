@@ -1,7 +1,7 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vocattio/screens/login_screen.dart';
+import 'package:vocattio/screens/welcome_screen.dart';
 import 'package:vocattio/theme/theme.dart';
 import 'package:vocattio/theme/theme_notifier.dart';
 import 'package:vocattio/theme/util.dart';
@@ -37,8 +37,7 @@ class MainApp extends StatelessWidget {
       theme: isHighContrast ? lightScheme.lightHighContrast() : lightScheme.light(), 
       darkTheme: isHighContrast ? darkScheme.darkHighContrast() : darkScheme.dark(), 
       themeMode: themeNotifier.themeMode,
-      // home: HomeProfessorScreen()
-      home: ValidateAttendanceScreen()
+      home: WelcomeScreen()
     );
   }
 }
