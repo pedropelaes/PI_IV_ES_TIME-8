@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:vocattio/screens/home_screen.dart';
 import 'package:vocattio/screens/reset_password_screen.dart';
 import 'package:vocattio/screens/signup_screen.dart';
 import 'package:vocattio/widgets/background_containers.dart';
@@ -163,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen>{
       SizedBox(height: largeSpacing,),
       ButtonDesign(context: context, childText: 'Entrar', 
         onPressed: (){
-  
+          Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
         }
       ),
       isMobileLayout ? Spacer() : SizedBox(height: largeSpacing * 2,),
