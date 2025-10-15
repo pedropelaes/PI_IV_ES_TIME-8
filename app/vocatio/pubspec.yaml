@@ -25,7 +25,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets: 
-   - assets/images/logo_vocatio_transparente.png
+   - assets/images/
 
 flutter_launcher_icons:
   android: "launcher_icon"
