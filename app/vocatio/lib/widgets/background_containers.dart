@@ -13,7 +13,7 @@ Widget surfaceGradientContainer({
         height: double.infinity,
         decoration: BoxDecoration(gradient: LinearGradient(
         colors: [theme.colorScheme.surface, theme.colorScheme.surfaceBright],
-        stops: [0.62, 1.0],
+        stops: [0.34, 1.0],
         begin: horizontal ? Alignment.centerLeft : Alignment.topCenter,
         end: horizontal ? Alignment.centerRight : Alignment.bottomCenter
       )

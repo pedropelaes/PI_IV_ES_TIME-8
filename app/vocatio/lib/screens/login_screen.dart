@@ -162,8 +162,12 @@ class _LoginScreenState extends State<LoginScreen>{
         },
       ),
       SizedBox(height: largeSpacing,),
-      ButtonDesign(context: context, childText: 'Entrar', 
-        onPressed: (){
+      primaryButtonDesign(
+        context: context, 
+        width: 140,
+        height: 45,
+        label: 'Entrar', 
+        onTap: (){
           Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
         }
       ),

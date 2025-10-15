@@ -196,12 +196,14 @@ class _SignupScreenState extends State<SignupScreen> {
       SizedBox(height: smallSpacing),
       TextFieldDesign(controller: confirmPasswordController, hintText: 'Confirmar Senha', context: context),
       SizedBox(height: largeSpacing),
-      ButtonDesign(
-        context: context,
-        childText: 'Criar',
-        onPressed: () {
-            // criacao de conta
-        },
+      primaryButtonDesign(
+        context: context, 
+        width: 140,
+        height: 45,
+        label: 'Cadastrar', 
+        onTap: (){
+          // cadastro
+        }
       ),
       isMobileLayout ? const Spacer() : const SizedBox(height: 60),
       Text(

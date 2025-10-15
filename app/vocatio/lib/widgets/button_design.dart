@@ -44,10 +44,12 @@ Widget bigTransparentButtonDesign({
   );
 }
 
-Widget bigPrimaryButtonDesign({
+Widget primaryButtonDesign({
   required BuildContext context,
   required String label,
   required VoidCallback onTap,
+  required double width,
+  required double height,
 }){
   final ThemeData theme = Theme.of(context);
   return InkWell(
@@ -55,8 +57,8 @@ Widget bigPrimaryButtonDesign({
     onTap: onTap,
     child: primaryGradientContainer(
       theme: theme, 
-      width: 255.0,
-      height: 55.0,
+      width: width,
+      height: height,
       child: Center(
         child: Text(
           label,
