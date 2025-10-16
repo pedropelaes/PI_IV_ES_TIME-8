@@ -19,8 +19,8 @@ Future<bool?> showDeleteDialog(BuildContext context, VoidCallback apagar) async 
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
               colors: [
-                Color(0xFF5E3A9E),
-                Color(0xFF9B71D9),
+                Color(0xff1f182a),
+                Color.fromARGB(255, 70, 36, 121),
               ],
             ),
           ),
