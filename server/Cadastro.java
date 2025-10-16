@@ -2,12 +2,13 @@ import io.github.cdimascio.dotenv.Dotenv;
 import com.mongodb.client.*;
 import org.bson.Document;
 
-public class TesteMongo {
+public class Cadastro {
     private String nome;
     private String email;
-    private int idade;
+    private String codigo;
+    private String tipo;
 
-    public TesteMongo() {
+    public Cadastro() {
     }
 
     public boolean criarDocumento() {
@@ -21,8 +22,11 @@ public class TesteMongo {
             MongoCollection<Document> colecao = db.getCollection("users");
 
             Document usuario = new Document("nome", this.nome)
-                    .append("idade", this.idade)
-                    .append("email", this.email);
+                    .append("email", this.email)
+                    .append("tipo", this.tipo)
+                    .append("codigo", this.codigo);
+
+
 
             colecao.insertOne(usuario);
             return true;

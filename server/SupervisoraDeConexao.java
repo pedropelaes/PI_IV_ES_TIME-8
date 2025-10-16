@@ -56,7 +56,7 @@ public class SupervisoraDeConexao extends Thread
 
                 String json = comunicadoJson.getJson();
                 JsonObject obj = gson.fromJson(json, JsonObject.class);
-                String tipo = obj.get("tipo").getAsString();
+                String tipo = obj.get("operacao").getAsString();
 
                 switch (tipo) {
                     //case "PedidoDeNumeroAleatorio":
@@ -68,14 +68,16 @@ public class SupervisoraDeConexao extends Thread
                   //      this.usuario.receba(new Resultado(this.valor));
                  //       break;
                     case "PedidoParaSair":
+                        this.usuario.receba(new Resultado("logout"));
                         synchronized (this.usuarios) {
                             this.usuarios.remove(this.usuario);
                         }
                         this.usuario.adeus();
                         return;
-                    case "TesteMongo":
-                        TesteMongo teste = gson.fromJson(json, TesteMongo.class);
-                        this.usuario.receba(new Resultado(teste.criarDocumento()));
+                    case "Cadastro":
+                        Cadastro teste = gson.fromJson(json, Cadastro.class);
+                        boolean resultado = teste.criarDocumento();
+                        this.usuario.receba(new Resultado(((Boolean)resultado).toString()));
                         break;
                     default:
                         System.err.println("Comunicado desconhecido: " + tipo);

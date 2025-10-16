@@ -1,20 +1,20 @@
 public class Resultado extends Comunicado
 {
-    private boolean valorResultante;
+    private String resultado;
 
-    public Resultado (boolean valorResultante)
+    public Resultado (String resultado)
     {
-        this.valorResultante = valorResultante;
+        this.resultado = resultado;
     }
 
-    public boolean getValorResultante ()
+    public String getResultado()
     {
-        return this.valorResultante;
+        return this.resultado;
     }
     
     public String toString ()
     {
-		return (""+this.valorResultante);
+		return this.resultado;
 	}
 
 }
