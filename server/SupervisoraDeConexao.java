@@ -57,27 +57,27 @@ public class SupervisoraDeConexao extends Thread
                 String json = comunicadoJson.getJson();
                 JsonObject obj = gson.fromJson(json, JsonObject.class);
                 String tipo = obj.get("operacao").getAsString();
+                boolean resultado;
 
                 switch (tipo) {
-                    //case "PedidoDeNumeroAleatorio":
-                     //   PedidoDeNumeroAleatorio pedidoNum = gson.fromJson(json, PedidoDeNumeroAleatorio.class);
-                     //   this.usuario.receba(new Resultado(pedidoNum.getValor()));
-                     //   break;
-                  //  case "PedidoDeResultado":
-                  //      PedidoDeResultado pedidoRes = gson.fromJson(json, PedidoDeResultado.class);
-                  //      this.usuario.receba(new Resultado(this.valor));
-                 //       break;
                     case "PedidoParaSair":
-                        this.usuario.receba(new Resultado("logout"));
+
                         synchronized (this.usuarios) {
-                            this.usuarios.remove(this.usuario);
+                            resultado = this.usuarios.remove(this.usuario);
                         }
+                        this.usuario.receba(new ResultadoOperacao(resultado,"LogOut"));
                         this.usuario.adeus();
                         return;
                     case "Cadastro":
-                        Cadastro teste = gson.fromJson(json, Cadastro.class);
-                        boolean resultado = teste.criarDocumento();
-                        this.usuario.receba(new Resultado(((Boolean)resultado).toString()));
+                        Cadastro cadastro = gson.fromJson(json, Cadastro.class);
+                        resultado = cadastro.criarDocumento();
+                        this.usuario.receba(new ResultadoOperacao(resultado, "Cadastro"));
+                        break;
+                    case "Login":
+                        Login login = gson.fromJson(json, Login.class);
+                        User user = login.getUserData();
+                        boolean userFound = user != null;
+                        this.usuario.receba(new ResultadoLogin(userFound,"Login", user));
                         break;
                     default:
                         System.err.println("Comunicado desconhecido: " + tipo);
