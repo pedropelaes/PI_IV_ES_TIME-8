@@ -16,16 +16,9 @@ class _PresencasScreenState extends State<PresencasScreen> {
       initialDate: _selectedDate ?? DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
-      builder: (context, child) {
+      builder: (_, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFFE94057),
-              onPrimary: Colors.white,
-              surface: Color(0xFF2C2C2E),
-              onSurface: Colors.white,
-            ),
-          ),
+          data: Theme.of(context),
           child: child!,
         );
       },
