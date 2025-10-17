@@ -1,8 +1,8 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:vocattio/theme/theme.dart';
-import 'package:vocattio/theme/theme_notifier.dart';
-import 'package:vocattio/theme/util.dart';
 import 'package:vocattio/widgets/app_header.dart';
 
 class ScanQrcode extends StatefulWidget {
@@ -14,7 +14,18 @@ class ScanQrcode extends StatefulWidget {
 
 class _ScanQrcodeState extends State<ScanQrcode> {
   final TextEditingController _codeController = TextEditingController();
+  final MobileScannerController _scannerController = MobileScannerController();
   bool _scanned = false;
+
+  @override
+  void dispose() {
+    _scannerController.dispose(); 
+    _codeController.dispose();
+    super.dispose();
+  }
+
+    bool get hasScanner =>
+      kIsWeb || Platform.isAndroid || Platform.isIOS;
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +52,8 @@ class _ScanQrcodeState extends State<ScanQrcode> {
                   Text(
                     'Aponte a câmera para o QR Code',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16,
+                    style: textTheme.titleLarge?.copyWith(
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -59,7 +69,8 @@ class _ScanQrcodeState extends State<ScanQrcode> {
                       ),
                     ),
                     clipBehavior: Clip.hardEdge,
-                    child: MobileScanner(
+                    child: hasScanner ? MobileScanner(
+                      controller: _scannerController,
                       onDetect: (capture) {
                         if (_scanned) return;
                         _scanned = true;
@@ -73,7 +84,7 @@ class _ScanQrcodeState extends State<ScanQrcode> {
                           ),
                         );
                       },
-                    ),
+                    ) : Row()
                   ),
 
                   const SizedBox(height: 16),

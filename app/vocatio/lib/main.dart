@@ -17,9 +17,9 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    print('✅ Firebase inicializado com sucesso');
+    print('Firebase inicializado com sucesso');
   } catch (e) {
-    print('❌ Erro ao inicializar Firebase: $e');
+    print('Erro ao inicializar Firebase: $e');
   }
   
   final themeNotifier = ThemeNotifier();
@@ -53,7 +53,7 @@ class MainApp extends StatelessWidget {
       theme: isHighContrast ? lightScheme.lightHighContrast() : lightScheme.light(), 
       darkTheme: isHighContrast ? darkScheme.darkHighContrast() : darkScheme.dark(), 
       themeMode: themeNotifier.themeMode,
-      home: WelcomeScreen()
+      home: ScanQrcode()
     );
   }
 }
