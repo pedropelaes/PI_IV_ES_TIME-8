@@ -13,20 +13,24 @@ Future<void> connect() async {
     /*final message = jsonEncode({"operacao": "Cadastro",
       "nome": "pai do mewtwo",
       "email": "paidomewtwo@gmail.com",
+      "tipo": "aluno",
       "codigo": "31251241",
-      "tipo": "aluno"
       });*/
-    final message = jsonEncode({"operacao": "PedidoParaSair"});
+    //final message = jsonEncode({"operacao": "PedidoParaSair"});
+
+    final message = jsonEncode({
+      "operacao": "Login",
+      "uid": "1",
+    });
     socket.write('$message\n');
 
     // Recebe a resposta
     socket.listen((data) {
-      print('Servidor respondeu: ${utf8.decode(data)}');
-
       if(data.contains('logout')){ 
         socket.close();
         print('Conexao fechada');
       }; 
+      print('Servidor respondeu: ${utf8.decode(data)}');
     });
 
     
