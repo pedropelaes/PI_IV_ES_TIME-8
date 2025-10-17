@@ -83,8 +83,9 @@ class _ResetPasswordScreenState extends State<ResetPassowordScreen>{
   Widget build(BuildContext context){
     final ThemeData theme = Theme.of(context);
     final TextTheme textTheme = theme.textTheme;
-    return PlatformScaffold(
-      appBar: PlatformAppBar(title: Text('Voltar', style: textTheme.headlineSmall?.copyWith(color: theme.colorScheme.onSurface),),),
+    return Scaffold(
+      appBar: AppBar(title: Text('Voltar', style: textTheme.headlineSmall?.copyWith(color: theme.colorScheme.onSurface),), 
+      backgroundColor: Colors.transparent, elevation: 0, shadowColor: Colors.transparent, surfaceTintColor: Colors.transparent,),
       body: surfaceGradientContainer(
         context: context,
         child: SafeArea(
