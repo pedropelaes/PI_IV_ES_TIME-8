@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:vocattio/screens/home_screen.dart';
@@ -8,6 +6,7 @@ import 'package:vocattio/screens/signup_screen.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/text_field.dart';
+import 'package:vocattio/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget{
   const LoginScreen({super.key});
@@ -19,12 +18,81 @@ class LoginScreen extends StatefulWidget{
 class _LoginScreenState extends State<LoginScreen>{
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  
+  final AuthService _authService = AuthService();
+  bool _isLoading = false;
 
   @override
   void dispose(){
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  // Método para validar os campos do formulário
+  bool _validateForm() {
+    if (emailController.text.trim().isEmpty) {
+      _showErrorSnackBar('Por favor, digite seu e-mail');
+      return false;
+    }
+    
+    if (passwordController.text.trim().isEmpty) {
+      _showErrorSnackBar('Por favor, digite sua senha');
+      return false;
+    }
+    
+    return true;
+  }
+
+  // Método para mostrar mensagens de erro
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  // Método para mostrar mensagens de sucesso
+  void _showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  // Método para realizar o login
+  Future<void> _signIn() async {
+    if (!_validateForm()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await _authService.signIn(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      _showSuccessSnackBar('Login realizado com sucesso!');
+      
+      // Navegar para a tela principal
+      Navigator.pushReplacement(
+        context, 
+        MaterialPageRoute(builder: (_) => HomeScreen())
+      );
+      
+    } catch (e) {
+      _showErrorSnackBar(e.toString());
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -37,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen>{
         context: context,
         child: SafeArea(
           bottom: false,
-          child:  Platform.isAndroid || Platform.isIOS || platform == TargetPlatform.android || platform == TargetPlatform.iOS ? 
+          child: platform == TargetPlatform.android || platform == TargetPlatform.iOS ? 
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -166,10 +234,8 @@ class _LoginScreenState extends State<LoginScreen>{
         context: context, 
         width: 140,
         height: 45,
-        label: 'Entrar', 
-        onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
-        }
+        label: _isLoading ? 'Entrando...' : 'Entrar', 
+        onTap: _isLoading ? () {} : () => _signIn(),
       ),
       isMobileLayout ? Spacer() : SizedBox(height: largeSpacing * 2,),
       Text(

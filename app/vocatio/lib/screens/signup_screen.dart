@@ -1,12 +1,11 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:vocattio/extensions/string_extensions.dart';
 import 'package:vocattio/screens/login_screen.dart';
 import 'package:vocattio/widgets/background_containers.dart';
-import 'package:vocattio/connection.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/text_field.dart';
+import 'package:vocattio/services/auth_service.dart';
 
 class SignupScreen extends StatefulWidget{
   const SignupScreen({super.key});
@@ -24,6 +23,9 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController confirmPasswordController = TextEditingController();
   final TextEditingController idController = TextEditingController();
   
+  final AuthService _authService = AuthService();
+  bool _isLoading = false;
+  
   @override
   void dispose(){
     emailController.dispose();
@@ -36,6 +38,96 @@ class _SignupScreenState extends State<SignupScreen> {
 
   Set<AccountType> _typeSelector = {AccountType.aluno};
 
+  // Método para validar os campos do formulário
+  bool _validateForm() {
+    if (nameController.text.trim().isEmpty) {
+      _showErrorSnackBar('Por favor, digite seu nome');
+      return false;
+    }
+    
+    if (_typeSelector.contains(AccountType.aluno) && idController.text.trim().isEmpty) {
+      _showErrorSnackBar('Por favor, digite seu número de identificação');
+      return false;
+    }
+    
+    if (emailController.text.trim().isEmpty) {
+      _showErrorSnackBar('Por favor, digite seu e-mail');
+      return false;
+    }
+    
+    if (passwordController.text.trim().isEmpty) {
+      _showErrorSnackBar('Por favor, digite sua senha');
+      return false;
+    }
+    
+    if (passwordController.text != confirmPasswordController.text) {
+      _showErrorSnackBar('As senhas não coincidem');
+      return false;
+    }
+    
+    if (passwordController.text.length < 6) {
+      _showErrorSnackBar('A senha deve ter pelo menos 6 caracteres');
+      return false;
+    }
+    
+    return true;
+  }
+
+  // Método para mostrar mensagens de erro
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  // Método para mostrar mensagens de sucesso
+  void _showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  // Método para realizar o cadastro
+  Future<void> _signUp() async {
+    if (!_validateForm()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await _authService.signUp(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+        name: nameController.text.trim(),
+        studentId: _typeSelector.contains(AccountType.aluno) 
+            ? idController.text.trim() 
+            : null,
+      );
+
+      _showSuccessSnackBar('Conta criada com sucesso!');
+      
+      // Navegar para a tela de login
+      Navigator.pushReplacement(
+        context, 
+        MaterialPageRoute(builder: (_) => const LoginScreen())
+      );
+      
+    } catch (e) {
+      _showErrorSnackBar(e.toString());
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context){
     final ThemeData theme = Theme.of(context);
@@ -47,7 +139,7 @@ class _SignupScreenState extends State<SignupScreen> {
         context: context,
         child: SafeArea(
           bottom: false,
-          child: Platform.isAndroid || Platform.isIOS || platform == TargetPlatform.android || platform == TargetPlatform.iOS ? 
+          child: platform == TargetPlatform.android || platform == TargetPlatform.iOS ? 
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -200,10 +292,8 @@ class _SignupScreenState extends State<SignupScreen> {
         context: context, 
         width: 140,
         height: 45,
-        label: 'Cadastrar', 
-        onTap: (){
-          // cadastro
-        }
+        label: _isLoading ? 'Cadastrando...' : 'Cadastrar', 
+        onTap: _isLoading ? () {} : () => _signUp(),
       ),
       isMobileLayout ? const Spacer() : const SizedBox(height: 60),
       Text(
