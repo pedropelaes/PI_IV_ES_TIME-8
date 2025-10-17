@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vocattio/screens/tela_presencas.dart';
 import 'package:vocattio/screens/gerar_qrcode_screen.dart';
-import 'package:vocattio/widgets/delete_fab.dart';
+import 'package:vocattio/widgets/dialog_exc.dart';
 import 'package:vocattio/widgets/animated_button.dart';
 import 'package:vocattio/utils/responsive_helper.dart';
 
@@ -195,7 +195,22 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
           ),
         ),
       ),
-      floatingActionButton: const DeleteFAB(),
+      floatingActionButton: FloatingActionButton(
+  backgroundColor: const Color(0xFF9B71D9),
+  child: const Icon(Icons.delete, color: Colors.white),
+  onPressed: () async {
+    final confirm = await showDeleteDialog(context, (){});
+
+    if (confirm == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Turma excluída com sucesso!'),
+        ),
+      );
+      Navigator.pop(context);
+    }
+  },
+),
     );
   }
 }
