@@ -1,6 +1,8 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vocattio/screens/scan_qrcode.dart';
+import 'package:vocattio/screens/validate_attendance_screen.dart';
 import 'package:vocattio/screens/welcome_screen.dart';
 import 'package:vocattio/theme/theme.dart';
 import 'package:vocattio/theme/theme_notifier.dart';
@@ -37,7 +39,7 @@ class MainApp extends StatelessWidget {
       theme: isHighContrast ? lightScheme.lightHighContrast() : lightScheme.light(), 
       darkTheme: isHighContrast ? darkScheme.darkHighContrast() : darkScheme.dark(), 
       themeMode: themeNotifier.themeMode,
-      home: WelcomeScreen()
+      home: ScanQrcode()
     );
   }
 }
