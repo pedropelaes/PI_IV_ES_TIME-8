@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final VoidCallback? onMenuPressed;
+  final bool hasGoBack;
+  final VoidCallback? onGoBack; 
 
   const AppHeader({
     super.key,
     required this.title,
     this.onMenuPressed,
+    this.hasGoBack = false,
+    this.onGoBack
   });
 
   @override
@@ -15,15 +19,28 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
     final ThemeData theme = Theme.of(context);
     
     return AppBar(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: theme.colorScheme.surfaceContainerLow,
       foregroundColor: theme.colorScheme.onSurface,
       elevation: 0,
-      leading: IconButton(
-        icon: Icon(
-          Icons.menu,
-          color: theme.colorScheme.onSurface,
-        ),
-        onPressed: onMenuPressed,
+      leadingWidth: 100,
+      leading: Row(
+        children: [
+          if (hasGoBack) 
+            IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: theme.colorScheme.onSurface,
+            ),
+            onPressed: onGoBack,
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.menu,
+              color: theme.colorScheme.onSurface,
+            ),
+            onPressed: onMenuPressed,
+          ),
+        ],
       ),
       title: Text(
         title,

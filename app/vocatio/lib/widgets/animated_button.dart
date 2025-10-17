@@ -85,8 +85,8 @@ class _AnimatedButtonState extends State<AnimatedButton>
               child: ElevatedButton(
                 onPressed: widget.onPressed,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: widget.backgroundColor ?? const Color(0xFF523C73),
-                  foregroundColor: widget.textColor ?? Colors.white,
+                  backgroundColor: theme.colorScheme.onPrimaryFixedVariant,
+                  foregroundColor: theme.colorScheme.onSurface,
                   elevation: 2,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(widget.borderRadius ?? 12),
