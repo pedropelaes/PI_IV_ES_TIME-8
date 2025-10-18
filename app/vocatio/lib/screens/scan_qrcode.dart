@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:vocattio/widgets/app_header.dart';
+import 'package:vocattio/widgets/button_design.dart';
 
 class ScanQrcode extends StatefulWidget {
   const ScanQrcode({super.key});
@@ -109,46 +110,13 @@ class _ScanQrcodeState extends State<ScanQrcode> {
 
                   const SizedBox(height: 36),
 
-                  // Botão de concluir
-                  SizedBox(
+                  primaryButtonDesign(
+                    context: context,
+                    label: 'Concluir chamada',
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        final code = _codeController.text.trim();
-                        if (code.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('Digite ou escaneie um código.'),
-                              backgroundColor: theme.colorScheme.error,
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
-                          return;
-                        }
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Presença registrada: $code'),
-                            backgroundColor: theme.colorScheme.primary,
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.colorScheme.primary,
-                        foregroundColor: theme.colorScheme.onPrimary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      child: const Text(
-                        'Concluir chamada',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
+                    height: 55.0,
+                    onTap: () {
+                    },
                   ),
                 ],
               ),
