@@ -70,3 +70,40 @@ Widget primaryButtonDesign({
     ),
   );
 }
+
+Widget onPrimaryStyleButtonDesign({
+  required BuildContext context,
+  required Widget label,
+  required VoidCallback onTap,
+  required IconData icon,
+  required double width,
+  required double height,
+}){
+  final ThemeData theme = Theme.of(context);
+  return InkWell(
+    splashColor: theme.colorScheme.onPrimaryFixed,
+    onTap: onTap,
+    child: onPrimaryStyleContainer(
+      theme: theme, 
+      width: width,
+      height: height,
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.all(12.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                icon,
+                size: 24,
+                color: theme.colorScheme.primaryFixedDim,
+              ),
+              SizedBox(width: 12,),
+              label
+            ],
+          ),
+        ),
+      )
+    ),
+  );
+}

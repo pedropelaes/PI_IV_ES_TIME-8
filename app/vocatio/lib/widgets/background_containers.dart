@@ -81,3 +81,49 @@ Widget primaryGradientContainer({
     child: child,
   );
 }
+
+Container onPrimaryStyleContainer({
+    required ThemeData theme,
+    required Widget child,
+    required double width,
+    double? height,
+}){
+  return Container(
+    width: width,
+    height: height,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(20.0),
+      gradient: LinearGradient(
+        colors: [theme.colorScheme.onPrimaryFixed, Color(0xFF9B71D9)],
+        stops: [0, 1.0],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      ),
+    ),
+    child: child,
+  );
+}
+
+Container primaryFixedGradientContainer({
+    required ThemeData theme,
+    required Widget child,
+    double? width,
+    double? height,
+    EdgeInsets? padding
+}){
+  return Container(
+    width: width,
+    height: height,
+    padding: padding,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(20.0),
+      gradient: LinearGradient(
+        colors: [theme.colorScheme.onPrimaryFixed, theme.colorScheme.onPrimaryFixedVariant],
+        stops: [0, 1.0],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      ),
+    ),
+    child: child,
+  );
+}
