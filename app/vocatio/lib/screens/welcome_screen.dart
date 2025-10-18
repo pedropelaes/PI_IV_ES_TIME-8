@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:vocattio/screens/login_screen.dart';
+import 'package:vocattio/screens/scan_qrcode.dart';
 import 'package:vocattio/screens/signup_screen.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 
 class WelcomeScreen extends StatelessWidget{
+  const WelcomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -42,7 +45,7 @@ class WelcomeScreen extends StatelessWidget{
                         Text(
                           'Bem vindo!',
                           textAlign: TextAlign.center, // Garante que o texto fique centralizado
-                          style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                          style: textTheme.displaySmall?.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
@@ -62,6 +65,16 @@ class WelcomeScreen extends StatelessWidget{
                           label: 'Cadastrar', 
                           onTap: (){
                             Navigator.push(context, MaterialPageRoute(builder: (_) => SignupScreen()));
+                          }
+                        ),
+                        SizedBox(height: smallSpacing,),
+                        primaryButtonDesign(
+                          context: context, 
+                          width: 255.0,
+                          height: 55.0,
+                          label: 'ScanQRCode', 
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => ScanQrcode()));
                           }
                         )
                       ],
