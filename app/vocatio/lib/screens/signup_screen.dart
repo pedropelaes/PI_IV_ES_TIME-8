@@ -1,13 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:vocattio/connection.dart';
 import 'package:vocattio/extensions/string_extensions.dart';
 import 'package:vocattio/screens/login_screen.dart';
+import 'package:vocattio/services/auth_service.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/text_field.dart';
-import 'package:vocattio/services/auth_service.dart';
 
 class SignupScreen extends StatefulWidget{
   const SignupScreen({super.key});
@@ -24,8 +23,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
   final TextEditingController idController = TextEditingController();
+  final _authService = AuthService();
   
-  final AuthService _authService = AuthService();
   bool _isLoading = false;
   
   @override
@@ -94,9 +93,7 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
     );
   }
-
-  // Método para realizar o cadastro
-  Future<void> _signUp() async {
+  Future<void> _signup() async {
     if (!_validateForm()) return;
 
     setState(() {
@@ -104,39 +101,48 @@ class _SignupScreenState extends State<SignupScreen> {
     });
 
     try {
-      UserCredential? _userCredential = await _authService.signUp(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-        name: nameController.text.trim(),
-        studentId: _typeSelector.contains(AccountType.aluno) 
-            ? idController.text.trim() 
-            : null,
+      final result = await _authService.signup(
+        emailController.text.trim(),
+        passwordController.text.trim(),
       );
 
-      _showSuccessSnackBar('Conta criada com sucesso!');
-
-      await connect(
-        _userCredential?.user?.uid, 
-        nameController.text, 
-        emailController.text, 
-        _typeSelector.first.name, 
-        idController.text
-        );
-      
-      // Navegar para a tela de login
-      Navigator.pushReplacement(
-        context, 
-        MaterialPageRoute(builder: (_) => const LoginScreen())
-      );
-      
+      if (result.containsKey('error')) {
+        _showErrorSnackBar(result['error']['message']);
+      } else {
+        _showSuccessSnackBar('Conta criada com sucesso!');
+        final verificationEmailResult = await _authService.sendEmailVerification(result['idToken']);
+        if(verificationEmailResult.containsKey('error')) {
+          _showErrorSnackBar(verificationEmailResult['error']['message']);
+        } else {
+          _showSuccessSnackBar('Email de verificação enviado!');
+        }
+      }
     } catch (e) {
-      _showErrorSnackBar(e.toString());
+      _showErrorSnackBar('Erro inesperado: $e');
     } finally {
       setState(() {
         _isLoading = false;
       });
     }
   }
+
+  /*Future<void> _sendVerificationEmail(String idToken) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await _authService.sendEmailVerification(idToken);
+      _showSuccessSnackBar('E-mail de verificação enviado!');
+    } catch (e) {
+      _showErrorSnackBar('Erro ao enviar e-mail: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }*/
+
 
   @override
   Widget build(BuildContext context){
@@ -303,7 +309,7 @@ class _SignupScreenState extends State<SignupScreen> {
         width: 140,
         height: 45,
         label: _isLoading ? 'Cadastrando...' : 'Cadastrar', 
-        onTap: _isLoading ? () {} : () => _signUp(),
+        onTap: _isLoading ? () {} : () => _signup(),
       ),
       isMobileLayout ? const Spacer() : const SizedBox(height: 60),
       Text(

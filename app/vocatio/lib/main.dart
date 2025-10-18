@@ -1,8 +1,6 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:vocattio/firebase_options.dart';
 import 'package:vocattio/screens/criar_turma_screen.dart';
 import 'package:vocattio/screens/detalhes_turma.dart';
 import 'package:vocattio/screens/scan_qrcode.dart';
@@ -12,19 +10,12 @@ import 'package:vocattio/screens/welcome_screen.dart';
 import 'package:vocattio/theme/theme.dart';
 import 'package:vocattio/theme/theme_notifier.dart';
 import 'package:vocattio/theme/util.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Inicializar Firebase com configurações específicas
-  try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    print('Firebase inicializado com sucesso');
-  } catch (e) {
-    print('Erro ao inicializar Firebase: $e');
-  }
+  await dotenv.load(fileName: ".env");
+
   
   final themeNotifier = ThemeNotifier();
   
@@ -57,7 +48,7 @@ class MainApp extends StatelessWidget {
       theme: isHighContrast ? lightScheme.lightHighContrast() : lightScheme.light(), 
       darkTheme: isHighContrast ? darkScheme.darkHighContrast() : darkScheme.dark(), 
       themeMode: themeNotifier.themeMode,
-      home: CriarTurmaScreen()
+      home: WelcomeScreen()
     );
   }
 }
