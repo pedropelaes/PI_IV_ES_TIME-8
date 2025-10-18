@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:vocattio/connection.dart';
 import 'package:vocattio/extensions/string_extensions.dart';
 import 'package:vocattio/screens/login_screen.dart';
 import 'package:vocattio/services/auth_service.dart';
+import 'package:vocattio/services/socket_service.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/text_field.dart';
@@ -24,6 +24,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController confirmPasswordController = TextEditingController();
   final TextEditingController idController = TextEditingController();
   final _authService = AuthService();
+  final _socketService = SocketService();
+  
   
   bool _isLoading = false;
   
