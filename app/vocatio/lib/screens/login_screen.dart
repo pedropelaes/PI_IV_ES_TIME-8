@@ -3,10 +3,10 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:vocattio/screens/home_screen.dart';
 import 'package:vocattio/screens/reset_password_screen.dart';
 import 'package:vocattio/screens/signup_screen.dart';
+import 'package:vocattio/services/auth_service.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/text_field.dart';
-import 'package:vocattio/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget{
   const LoginScreen({super.key});
@@ -18,8 +18,7 @@ class LoginScreen extends StatefulWidget{
 class _LoginScreenState extends State<LoginScreen>{
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  
-  final AuthService _authService = AuthService();
+  final _authService = AuthService();
   bool _isLoading = false;
 
   @override
@@ -64,30 +63,30 @@ class _LoginScreenState extends State<LoginScreen>{
     );
   }
 
-  // Método para realizar o login
-  Future<void> _signIn() async {
-    if (!_validateForm()) return;
+  Future<void> _login() async {
+    if (!_validateForm()) return; 
 
     setState(() {
       _isLoading = true;
     });
 
     try {
-      await _authService.signIn(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
+      final result = await _authService.login(
+        emailController.text.trim(),
+        passwordController.text.trim(),
       );
 
-      _showSuccessSnackBar('Login realizado com sucesso!');
-      
-      // Navegar para a tela principal
-      Navigator.pushReplacement(
-        context, 
-        MaterialPageRoute(builder: (_) => HomeScreen())
-      );
-      
+      if (result.containsKey('error')) {
+        _showErrorSnackBar(result['error']['message']);
+      } else {
+        _showSuccessSnackBar('Login realizado com sucesso!');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomeScreen()),
+        );
+      }
     } catch (e) {
-      _showErrorSnackBar(e.toString());
+      _showErrorSnackBar('Erro inesperado: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -235,7 +234,7 @@ class _LoginScreenState extends State<LoginScreen>{
         width: 140,
         height: 45,
         label: _isLoading ? 'Entrando...' : 'Entrar', 
-        onTap: _isLoading ? () {} : () => _signIn(),
+        onTap: _isLoading ? () {} : () => _login(),
       ),
       isMobileLayout ? Spacer() : SizedBox(height: largeSpacing * 2,),
       Text(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:vocattio/services/auth_service.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/text_field.dart';
-import 'package:vocattio/services/auth_service.dart';
 
 class ResetPassowordScreen extends StatefulWidget{
   const ResetPassowordScreen({super.key});
@@ -14,8 +14,7 @@ class ResetPassowordScreen extends StatefulWidget{
 
 class _ResetPasswordScreenState extends State<ResetPassowordScreen>{
   final TextEditingController emailController = TextEditingController();
-  
-  final AuthService _authService = AuthService();
+  final _authService = AuthService();
   bool _isLoading = false;
 
   @override
@@ -54,29 +53,31 @@ class _ResetPasswordScreenState extends State<ResetPassowordScreen>{
     );
   }
 
-  // Método para enviar e-mail de reset de senha
-  Future<void> _resetPassword() async {
-    if (!_validateForm()) return;
+   Future<void> _resetPassword(String email) async {
+    if(!_validateForm()) return ;
 
     setState(() {
       _isLoading = true;
     });
 
     try {
-      await _authService.resetPassword(email: emailController.text.trim());
+      final result = await _authService.sendPasswordResetEmail(
+          emailController.text.trim(),
+        );
       
-      _showSuccessSnackBar('E-mail de recuperação enviado! Verifique sua caixa de entrada.');
-      
-      // Voltar para a tela de login após sucesso
-      Navigator.pop(context);
-      
-    } catch (e) {
-      _showErrorSnackBar(e.toString());
+      if(result.containsKey('error')){
+        _showErrorSnackBar(result['error']['message']);
+      }else{
+        _showSuccessSnackBar('E-mail de recuperação enviado para ${emailController.text.trim()}');
+      }
+    } on Exception catch (e) {
+      _showErrorSnackBar('Erro inesperado: $e');
     } finally {
       setState(() {
         _isLoading = false;
       });
     }
+
   }
 
   @override
@@ -202,7 +203,7 @@ class _ResetPasswordScreenState extends State<ResetPassowordScreen>{
         width: 140,
         height: 45,
         label: _isLoading ? 'Enviando...' : 'Enviar', 
-        onTap: _isLoading ? () {} : () => _resetPassword(),
+        onTap: _isLoading ? () {} : () => _resetPassword(emailController.text.trim()),
       ),
     ];
   }
