@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:vocattio/firebase_options.dart';
+import 'package:vocattio/screens/criar_turma_screen.dart';
 import 'package:vocattio/screens/detalhes_turma.dart';
 import 'package:vocattio/screens/scan_qrcode.dart';
+import 'package:vocattio/screens/signup_screen.dart';
 import 'package:vocattio/screens/tela_presencas.dart';
 import 'package:vocattio/screens/welcome_screen.dart';
 import 'package:vocattio/theme/theme.dart';
@@ -55,7 +57,7 @@ class MainApp extends StatelessWidget {
       theme: isHighContrast ? lightScheme.lightHighContrast() : lightScheme.light(), 
       darkTheme: isHighContrast ? darkScheme.darkHighContrast() : darkScheme.dark(), 
       themeMode: themeNotifier.themeMode,
-      home: DetalhesTurmaScreen(nomeTurma: 'Turma 1', descricao: 'Teste', numeroAlunos: 35,)
+      home: CriarTurmaScreen()
     );
   }
 }
