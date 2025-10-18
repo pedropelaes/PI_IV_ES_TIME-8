@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "198635508987",
+    "project_id": "vocattio-f4c99",
+    "storage_bucket": "vocattio-f4c99.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:198635508987:android:482d2cded8b124d6f30c5e",
+        "android_client_info": {
+          "package_name": "com.example.vocatio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-ZVpyWRGei13f_kDDfJLuoc66l691UpQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:198635508987:android:a1aaa1e0acb98378f30c5e",
+        "android_client_info": {
+          "package_name": "com.vocattio.vocattio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-ZVpyWRGei13f_kDDfJLuoc66l691UpQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:vocattio/screens/tela_presencas.dart';
 import 'package:vocattio/screens/gerar_qrcode_screen.dart';
-import 'package:vocattio/widgets/delete_fab.dart';
+import 'package:vocattio/widgets/app_header.dart';
+import 'package:vocattio/widgets/background_containers.dart';
+import 'package:vocattio/widgets/dialog_exc.dart';
 import 'package:vocattio/widgets/animated_button.dart';
 import 'package:vocattio/utils/responsive_helper.dart';
 
@@ -29,24 +31,14 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF1D1A20),
-        foregroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          widget.nomeTurma,
-          style: textTheme.headlineSmall?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
+      appBar: AppHeader(
+        title: 'Registrar',
+        onMenuPressed: () {
+        },
+        hasGoBack: true,
+        onGoBack: () {
+          Navigator.pop(context);
+        },
       ),
       body: SafeArea(
         child: Center(
@@ -60,34 +52,17 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Código da turma
-                  Container(
+                  primaryFixedGradientContainer(
                     width: double.infinity,
                     padding: EdgeInsets.all(ResponsiveHelper.isDesktop(context) ? 24 : 20),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(0xFF523C73),
-                          Color(0xFF9B71D9),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: theme.colorScheme.primary.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
+                    theme: theme,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'Código da Turma',
                           style: textTheme.titleMedium?.copyWith(
-                            color: Colors.white,
+                            color: theme.colorScheme.primaryFixed,
                             fontWeight: FontWeight.bold,
                             fontSize: ResponsiveHelper.getResponsiveFontSize(context, 18),
                           ),
@@ -96,7 +71,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                         Text(
                           'TURMA001', // Código fixo por enquanto
                           style: textTheme.headlineMedium?.copyWith(
-                            color: Colors.white,
+                            color: theme.colorScheme.primaryFixed,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 2,
                             fontSize: ResponsiveHelper.getResponsiveFontSize(context, 28),
@@ -106,7 +81,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                         Text(
                           widget.descricao,
                           style: textTheme.bodyMedium?.copyWith(
-                            color: Colors.white.withOpacity(0.9),
+                            color: theme.colorScheme.primaryFixed.withValues(alpha: 0.9),
                             fontSize: ResponsiveHelper.getResponsiveFontSize(context, 16),
                           ),
                         ),
@@ -118,7 +93,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                   
                   // Botões de ação
                   Expanded(
-                    child: Column(
+                    child: ListView(
                       children: [
                         AnimatedButton(
                           text: 'Gerar QR CODE',
@@ -195,7 +170,22 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
           ),
         ),
       ),
-      floatingActionButton: const DeleteFAB(),
+      floatingActionButton: FloatingActionButton(
+  backgroundColor: const Color(0xFF9B71D9),
+  child: const Icon(Icons.delete, color: Colors.white),
+  onPressed: () async {
+    final confirm = await showDeleteDialog(context, (){});
+
+    if (confirm == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Turma excluída com sucesso!'),
+        ),
+      );
+      Navigator.pop(context);
+    }
+  },
+),
     );
   }
 }
