@@ -71,7 +71,7 @@ public class SupervisoraDeConexao extends Thread
                     case "Cadastro":
                         Cadastro cadastro = gson.fromJson(json, Cadastro.class);
                         resultado = cadastro.criarDocumento();
-                        this.usuario.receba(new ResultadoOperacao(resultado, "Cadastro"));
+                        this.usuario.receba(new ResultadoOperacao(resultado, "ResultadoCadastro"));
                         break;
                     case "Login":
                         Login login = gson.fromJson(json, Login.class);

@@ -1,12 +1,8 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vocattio/screens/criar_turma_screen.dart';
-import 'package:vocattio/screens/detalhes_turma.dart';
-import 'package:vocattio/screens/scan_qrcode.dart';
-import 'package:vocattio/screens/signup_screen.dart';
-import 'package:vocattio/screens/tela_presencas.dart';
 import 'package:vocattio/screens/welcome_screen.dart';
+import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/theme/theme.dart';
 import 'package:vocattio/theme/theme_notifier.dart';
 import 'package:vocattio/theme/util.dart';
@@ -19,6 +15,7 @@ void main() async {
   
   final themeNotifier = ThemeNotifier();
   
+  setupLocator();
   runApp(
     MultiProvider(
       providers: [

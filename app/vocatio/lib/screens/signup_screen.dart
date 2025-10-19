@@ -1,9 +1,14 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:vocattio/extensions/string_extensions.dart';
+import 'package:vocattio/models/user.dart';
 import 'package:vocattio/screens/login_screen.dart';
 import 'package:vocattio/services/auth_service.dart';
-import 'package:vocattio/services/socket_service.dart';
+import 'package:vocattio/services/locator.dart';
+import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/text_field.dart';
@@ -24,7 +29,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController confirmPasswordController = TextEditingController();
   final TextEditingController idController = TextEditingController();
   final _authService = AuthService();
-  final _socketService = SocketService();
+  final SocketService _socketService = getIt<SocketService>();
   
   
   bool _isLoading = false;
@@ -103,21 +108,48 @@ class _SignupScreenState extends State<SignupScreen> {
     });
 
     try {
-      final result = await _authService.signup(
+      final authResult = await _authService.signup(    // criando usuario no firebase auth
         emailController.text.trim(),
         passwordController.text.trim(),
       );
 
-      if (result.containsKey('error')) {
-        _showErrorSnackBar(result['error']['message']);
-      } else {
-        _showSuccessSnackBar('Conta criada com sucesso!');
-        final verificationEmailResult = await _authService.sendEmailVerification(result['idToken']);
-        if(verificationEmailResult.containsKey('error')) {
-          _showErrorSnackBar(verificationEmailResult['error']['message']);
-        } else {
-          _showSuccessSnackBar('Email de verificação enviado!');
-        }
+      if (authResult.containsKey('error')) {
+        _showErrorSnackBar(authResult['error']['message']);
+        return;                                               
+      }
+
+      final registerNewUserResult = await _registerNewUser(     // registrando usuario no banco
+        User(
+          uid: authResult['localId'],
+          nome: nameController.text,
+          email: emailController.text.trim(),
+          tipo: _typeSelector.first.toString(),
+          codigo: idController.text.trim(),
+        ),
+      );
+
+      if (registerNewUserResult != true) {
+        final errorMessage = registerNewUserResult == false
+            ? 'Servidor não pôde registrar o usuário'
+            : 'Erro ao adquirir resposta do servidor';
+        _showErrorSnackBar(errorMessage);
+        return; 
+      }
+
+      final verificationEmailResult =                                       // enviando e-mail de verificacao
+          await _authService.sendEmailVerification(authResult['idToken']);
+
+      if (verificationEmailResult.containsKey('error')) {
+        _showErrorSnackBar(verificationEmailResult['error']['message']);
+        return; 
+      }
+
+      _showSuccessSnackBar('Cadastro realizado com sucesso! Verifique seu e-mail.');
+
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => LoginScreen()),
+        );
       }
     } catch (e) {
       _showErrorSnackBar('Erro inesperado: $e');
@@ -125,6 +157,47 @@ class _SignupScreenState extends State<SignupScreen> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  Future<bool?> _registerNewUser(User newUser) async {
+    Map<String, dynamic> jsonCadastro = {
+      "operacao": "Cadastro",
+      ...newUser.toJson()
+    };
+
+    try {
+      _socketService.send(jsonCadastro);
+
+      final responseData = await _socketService.messages.firstWhere(
+        (data) {
+          try {
+            final message = jsonDecode(data is String ? data : utf8.decode(data));
+            return message['operacao'] == 'ResultadoCadastro';
+          } catch (e) {
+            return false;
+          }
+        },
+      ).timeout(const Duration(seconds: 10)); 
+
+      final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
+      
+      final resultado = responseJson['resultado'];
+
+      print("Resposta de cadastro recebida: $resultado");
+
+      if (resultado == 'true' || resultado == true) { 
+        return true;
+      } else {
+        return false;
+      }
+
+    } on TimeoutException {
+      print("Erro: Tempo de resposta para o cadastro esgotado.");
+      return null;
+    } catch (e) {
+      print("Erro ao processar resposta do cadastro: $e");
+      return null; 
     }
   }
 

@@ -22,6 +22,8 @@ dependencies:
   geolocator: ^13.0.1
   http: ^1.5.0
   flutter_dotenv: ^6.0.0
+  get_it: ^8.2.0
+  web: ^1.1.1
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,4 @@
-public class ResultadoOperacao extends Resultado {
+public class ResultadoOperacao extends Comunicado {
     private boolean resultado;
     private String operacao;
 
