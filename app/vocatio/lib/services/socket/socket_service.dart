@@ -7,7 +7,7 @@ import 'socket_client_mobile.dart'
 import 'socket_client.dart';
 
 class SocketService {
-  static const String host = 'localhost';
+  static const String host = '192.168.0.5';
   static const int port = 3000;
 
   final SocketClient _client = getSocketClient();

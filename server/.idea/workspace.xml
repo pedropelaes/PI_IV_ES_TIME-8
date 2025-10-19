@@ -5,8 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="835ce07a-16a5-48fc-93cd-fcf22f86460b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SupervisoraDeConexao.java" beforeDir="false" afterPath="$PROJECT_DIR$/SupervisoraDeConexao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/services/socket/socket_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/services/socket/socket_service.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,7 +69,7 @@
       <workItem from="1760387242450" duration="594000" />
       <workItem from="1760809676917" duration="832000" />
       <workItem from="1760881418344" duration="5156000" />
-      <workItem from="1760887504788" duration="3892000" />
+      <workItem from="1760887504788" duration="4644000" />
     </task>
     <servers />
   </component>

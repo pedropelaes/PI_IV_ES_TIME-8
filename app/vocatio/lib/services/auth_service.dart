@@ -89,7 +89,7 @@ class AuthService {
       final futureResponse = _socketService.messages.firstWhere((data) {
       try {
           final message = jsonDecode(data is String ? data : utf8.decode(data));
-          return message['operacao'] == 'Login'; // ou 'ResultadoLogin', conforme sua lógica
+          return message['operacao'] == 'ResultadoLogin';
         } catch (e) {
           return false;
         }

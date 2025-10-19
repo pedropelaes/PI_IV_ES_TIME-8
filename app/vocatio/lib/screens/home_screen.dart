@@ -9,6 +9,7 @@ import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/app_drawer.dart';
+import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/custom_fab.dart';
 import 'package:vocattio/widgets/turma_card.dart';
 import 'package:vocattio/screens/detalhes_turma.dart';
@@ -78,9 +79,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   if (asyncSnapshot.hasError || !asyncSnapshot.hasData || asyncSnapshot.data == null) {
                   return Center(
-                    child: Text('Erro ao carregar dados do usuário.', style: textTheme.displaySmall?.copyWith(
-                      color: theme.colorScheme.error
-                    ),),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text('Erro ao carregar dados do usuário.', style: textTheme.displaySmall?.copyWith(
+                          color: theme.colorScheme.error
+                        ),),
+                        primaryButtonDesign(context: context, label: 'Retry', onTap: (){
+                          setState(() {
+                            _user = _authService.getUser(widget.uid);
+                          });
+                       
+                        }, width: 255, height: 55)
+                      ],
+                    ),
                   );
                 }
 

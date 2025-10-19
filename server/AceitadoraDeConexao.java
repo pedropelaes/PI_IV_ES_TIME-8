@@ -16,7 +16,7 @@ public class AceitadoraDeConexao extends Thread
         try
         {
             this.pedido =
-            new ServerSocket (Integer.parseInt(porta));
+            new ServerSocket (Integer.parseInt(porta), 0, InetAddress.getByName("0.0.0.0"));
         }
         catch (Exception  erro)
         {
