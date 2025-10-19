@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:vocattio/extensions/string_extensions.dart';
 import 'package:vocattio/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:vocattio/models/user.dart';
@@ -90,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       // Saudação
                       Text(
-                        'Olá, ${user?.getNome()}',
+                        'Olá, ${user?.tipo.capitalize()} ${user?.getNome()}',
                         style: textTheme.headlineSmall?.copyWith(
                           color: theme.colorScheme.onSurface,
                           fontWeight: FontWeight.w500,

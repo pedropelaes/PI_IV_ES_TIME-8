@@ -123,7 +123,7 @@ class _SignupScreenState extends State<SignupScreen> {
           uid: authResult['localId'],
           nome: nameController.text,
           email: emailController.text.trim(),
-          tipo: _typeSelector.first.toString(),
+          tipo: _typeSelector.first.name,
           codigo: idController.text.trim(),
         ),
       );
