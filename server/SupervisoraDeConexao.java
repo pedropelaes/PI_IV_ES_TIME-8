@@ -77,7 +77,7 @@ public class SupervisoraDeConexao extends Thread
                         Login login = gson.fromJson(json, Login.class);
                         User user = login.getUserData();
                         boolean userFound = user != null;
-                        this.usuario.receba(new ResultadoLogin(userFound,"Login", user));
+                        this.usuario.receba(new ResultadoLogin(userFound,"ResultadoLogin", user));
                         break;
                     default:
                         System.err.println("Comunicado desconhecido: " + tipo);

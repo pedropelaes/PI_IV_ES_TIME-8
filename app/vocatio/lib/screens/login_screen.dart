@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:vocattio/screens/home_screen.dart';
 import 'package:vocattio/screens/reset_password_screen.dart';
 import 'package:vocattio/screens/signup_screen.dart';
 import 'package:vocattio/services/auth_service.dart';
+import 'package:vocattio/services/locator.dart';
+import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/text_field.dart';
@@ -19,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen>{
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final _authService = AuthService();
+  final SocketService _socketService = getIt<SocketService>();
   bool _isLoading = false;
 
   @override
@@ -82,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen>{
         _showSuccessSnackBar('Login realizado com sucesso!');
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => HomeScreen()),
+          MaterialPageRoute(builder: (_) => HomeScreen(uid: result['localId'])),
         );
       }
     } catch (e) {

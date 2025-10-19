@@ -1,4 +1,11 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:vocattio/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:vocattio/models/user.dart';
+import 'package:vocattio/services/locator.dart';
+import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/app_drawer.dart';
 import 'package:vocattio/widgets/custom_fab.dart';
@@ -7,7 +14,8 @@ import 'package:vocattio/screens/detalhes_turma.dart';
 import 'package:vocattio/utils/responsive_helper.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String uid;
+  const HomeScreen({super.key, required this.uid});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -15,6 +23,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final SocketService _socketService = getIt<SocketService>();
+  final AuthService _authService = AuthService();
+  late Future<User?> _user;
+  
 
   // Dados das turmas baseados na imagem
   final List<Map<String, dynamic>> turmas = [
@@ -25,6 +37,12 @@ class _HomeScreenState extends State<HomeScreen> {
     {'nome': 'Turma 5', 'descricao': 'Descrição *', 'alunos': 42},
     {'nome': 'Turma 6', 'descricao': 'Descrição *', 'alunos': 0},
   ];
+
+  @override
+  void initState(){
+    super.initState();
+    _user = _authService.getUser(widget.uid);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,55 +67,75 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: Padding(
               padding: EdgeInsets.all(ResponsiveHelper.getResponsivePadding(context)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Saudação
-                  Text(
-                    'Olá, (NOME)',
-                    style: textTheme.headlineSmall?.copyWith(
-                      color: theme.colorScheme.onSurface,
-                      fontWeight: FontWeight.w500,
-                      fontSize: ResponsiveHelper.getResponsiveFontSize(context, 24),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  
-                  // Grid de turmas
-                  Expanded(
-                    child: GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: ResponsiveHelper.getGridCrossAxisCount(context),
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        childAspectRatio: ResponsiveHelper.isDesktop(context) ? 1.0 : 0.85,
+              child: FutureBuilder<User?>(
+                future: _user,
+                builder: (context, asyncSnapshot) {
+
+                  if(asyncSnapshot.connectionState == ConnectionState.waiting){
+                    return Center(child: CircularProgressIndicator(color: theme.colorScheme.onSurface),);
+                  }
+
+                  if (asyncSnapshot.hasError || !asyncSnapshot.hasData || asyncSnapshot.data == null) {
+                  return Center(
+                    child: Text('Erro ao carregar dados do usuário.', style: textTheme.displaySmall?.copyWith(
+                      color: theme.colorScheme.error
+                    ),),
+                  );
+                }
+
+                  final user = asyncSnapshot.data;
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Saudação
+                      Text(
+                        'Olá, ${user?.getNome()}',
+                        style: textTheme.headlineSmall?.copyWith(
+                          color: theme.colorScheme.onSurface,
+                          fontWeight: FontWeight.w500,
+                          fontSize: ResponsiveHelper.getResponsiveFontSize(context, 24),
+                        ),
                       ),
-                      itemCount: turmas.length,
-                      itemBuilder: (context, index) {
-                        final turma = turmas[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetalhesTurmaScreen(
-                                  nomeTurma: turma['nome'],
-                                  descricao: turma['descricao'],
-                                  numeroAlunos: turma['alunos'],
-                                ),
+                      const SizedBox(height: 24),
+                      
+                      // Grid de turmas
+                      Expanded(
+                        child: GridView.builder(
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: ResponsiveHelper.getGridCrossAxisCount(context),
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: ResponsiveHelper.isDesktop(context) ? 1.0 : 0.85,
+                          ),
+                          itemCount: turmas.length,
+                          itemBuilder: (context, index) {
+                            final turma = turmas[index];
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DetalhesTurmaScreen(
+                                      nomeTurma: turma['nome'],
+                                      descricao: turma['descricao'],
+                                      numeroAlunos: turma['alunos'],
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: TurmaCard(
+                                nomeTurma: turma['nome'],
+                                descricao: turma['descricao'],
+                                numeroAlunos: turma['alunos'],
                               ),
                             );
                           },
-                          child: TurmaCard(
-                            nomeTurma: turma['nome'],
-                            descricao: turma['descricao'],
-                            numeroAlunos: turma['alunos'],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
+                        ),
+                      ),
+                    ],
+                  );
+                }
               ),
             ),
           ),

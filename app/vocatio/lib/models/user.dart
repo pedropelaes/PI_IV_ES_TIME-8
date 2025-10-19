@@ -13,6 +13,26 @@ class User{
     required this.codigo,
   });
 
+  String getUid(){
+    return uid;
+  }
+
+  String getNome(){
+    return nome;
+  }
+
+  String getEmail(){
+    return email;
+  }
+
+  String getTipo(){
+    return tipo;
+  }
+
+  String getCodigo(){
+    return codigo;
+  }
+
   User copyWith({
     String? uid,
     String? nome,

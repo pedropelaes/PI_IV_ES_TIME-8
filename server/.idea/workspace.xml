@@ -5,18 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="835ce07a-16a5-48fc-93cd-fcf22f86460b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/screens/signup_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/screens/signup_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/screens/welcome_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/screens/welcome_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/services/socket_service.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/vocatio/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/vocatio/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/pubspec.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Resultado.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Resultado.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ResultadoOperacao.class" beforeDir="false" afterPath="$PROJECT_DIR$/ResultadoOperacao.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ResultadoOperacao.java" beforeDir="false" afterPath="$PROJECT_DIR$/ResultadoOperacao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SupervisoraDeConexao.class" beforeDir="false" afterPath="$PROJECT_DIR$/SupervisoraDeConexao.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SupervisoraDeConexao.java" beforeDir="false" afterPath="$PROJECT_DIR$/SupervisoraDeConexao.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -81,7 +70,7 @@
       <workItem from="1760387242450" duration="594000" />
       <workItem from="1760809676917" duration="832000" />
       <workItem from="1760881418344" duration="5156000" />
-      <workItem from="1760887504788" duration="1554000" />
+      <workItem from="1760887504788" duration="3892000" />
     </task>
     <servers />
   </component>
