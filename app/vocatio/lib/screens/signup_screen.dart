@@ -249,7 +249,10 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                           TextSpan(
                             text: PouA,
-                            style: textTheme.headlineMedium?.copyWith(color: theme.colorScheme.primary),
+                            style: textTheme.headlineMedium?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w800
+                            ),
                           )
                         ],
                           
@@ -272,15 +275,8 @@ class _SignupScreenState extends State<SignupScreen> {
                       child: ConstrainedBox(
                         constraints: BoxConstraints(minHeight: screenHeight),
                         child: IntrinsicHeight(
-                          child: Container(
-                            decoration: BoxDecoration(
-                                  color: theme.colorScheme.primaryContainer,
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(40),
-                                    topRight: Radius.circular(40)
-                                  )
-                                ),
-                            padding: EdgeInsets.all(24.0),
+                          child: primaryFormsContainer(
+                            theme: theme,
                             child: Column(
                               children: [
                                 SizedBox(height: largeSpacing,),
@@ -366,18 +362,24 @@ class _SignupScreenState extends State<SignupScreen> {
         emptySelectionAllowed: false,
       ),
       SizedBox(height: largeSpacing),
-      TextFieldDesign(controller: nameController, hintText: 'Nome', context: context),
-      if (_typeSelector.contains(AccountType.aluno))
-        ...[
-          SizedBox(height: smallSpacing),
-          TextFieldDesign(controller: idController, hintText: 'Número de identificação', context: context),
-        ],
+      TextFieldDesign(controller: nameController, hintText: 'Nome *', context: context),
+      //if (_typeSelector.contains(AccountType.aluno))
       SizedBox(height: smallSpacing),
-      TextFieldDesign(controller: emailController, hintText: 'E-mail', context: context),
+      TextFieldDesign(controller: idController, hintText: _typeSelector.contains(AccountType.aluno) ? 'Mátricula do aluno *' : 'ID do professor *', 
+      context: context),
       SizedBox(height: smallSpacing),
-      TextFieldDesign(controller: passwordController, hintText: 'Senha', context: context),
+      TextFieldDesign(controller: emailController, hintText: 'E-mail *', context: context),
       SizedBox(height: smallSpacing),
-      TextFieldDesign(controller: confirmPasswordController, hintText: 'Confirmar Senha', context: context),
+      TextFieldDesign(controller: passwordController, hintText: 'Senha *', context: context),
+      SizedBox(height: smallSpacing),
+      TextFieldDesign(controller: confirmPasswordController, hintText: 'Confirmar Senha *', context: context),
+      SizedBox(height: smallSpacing,),
+      Text(
+        _typeSelector.contains(AccountType.aluno) ? 'Você está se registrando como aluno.' : 'Você está se registrando como professor.',
+        style: textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.primary
+        ),
+      ),
       SizedBox(height: largeSpacing),
       primaryButtonDesign(
         context: context, 

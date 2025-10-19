@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:vocattio/services/auth_service.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
@@ -84,7 +83,9 @@ class _ResetPasswordScreenState extends State<ResetPassowordScreen>{
   Widget build(BuildContext context){
     final ThemeData theme = Theme.of(context);
     final TextTheme textTheme = theme.textTheme;
+    TargetPlatform platform = theme.platform;   
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(title: Text('Voltar', style: textTheme.headlineSmall?.copyWith(color: theme.colorScheme.onSurface),), 
       backgroundColor: Colors.transparent, elevation: 0, shadowColor: Colors.transparent, surfaceTintColor: Colors.transparent,),
       body: surfaceGradientContainer(
@@ -189,8 +190,8 @@ class _ResetPasswordScreenState extends State<ResetPassowordScreen>{
     return [
       SizedBox(height: largeSpacing,),
       Text(
-        'Insira o e-mail relacionado a sua conta.\n Você recebera um link para recuperar sua senha,',
-        style: textTheme.headlineSmall?.copyWith(
+        'Insira o e-mail relacionado a sua conta. Você recebera um link para recuperar sua senha,',
+        style: textTheme.titleLarge?.copyWith(
           color: isMobileLayout ? theme.colorScheme.onPrimaryContainer : theme.colorScheme.onSurface
         ),
         textAlign: TextAlign.center,

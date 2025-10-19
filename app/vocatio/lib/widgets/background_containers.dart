@@ -25,16 +25,23 @@ Widget surfaceGradientContainer({
 
 Widget primaryFormsContainer({
   required ThemeData theme,
-  required Widget child
+  required Widget child,
 }){
+  final Brightness currentBrightness = theme.brightness;
+  final bool isDarkMode = currentBrightness == Brightness.dark;
   return Container(
     decoration: BoxDecoration(
-          color: theme.colorScheme.primaryContainer,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(40),
-            topRight: Radius.circular(40)
-          )
+      gradient: LinearGradient(
+        colors: [
+           isDarkMode ? theme.colorScheme.onPrimaryFixed : theme.colorScheme.primaryContainer, 
+           isDarkMode ? theme.colorScheme.onPrimaryFixedVariant : theme.colorScheme.primaryContainer
+          ]
         ),
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(40),
+        topRight: Radius.circular(40)
+      )
+    ),
     padding: EdgeInsets.all(24.0),
     child: child
   );
