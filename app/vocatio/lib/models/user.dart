@@ -1,4 +1,7 @@
+import 'package:bson/bson.dart';
+
 class User{
+  final String? objectId;
   final String uid;
   final String nome;
   final String email;
@@ -6,6 +9,7 @@ class User{
   final String codigo;
 
   const User({
+    this.objectId,
     required this.uid,
     required this.nome,
     required this.email,
@@ -34,6 +38,7 @@ class User{
   }
 
   User copyWith({
+    String? objectId,
     String? uid,
     String? nome,
     String? email,
@@ -41,6 +46,7 @@ class User{
     String? codigo,
   }) {
     return User(
+      objectId: objectId ?? this.objectId,
       uid: uid ?? this.uid,
       nome: nome ?? this.nome,
       email: email ?? this.email,
@@ -51,6 +57,7 @@ class User{
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
+      objectId: json['_id'] ?? '',
       uid: json['uid'] ?? '',
       nome: json['nome'] ?? '',
       email: json['email'] ?? '',
@@ -61,6 +68,7 @@ class User{
 
   Map<String, dynamic> toJson() {
     return {
+      '_id': objectId,
       'uid': uid,
       'nome': nome,
       'email': email,
@@ -71,7 +79,7 @@ class User{
 
   @override
   String toString(){
-    return 'User{uid: $uid, name: $nome, email: $email, tipo: $tipo, codigo: $codigo}';
+    return 'User{_id: $objectId, $uid, name: $nome, email: $email, tipo: $tipo, codigo: $codigo}';
   }
 
 }

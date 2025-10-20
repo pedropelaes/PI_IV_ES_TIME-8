@@ -149,11 +149,11 @@ class AuthService {
       return resultado;
 
     }on TimeoutException{
-      print("Erro: Tempo de resposta para o login esgotado.");
+      print("Erro: Tempo de resposta para a busca esgotado.");
       return null;
     }
     catch(e){
-      print("Erro ao processar resposta do cadastro: $e");
+      print("Erro ao processar resposta do servidor: $e");
       return null; 
     }
   }
