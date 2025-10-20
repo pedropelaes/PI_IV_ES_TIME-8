@@ -47,7 +47,7 @@ public class CriarTurma {
 
         try (MongoClient client = MongoClients.create(uri)) {
             MongoDatabase db = client.getDatabase("vocattio_db");
-            MongoCollection<Document> colecao = db.getCollection("users");
+            MongoCollection<Document> colecao = db.getCollection("turmas");
 
             Document turma = new Document("nome", this.nome)
                     .append("descricao", this.descricao)
