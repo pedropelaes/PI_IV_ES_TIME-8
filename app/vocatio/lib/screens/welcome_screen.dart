@@ -132,7 +132,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             ),
           ),
           if(_isConnecting)
-            primaryFixedGradientContainer(theme: theme, child: Center(
+            surfaceGradientContainer(context: context, horizontal: false,
+            child: Center(
               child: CircularProgressIndicator(color: theme.colorScheme.onPrimaryContainer,),
             ))
           
