@@ -133,6 +133,7 @@ class _SignupScreenState extends State<SignupScreen> {
             ? 'Servidor não pôde registrar o usuário'
             : 'Erro ao adquirir resposta do servidor';
         _showErrorSnackBar(errorMessage);
+        await _authService.deleteUser(authResult['idToken']);
         return; 
       }
 
@@ -200,23 +201,6 @@ class _SignupScreenState extends State<SignupScreen> {
       return null; 
     }
   }
-
-  /*Future<void> _sendVerificationEmail(String idToken) async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      await _authService.sendEmailVerification(idToken);
-      _showSuccessSnackBar('E-mail de verificação enviado!');
-    } catch (e) {
-      _showErrorSnackBar('Erro ao enviar e-mail: $e');
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }*/
 
 
   @override

@@ -79,6 +79,48 @@ class AuthService {
     return jsonDecode(response.body);
   }
 
+  Future<Map<String, dynamic>> userLookUp(String idToken) async {
+    final url = Uri.parse(
+      'https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=$apiKey',
+    );
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'idToken': idToken}),
+    );
+
+    final data = jsonDecode(response.body);
+
+    if (data['users'] != null && data['users'].isNotEmpty) {
+      return data['users'][0];
+    }
+
+    throw Exception('Usuário não encontrado ou token inválido.');
+  }
+
+
+  Future<bool> deleteUser(String idToken) async {
+    final url = Uri.parse(
+      'https://identitytoolkit.googleapis.com/v1/accounts:delete?key=$apiKey',
+    );
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'idToken': idToken}),
+    );
+
+    if (response.statusCode == 200) {
+      print('✅ Usuário deletado do Firebase.');
+      return true;
+    } else {
+      print('⚠️ Erro ao deletar usuário: ${response.body}');
+      return false;
+    }
+  }
+
+
   Future<User?> getUser(String uid) async {
     Map<String, dynamic> jsonLogin = {
       "operacao": "Login",

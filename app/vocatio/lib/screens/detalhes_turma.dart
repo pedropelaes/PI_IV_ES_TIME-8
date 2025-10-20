@@ -174,7 +174,16 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
   backgroundColor: const Color(0xFF9B71D9),
   child: const Icon(Icons.delete, color: Colors.white),
   onPressed: () async {
-    final confirm = await showDeleteDialog(context, (){});
+    final confirm = await showCustomDialog(
+      context, 
+      'Deseja apagar essa turma?',
+      'Não será possível restaurar essa turma, deve ter certeza que deseja excluir permanentemente.',
+      (){
+        // logica de apagar
+      },
+      'Apagar',
+      isCritical: true,
+    );
 
     if (confirm == true) {
       ScaffoldMessenger.of(context).showSnackBar(

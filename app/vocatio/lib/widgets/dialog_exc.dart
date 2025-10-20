@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 
-Future<bool?> showDeleteDialog(BuildContext context, VoidCallback apagar) async {
+Future<bool?> showCustomDialog(BuildContext context, String title, String body, VoidCallback apagar, String actionLabel, {bool isCritical = false}) async {
  
   final ThemeData theme = Theme.of(context);
 
@@ -28,7 +28,7 @@ Future<bool?> showDeleteDialog(BuildContext context, VoidCallback apagar) async 
                 ),
                 SizedBox(height: 16),
                 Text(
-                  'Deseja apagar essa turma?',
+                  title,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.titleLarge?.copyWith(
                     color: theme.colorScheme.primaryFixedDim,
@@ -37,8 +37,7 @@ Future<bool?> showDeleteDialog(BuildContext context, VoidCallback apagar) async 
                 ),
                 SizedBox(height: 12),
                 Text(
-                  'Não será possível restaurar essa turma, '
-                  'deve ter certeza que deseja excluir permanentemente.',
+                  body,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.primaryFixed,
@@ -65,9 +64,9 @@ Future<bool?> showDeleteDialog(BuildContext context, VoidCallback apagar) async 
                       },
                   
                       child: Text(
-                        'Apagar',
+                        actionLabel,
                         style: theme.textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.error,
+                          color: isCritical ? theme.colorScheme.error : theme.colorScheme.primaryFixedDim,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

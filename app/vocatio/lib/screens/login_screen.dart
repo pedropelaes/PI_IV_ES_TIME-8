@@ -10,6 +10,7 @@ import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
+import 'package:vocattio/widgets/dialog_exc.dart';
 import 'package:vocattio/widgets/text_field.dart';
 
 class LoginScreen extends StatefulWidget{
@@ -75,20 +76,44 @@ class _LoginScreenState extends State<LoginScreen>{
       _isLoading = true;
     });
 
+
     try {
       final result = await _authService.login(
         emailController.text.trim(),
         passwordController.text.trim(),
       );
-
+      
       if (result.containsKey('error')) {
         _showErrorSnackBar(result['error']['message']);
-      } else {
-        _showSuccessSnackBar('Login realizado com sucesso!');
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => HomeScreen(uid: result['localId'])),
-        );
+      }else {
+        final userInfo = await _authService.userLookUp(result['idToken']);
+        bool isVerified = userInfo['emailVerified'];
+
+        if(isVerified){
+          _showSuccessSnackBar('Login realizado com sucesso!');
+          if(mounted){
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => HomeScreen(uid: result['localId'])),
+            );
+          }
+        }else{
+          if(mounted){
+            showCustomDialog(context,
+            'E-mail não verificado',
+            'Para usar nosso serviço, seu e-mail deve ser verificado. Ao clicar em enviar, enviaremos um e-mail para ${userInfo['email']}',
+              () async {
+                try {
+                  await _authService.sendEmailVerification(result['idToken']);
+                  _showSuccessSnackBar('E-mail de verificação enviado!');
+                } catch (e) {
+                  _showErrorSnackBar('Erro ao enviar e-mail: $e');
+                }
+              },
+              'Enviar e-mail'
+            );
+          }
+        }
       }
     } catch (e) {
       _showErrorSnackBar('Erro inesperado: $e');
@@ -98,6 +123,7 @@ class _LoginScreenState extends State<LoginScreen>{
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
