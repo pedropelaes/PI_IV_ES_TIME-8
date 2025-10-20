@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 
-Future<bool?> showCustomDialog(BuildContext context, String title, String body, VoidCallback apagar, String actionLabel, {bool isCritical = false}) async {
+Future<bool?> showCustomDialog(BuildContext context, IconData iconData,String title, String body, VoidCallback apagar, String actionLabel, {bool isCritical = false}) async {
  
   final ThemeData theme = Theme.of(context);
 
@@ -22,7 +22,7 @@ Future<bool?> showCustomDialog(BuildContext context, String title, String body, 
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  Icons.delete_forever,
+                  iconData,
                   color: theme.colorScheme.primaryFixed,
                   size: 48,
                 ),

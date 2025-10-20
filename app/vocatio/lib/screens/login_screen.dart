@@ -100,6 +100,7 @@ class _LoginScreenState extends State<LoginScreen>{
         }else{
           if(mounted){
             showCustomDialog(context,
+            Icons.mail_outline_rounded,
             'E-mail não verificado',
             'Para usar nosso serviço, seu e-mail deve ser verificado. Ao clicar em enviar, enviaremos um e-mail para ${userInfo['email']}',
               () async {

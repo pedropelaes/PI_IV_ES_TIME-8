@@ -176,6 +176,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
   onPressed: () async {
     final confirm = await showCustomDialog(
       context, 
+      Icons.delete_forever,
       'Deseja apagar essa turma?',
       'Não será possível restaurar essa turma, deve ter certeza que deseja excluir permanentemente.',
       (){
