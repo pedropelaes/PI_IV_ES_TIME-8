@@ -41,7 +41,7 @@ public class CriarTurma {
         return String.format("%s-%d-%d-%s", prefixo, ano, semestre, sufixoUnico);
     }
 
-    public boolean CriarTurma(){
+    public boolean criarTurma(){
         Dotenv dotenv = Dotenv.load();
         String uri = dotenv.get("MONGO_URI");
 

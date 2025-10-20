@@ -2,30 +2,33 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:vocattio/models/user.dart';
 import 'package:vocattio/screens/home_screen.dart';
+import 'package:vocattio/services/auth_service.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/text_field.dart';
 
-class CriarTurmaScreen extends StatefulWidget {
-  const CriarTurmaScreen({super.key});
+class EntrarEmTurmaScreen extends StatefulWidget {
+  final String uid;
+  const EntrarEmTurmaScreen({super.key, required this.uid});
 
   @override
-  State<CriarTurmaScreen> createState() => _CriarTurmaScreenState();
+  State<EntrarEmTurmaScreen> createState() => _EntrarEmTurmaScreenState();
 }
 
-class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
+class _EntrarEmTurmaScreenState extends State<EntrarEmTurmaScreen> {
 
-    final TextEditingController nameController = TextEditingController();
-    final TextEditingController descriptionController = TextEditingController();
+    final TextEditingController codeController = TextEditingController();
     final SocketService _socketService = getIt<SocketService>();
+    final AuthService _authService = AuthService();
+    late Future<User?> _user;
 
   @override
   void dispose(){
-    nameController.dispose();
-    descriptionController.dispose();
+    codeController.dispose();
     super.dispose();
   }
 
@@ -48,21 +51,28 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
     );
   }
 
-  Future<bool?> _criarTurma() async {
-    Map<String, dynamic> jsonCriarTurma = {
-      "operacao": "CriarTurma",
-      "nome": nameController.text,
-      "descricao": descriptionController.text
+  @override
+  void initState(){
+    super.initState();
+    _user = _authService.getUser(widget.uid);
+  }
+
+
+  Future<bool?> _entrarEmTurma() async {
+    Map<String, dynamic> jsonEntrarEmTurma = {
+      "operacao": "EntrarEmTurma",
+      "alunoUid": _authService.getUser(widget.uid),
+      "codigoTurma": codeController.text
     };
 
     try {
-      _socketService.send(jsonCriarTurma);
+      _socketService.send(jsonEntrarEmTurma);
 
       final responseData = await _socketService.messages.firstWhere(
         (data) {
           try {
             final message = jsonDecode(data is String ? data : utf8.decode(data));
-            return message['operacao'] == 'ResultadoCriarTurma';
+            return message['operacao'] == 'ResultadoEntrarEmTurma';
           } catch (e) {
             return false;
           }
@@ -73,7 +83,7 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
       
       final resultado = responseJson['resultado'];
 
-      print("Resposta de criação de turma: $resultado");
+      print("Resposta de entrada em turma: $resultado");
 
       if (resultado == 'true' || resultado == true) { 
         return true;
@@ -82,10 +92,10 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
       }
 
     } on TimeoutException {
-      print("Erro: Tempo de resposta para a criação de turma.");
+      print("Erro: Tempo de resposta para entrar em turma.");
       return null;
     } catch (e) {
-      print("Erro ao processar resposta da criação de turma: $e");
+      print("Erro ao processar resposta da entrada em turma: $e");
       return null; 
     }
   }
@@ -96,7 +106,7 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       appBar: AppHeader(
-        title: 'Nova Turma',
+        title: 'Entrar Em Turma',
         hasGoBack: true,
         onGoBack: () => Navigator.pop(context),
         onMenuPressed: () {},
@@ -138,27 +148,24 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
                         ),
                       SizedBox(height: largeSpacing),
                 
-                      TextFieldDesign(controller: nameController, hintText: 'Digite o nome da turma', context: context),
+                      TextFieldDesign(controller: codeController, hintText: 'Digite o código da turma', context: context),
                       SizedBox(height: smallSpacing),
-                
-                      TextFieldDesign(controller: descriptionController, hintText: 'Descrição (opcional)', context: context),
-                      SizedBox(height: largeSpacing),
                 
                       primaryButtonDesign(
                         context: context,
-                        label: 'Criar Turma',
+                        label: 'Entrar em Turma',
                         width: 255,
                         height: 55.0,
                         onTap: () async {
-                          final resultado = await _criarTurma();
+                          final resultado = await _entrarEmTurma();
                           if(resultado == true){
-                            _showSuccessSnackBar("Turma Criada!");
+                            _showSuccessSnackBar("Entrada Realizada");
                             if (mounted) {
                               Navigator.of(context).pop();
                             }
                           }
                           else {
-                            _showErrorSnackBar("Erro ao criar turma");
+                            _showErrorSnackBar("Erro ao entrar na turma");
                           }
                         },
                       ),

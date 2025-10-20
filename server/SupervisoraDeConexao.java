@@ -80,8 +80,13 @@ public class SupervisoraDeConexao extends Thread
                         break;
                     case "CriarTurma":
                         CriarTurma criarTurma = gson.fromJson(json, CriarTurma.class);
-                        resultado = criarTurma.CriarTurma();
+                        resultado = criarTurma.criarTurma();
                         this.usuario.receba(new ResultadoOperacao(resultado, "ResultadoCriarTurma"));
+                        break;
+                    case "EntrarEmTurma":
+                        EntrarEmTurma entrarEmTurma = gson.fromJson(json, EntrarEmTurma.class);
+                        resultado = entrarEmTurma.entrar();
+                        this.usuario.receba(new ResultadoOperacao(resultado, "ResultadoEntrarEmTurma"));
                         break;
                     default:
                         System.err.println("Comunicado desconhecido: " + tipo);

@@ -5,13 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="835ce07a-16a5-48fc-93cd-fcf22f86460b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AceitadoraDeConexao.class" beforeDir="false" afterPath="$PROJECT_DIR$/AceitadoraDeConexao.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cadastro.class" beforeDir="false" afterPath="$PROJECT_DIR$/Cadastro.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Comunicado.class" beforeDir="false" afterPath="$PROJECT_DIR$/Comunicado.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ComunicadoDeDesligamento.class" beforeDir="false" afterPath="$PROJECT_DIR$/ComunicadoDeDesligamento.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ComunicadoJson.class" beforeDir="false" afterPath="$PROJECT_DIR$/ComunicadoJson.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CriarTurma.class" beforeDir="false" afterPath="$PROJECT_DIR$/CriarTurma.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Login.class" beforeDir="false" afterPath="$PROJECT_DIR$/Login.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Parceiro.class" beforeDir="false" afterPath="$PROJECT_DIR$/Parceiro.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PedidoParaSair.class" beforeDir="false" afterPath="$PROJECT_DIR$/PedidoParaSair.class" afterDir="false" />
@@ -20,6 +20,7 @@
       <change beforePath="$PROJECT_DIR$/Servidor.class" beforeDir="false" afterPath="$PROJECT_DIR$/Servidor.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SupervisoraDeConexao.class" beforeDir="false" afterPath="$PROJECT_DIR$/SupervisoraDeConexao.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Teclado.class" beforeDir="false" afterPath="$PROJECT_DIR$/Teclado.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Turma.class" beforeDir="false" afterPath="$PROJECT_DIR$/Turma.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/User.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -87,7 +88,7 @@
       <workItem from="1760881418344" duration="5156000" />
       <workItem from="1760887504788" duration="4644000" />
       <workItem from="1760992655290" duration="1444000" />
-      <workItem from="1760994119895" duration="2999000" />
+      <workItem from="1760994119895" duration="3877000" />
     </task>
     <servers />
   </component>
