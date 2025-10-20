@@ -1,18 +1,97 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:vocattio/screens/home_screen.dart';
+import 'package:vocattio/services/locator.dart';
+import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/text_field.dart';
 
-class CriarTurmaScreen extends StatelessWidget {
+class CriarTurmaScreen extends StatefulWidget {
   const CriarTurmaScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+  State<CriarTurmaScreen> createState() => _CriarTurmaScreenState();
+}
 
-    // Controllers para capturar o nome e a descrição da turma
+class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
+
     final TextEditingController nameController = TextEditingController();
     final TextEditingController descriptionController = TextEditingController();
+    final SocketService _socketService = getIt<SocketService>();
+
+  @override
+  void dispose(){
+    nameController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  // Método para mostrar mensagens de sucesso
+  void _showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  Future<bool?> _criarTurma() async {
+    Map<String, dynamic> jsonCadastro = {
+      "operacao": "CriarTurma",
+      "nome": nameController.text,
+      "descricao": descriptionController.text
+    };
+
+    try {
+      _socketService.send(jsonCadastro);
+
+      final responseData = await _socketService.messages.firstWhere(
+        (data) {
+          try {
+            final message = jsonDecode(data is String ? data : utf8.decode(data));
+            return message['operacao'] == 'ResultadoCriarTurma';
+          } catch (e) {
+            return false;
+          }
+        },
+      ).timeout(const Duration(seconds: 10)); 
+
+      final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
+      
+      final resultado = responseJson['resultado'];
+
+      print("Resposta de criação de turma: $resultado");
+
+      if (resultado == 'true' || resultado == true) { 
+        return true;
+      } else {
+        return false;
+      }
+
+    } on TimeoutException {
+      print("Erro: Tempo de resposta para a criação de turma.");
+      return null;
+    } catch (e) {
+      print("Erro ao processar resposta da criação de turma: $e");
+      return null; 
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
@@ -59,20 +138,28 @@ class CriarTurmaScreen extends StatelessWidget {
                         ),
                       SizedBox(height: largeSpacing),
                 
-                      // Campo de nome da turma
                       TextFieldDesign(controller: nameController, hintText: 'Digite o nome da turma', context: context),
                       SizedBox(height: smallSpacing),
                 
-                      TextFieldDesign(controller: nameController, hintText: 'Descrição (opcional)', context: context),
+                      TextFieldDesign(controller: descriptionController, hintText: 'Descrição (opcional)', context: context),
                       SizedBox(height: largeSpacing),
                 
-                      // Botão Criar
                       primaryButtonDesign(
                         context: context,
                         label: 'Criar Turma',
                         width: 255,
                         height: 55.0,
-                        onTap: () {
+                        onTap: () async {
+                          final resultado = await _criarTurma();
+                          if(resultado == true){
+                            _showSuccessSnackBar("Turma Criada!");
+                            if (mounted) {
+                              Navigator.of(context).pop();
+                            }
+                          }
+                          else {
+                            _showErrorSnackBar("Erro ao criar turma");
+                          }
                         },
                       ),
                     ],

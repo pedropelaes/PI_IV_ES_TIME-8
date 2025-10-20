@@ -8,7 +8,6 @@ import com.google.gson.JsonObject;
 
 public class SupervisoraDeConexao extends Thread
 {
-    private double              valor=0;
     private Parceiro            usuario;
     private Socket              conexao;
     private ArrayList<Parceiro> usuarios;
@@ -78,6 +77,11 @@ public class SupervisoraDeConexao extends Thread
                         User user = login.getUserData();
                         boolean userFound = user != null;
                         this.usuario.receba(new ResultadoLogin(userFound,"ResultadoLogin", user));
+                        break;
+                    case "CriarTurma":
+                        CriarTurma criarTurma = gson.fromJson(json, CriarTurma.class);
+                        resultado = criarTurma.CriarTurma();
+                        this.usuario.receba(new ResultadoOperacao(resultado, "ResultadoCriarTurma"));
                         break;
                     default:
                         System.err.println("Comunicado desconhecido: " + tipo);
