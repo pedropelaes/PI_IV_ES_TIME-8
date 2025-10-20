@@ -155,7 +155,23 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      floatingActionButton: const CustomFAB(),
+      floatingActionButton: FutureBuilder<User?>(
+        future: _user,
+        builder: (context, asyncSnapshot) {
+          if (asyncSnapshot.connectionState == ConnectionState.waiting) {
+            return const SizedBox.shrink(); // Esconde o FAB enquanto carrega
+          }
+
+          if (!asyncSnapshot.hasData || asyncSnapshot.data == null) {
+            return const SizedBox.shrink(); // Esconde se der erro ou user for null
+          }
+
+          final user = asyncSnapshot.data!;
+          print(user.objectId);
+          return CustomFAB(tipo: user.tipo, objectId: user.objectId ?? "");
+  },
+),
+
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:bson/bson.dart';
 import 'package:flutter/material.dart';
 import 'package:vocattio/models/user.dart';
 import 'package:vocattio/screens/home_screen.dart';
@@ -12,8 +13,8 @@ import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/text_field.dart';
 
 class EntrarEmTurmaScreen extends StatefulWidget {
-  final String uid;
-  const EntrarEmTurmaScreen({super.key, required this.uid});
+  final String objectId;
+  const EntrarEmTurmaScreen({super.key, required this.objectId});
 
   @override
   State<EntrarEmTurmaScreen> createState() => _EntrarEmTurmaScreenState();
@@ -51,17 +52,10 @@ class _EntrarEmTurmaScreenState extends State<EntrarEmTurmaScreen> {
     );
   }
 
-  @override
-  void initState(){
-    super.initState();
-    _user = _authService.getUser(widget.uid);
-  }
-
-
   Future<bool?> _entrarEmTurma() async {
     Map<String, dynamic> jsonEntrarEmTurma = {
       "operacao": "EntrarEmTurma",
-      "alunoUid": _authService.getUser(widget.uid),
+      "objectId": widget.objectId,
       "codigoTurma": codeController.text
     };
 
