@@ -47,27 +47,31 @@ Future<bool?> showCustomDialog(BuildContext context, IconData iconData,String ti
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: Text(
-                        'Cancelar',
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.primaryFixedDim
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: Text(
+                          'Cancelar',
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: theme.colorScheme.primaryFixedDim
+                          ),
                         ),
                       ),
                     ),
                     SizedBox(width: 24),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context, true);
-                        apagar(); 
-                      },
-                  
-                      child: Text(
-                        actionLabel,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: isCritical ? theme.colorScheme.error : theme.colorScheme.primaryFixedDim,
-                          fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.pop(context, true);
+                          apagar(); 
+                        },
+                        child: Text(
+                          actionLabel,
+                          overflow: TextOverflow.clip,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: isCritical ? theme.colorScheme.error : theme.colorScheme.primaryFixedDim,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
