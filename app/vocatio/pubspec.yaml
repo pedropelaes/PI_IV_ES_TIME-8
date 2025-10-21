@@ -19,11 +19,13 @@ dependencies:
   camera: ^0.10.5+2
   path: ^1.9.0
   mobile_scanner: ^6.0.2
-  geolocator: ^13.0.1
+  geolocator: ^14.0.2
+  permission_handler: ^11.3.1
   http: ^1.5.0
   flutter_dotenv: ^6.0.0
   get_it: ^8.2.0
   web: ^1.1.1
+  bson: ^5.0.7
 
 dev_dependencies:
   flutter_test:

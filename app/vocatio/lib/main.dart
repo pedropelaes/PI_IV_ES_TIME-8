@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vocattio/screens/welcome_screen.dart';
@@ -24,7 +25,7 @@ void main() async {
         ChangeNotifierProvider<ThemeNotifier>.value(value: themeNotifier,)
       ],
       child: DevicePreview(
-        enabled: Platform.isAndroid || Platform.isIOS ? false : true,
+        enabled: kIsWeb || !(Platform.isAndroid || Platform.isIOS),
         builder: (context) => const MainApp()
       ),
     )

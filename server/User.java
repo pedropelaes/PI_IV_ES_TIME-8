@@ -1,4 +1,7 @@
+import org.bson.types.ObjectId;
+
 public class User {
+    private String _id;
     private String uid;
     private String nome;
     private String email;
@@ -7,7 +10,8 @@ public class User {
 
     public User(){}
 
-    public User(String uid, String nome, String email, String tipo, String codigo) {
+    public User(String _id,String uid, String nome, String email, String tipo, String codigo) {
+        this._id = _id;
         this.uid = uid;
         this.nome = nome;
         this.email = email;

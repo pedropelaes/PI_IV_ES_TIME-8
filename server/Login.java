@@ -30,6 +30,7 @@ public class Login {
             if(doc == null){return null;}
 
             User user = new User(
+                    doc.getObjectId("_id").toHexString(),
                 doc.getString("uid"),
                 doc.getString("nome"),
                 doc.getString("email"),

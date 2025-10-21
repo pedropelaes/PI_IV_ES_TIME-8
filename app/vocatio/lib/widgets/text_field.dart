@@ -4,11 +4,13 @@ Widget TextFieldDesign({
   required TextEditingController controller,
   required String hintText,
   required BuildContext context,
+  bool isPassword = false
 }){
   final theme = Theme.of(context);
   return ConstrainedBox(
     constraints: BoxConstraints(maxWidth: 400, maxHeight: 40),
     child: TextField(
+      obscureText: isPassword,
       decoration: InputDecoration(
         isDense: true,
         hintText: hintText,
