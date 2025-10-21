@@ -316,143 +316,145 @@ class _ScanQrcodeState extends State<ScanQrcode> {
       ),
       body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Título principal
-                  Text(
-                    'Aponte a câmera para o QR Code',
-                    textAlign: TextAlign.center,
-                    style: textTheme.titleLarge?.copyWith(
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  // Área da câmera
-                  Container(
-                    width: double.infinity,
-                    height: 300,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        width: 2,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Título principal
+                    Text(
+                      'Aponte a câmera para o QR Code',
+                      textAlign: TextAlign.center,
+                      style: textTheme.titleLarge?.copyWith(
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
-                    clipBehavior: Clip.hardEdge,
-                    child: hasScanner ? MobileScanner(
-                      controller: _scannerController,
-                      onDetect: (capture) {
-                        if (_scanned) return;
-                        _scanned = true;
-                        final barcode = capture.barcodes.first.rawValue ?? '';
-                        setState(() => _codeController.text = barcode);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('QR Code lido: $barcode'),
-                            backgroundColor: theme.colorScheme.primary,
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
-                      },
-                    ) : Row()
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Campo de texto
-                  TextField(
-                    controller: _codeController,
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      hintText: 'Digite o código temporário',
-                      filled: true,
-                      fillColor: theme.colorScheme.surfaceContainerHighest,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide.none,
-                      ),
-                      hintStyle: TextStyle(
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Indicador de localização
-                  if (_currentLocation != null)
+                    const SizedBox(height: 24),
+                    // Área da câmera
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      width: double.infinity,
+                      height: 300,
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(12),
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: theme.colorScheme.primary,
-                          width: 1,
+                          width: 2,
                         ),
                       ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.location_on,
-                            color: theme.colorScheme.primary,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Localização obtida:',
-                                  style: textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onPrimaryContainer,
-                                  ),
-                                ),
-                                Text(
-                                  'Lat: ${_currentLocation!.latitude.toStringAsFixed(4)}, Lng: ${_currentLocation!.longitude.toStringAsFixed(4)}',
-                                  style: textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onPrimaryContainer,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
+                      clipBehavior: Clip.hardEdge,
+                      child: hasScanner ? MobileScanner(
+                        controller: _scannerController,
+                        onDetect: (capture) {
+                          if (_scanned) return;
+                          _scanned = true;
+                          final barcode = capture.barcodes.first.rawValue ?? '';
+                          setState(() => _codeController.text = barcode);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('QR Code lido: $barcode'),
+                              backgroundColor: theme.colorScheme.primary,
+                              behavior: SnackBarBehavior.floating,
                             ),
+                          );
+                        },
+                      ) : Row()
+                    ),
+                
+                    const SizedBox(height: 16),
+                
+                    // Campo de texto
+                    TextField(
+                      controller: _codeController,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        hintText: 'Digite o código temporário',
+                        filled: true,
+                        fillColor: theme.colorScheme.surfaceContainerHighest,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide.none,
+                        ),
+                        hintStyle: TextStyle(
+                          color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        ),
+                      ),
+                    ),
+                
+                    const SizedBox(height: 24),
+                
+                    // Indicador de localização
+                    if (_currentLocation != null)
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: theme.colorScheme.primary,
+                            width: 1,
                           ),
-                        ],
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.location_on,
+                              color: theme.colorScheme.primary,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Localização obtida:',
+                                    style: textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onPrimaryContainer,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Lat: ${_currentLocation!.latitude.toStringAsFixed(4)}, Lng: ${_currentLocation!.longitude.toStringAsFixed(4)}',
+                                    style: textTheme.bodyMedium?.copyWith(
+                                      color: theme.colorScheme.onPrimaryContainer,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                
+                    const SizedBox(height: 16),
+                
+                    // Botão para testar permissões
+                    TextButton(
+                      onPressed: () async {
+                        await _testPermissions();
+                      },
+                      child: Text(
+                        '🔍 Testar Permissões de Localização',
+                        style: TextStyle(
+                          color: theme.colorScheme.primary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-
-                  const SizedBox(height: 16),
-
-                  // Botão para testar permissões
-                  TextButton(
-                    onPressed: () async {
-                      await _testPermissions();
-                    },
-                    child: Text(
-                      '🔍 Testar Permissões de Localização',
-                      style: TextStyle(
-                        color: theme.colorScheme.primary,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
+                
+                    const SizedBox(height: 24),
+                
+                    primaryButtonDesign(
+                      context: context,
+                      label: _isGettingLocation ? 'Obtendo localização...' : 'Concluir chamada',
+                      width: double.infinity,
+                      height: 55.0,
+                      onTap: _isGettingLocation ? () {} : () {
+                        _handleCompleteAttendance();
+                      },
                     ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  primaryButtonDesign(
-                    context: context,
-                    label: _isGettingLocation ? 'Obtendo localização...' : 'Concluir chamada',
-                    width: double.infinity,
-                    height: 55.0,
-                    onTap: _isGettingLocation ? () {} : () {
-                      _handleCompleteAttendance();
-                    },
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
