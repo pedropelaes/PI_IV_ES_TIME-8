@@ -30,58 +30,44 @@ class _ScanQrcodeState extends State<ScanQrcode> {
     super.dispose();
   }
 
+  @override
+  void initState(){
+    super.initState();
+    _checkLocationPermission();
+  }
+
   bool get hasScanner =>
     kIsWeb || Platform.isAndroid || Platform.isIOS;
 
 
-  // Verificar permissões de localização usando permission_handler
+
   Future<bool> _checkLocationPermission() async {
-    print('Verificando permissões com permission_handler...');
-    
-    // Verificar status atual da permissão
-    PermissionStatus status = await Permission.location.status;
-    print('Status atual da permissão: $status');
-    
-    // Se a permissão não foi concedida, solicitar
-    if (!status.isGranted) {
-      print('Permissão não concedida, solicitando...');
-      
-      // Solicitar permissão
-      status = await Permission.location.request();
-      print('Status após solicitação: $status');
-      
-      // Se ainda não foi concedida
-      if (!status.isGranted) {
-        print('Permissão ainda não concedida após solicitação');
-        
-        if (status.isPermanentlyDenied) {
-          print('Permissão negada permanentemente');
-          _showPermissionDialog(
-            'Permissão Negada Permanentemente',
-            'O acesso à localização foi negado permanentemente. Para usar esta funcionalidade, vá até as Configurações do dispositivo > Aplicativos > Vocattio > Permissões e habilite a localização.',
-            'Ir para Configurações',
-            () async {
-              await openAppSettings();
-            },
-          );
-        } else {
-          print('Permissão negada temporariamente');
-          _showPermissionDialog(
-            'Permissão Necessária',
-            'Para registrar sua presença, o Vocattio precisa acessar sua localização. Por favor, permita o acesso à localização quando solicitado.',
-            'Tentar Novamente',
-            () async {
-              await _checkLocationPermission();
-            },
-          );
-        }
-        return false;
-      }
+    // Passo 1: Verifica permissão atual
+    LocationPermission geoPermission = await Geolocator.checkPermission();
+
+    // Passo 2: Solicita "When in Use" se ainda não tiver
+    if (geoPermission == LocationPermission.denied ||
+        geoPermission == LocationPermission.deniedForever) {
+      geoPermission = await Geolocator.requestPermission();
     }
-    
-    print('Permissão concedida com sucesso!');
-    return true;
+
+    // Passo 3: Se for iOS e já tiver "When in Use", tenta pedir "Always"
+    if (Platform.isIOS && geoPermission == LocationPermission.whileInUse) {
+      // Esse segundo pedido dispara o popup "Permitir sempre"
+      geoPermission = await Geolocator.requestPermission();
+    }
+
+    // Passo 4: Confere resultado final
+    if (geoPermission == LocationPermission.always ||
+      geoPermission == LocationPermission.whileInUse) {
+      print("Permissão de localização concedida: $geoPermission");
+      return true;
+    } else {
+      print("Permissão de localização negada: $geoPermission");
+      return false;
+    }
   }
+
 
   // Mostrar diálogo de permissão
   void _showPermissionDialog(String title, String message, String buttonText, VoidCallback onPressed) {
@@ -362,22 +348,10 @@ class _ScanQrcodeState extends State<ScanQrcode> {
                 
                     const SizedBox(height: 16),
                 
-                    // Campo de texto
-                    TextField(
-                      controller: _codeController,
-                      textAlign: TextAlign.center,
-                      decoration: InputDecoration(
-                        hintText: 'Digite o código temporário',
-                        filled: true,
-                        fillColor: theme.colorScheme.surfaceContainerHighest,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide.none,
-                        ),
-                        hintStyle: TextStyle(
-                          color: theme.colorScheme.onSurface.withOpacity(0.6),
-                        ),
-                      ),
+                    TextFieldDesign(
+                      controller: _codeController, 
+                      hintText: 'Digite o código temporário', 
+                      context: context
                     ),
                 
                     const SizedBox(height: 24),
