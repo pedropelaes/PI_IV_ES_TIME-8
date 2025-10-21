@@ -354,9 +354,9 @@ class _SignupScreenState extends State<SignupScreen> {
       SizedBox(height: smallSpacing),
       TextFieldDesign(controller: emailController, hintText: 'E-mail *', context: context),
       SizedBox(height: smallSpacing),
-      TextFieldDesign(controller: passwordController, hintText: 'Senha *', context: context),
+      TextFieldDesign(controller: passwordController, hintText: 'Senha *', context: context, isPassword: true),
       SizedBox(height: smallSpacing),
-      TextFieldDesign(controller: confirmPasswordController, hintText: 'Confirmar Senha *', context: context),
+      TextFieldDesign(controller: confirmPasswordController, hintText: 'Confirmar Senha *', context: context, isPassword: true),
       SizedBox(height: smallSpacing,),
       Text(
         _typeSelector.contains(AccountType.aluno) ? 'Você está se registrando como aluno.' : 'Você está se registrando como professor.',

@@ -249,7 +249,7 @@ class _LoginScreenState extends State<LoginScreen>{
       SizedBox(height: largeSpacing,),
       TextFieldDesign(controller: emailController, hintText: 'E-mail', context: context),
       SizedBox(height: smallSpacing,),
-      TextFieldDesign(controller: passwordController, hintText: 'Senha', context: context),
+      TextFieldDesign(controller: passwordController, hintText: 'Senha', context: context, isPassword: true),
       SizedBox(height: smallSpacing,),
       PlatformTextButton(
         child: Text('Esqueceu sua senha?',style: textTheme.bodyLarge?.copyWith(color: theme.colorScheme.primary, 

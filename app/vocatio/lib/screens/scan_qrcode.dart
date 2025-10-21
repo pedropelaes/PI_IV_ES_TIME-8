@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
+import 'package:vocattio/widgets/text_field.dart';
 
 class ScanQrcode extends StatefulWidget {
   const ScanQrcode({super.key});
