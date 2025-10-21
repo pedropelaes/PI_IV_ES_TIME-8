@@ -42,6 +42,24 @@ class _ScanQrcodeState extends State<ScanQrcode> {
 
 
   Future<bool> _checkLocationPermission() async {
+  if (kIsWeb) {
+    // Lógica específica para a Web
+    LocationPermission geoPermission = await Geolocator.checkPermission();
+    
+    if (geoPermission == LocationPermission.denied) {
+      // No navegador, requestPermission abre o popup de permissão
+      geoPermission = await Geolocator.requestPermission();
+    }
+    
+    if (geoPermission == LocationPermission.whileInUse || geoPermission == LocationPermission.always) {
+      print("Permissão de localização concedida na Web: $geoPermission");
+      return true;
+    } else {
+      print("Permissão de localização negada na Web: $geoPermission");
+      return false;
+    }
+
+  } else {
     // Passo 1: Verifica permissão atual
     LocationPermission geoPermission = await Geolocator.checkPermission();
 
@@ -52,21 +70,21 @@ class _ScanQrcodeState extends State<ScanQrcode> {
     }
 
     // Passo 3: Se for iOS e já tiver "When in Use", tenta pedir "Always"
-    if (Platform.isMacOS || Platform.isIOS && geoPermission == LocationPermission.whileInUse) {
-      // Esse segundo pedido dispara o popup "Permitir sempre"
+    if ( Platform.isMacOS|| Platform.isIOS && geoPermission == LocationPermission.whileInUse) {
       geoPermission = await Geolocator.requestPermission();
     }
 
     // Passo 4: Confere resultado final
     if (geoPermission == LocationPermission.always ||
-      geoPermission == LocationPermission.whileInUse) {
-      print("Permissão de localização concedida: $geoPermission");
+        geoPermission == LocationPermission.whileInUse) {
+      print("Permissão de localização concedida no Mobile: $geoPermission");
       return true;
     } else {
-      print("Permissão de localização negada: $geoPermission");
+      print("Permissão de localização negada no Mobile: $geoPermission");
       return false;
     }
   }
+}
 
 
   // Mostrar diálogo de permissão
