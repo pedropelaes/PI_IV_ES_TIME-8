@@ -8,6 +8,8 @@
 	<string>O app precisa da sua localização para funcionar corretamente.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>O app usa sua localização mesmo em segundo plano.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>O app precisa da sua localização para funcionar corretamente.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>

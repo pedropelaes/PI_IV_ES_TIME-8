@@ -33,7 +33,7 @@ class _ScanQrcodeState extends State<ScanQrcode> {
   @override
   void initState(){
     super.initState();
-    _checkLocationPermission();
+   _checkLocationPermission();
   }
 
   bool get hasScanner =>
@@ -52,7 +52,7 @@ class _ScanQrcodeState extends State<ScanQrcode> {
     }
 
     // Passo 3: Se for iOS e já tiver "When in Use", tenta pedir "Always"
-    if (Platform.isIOS && geoPermission == LocationPermission.whileInUse) {
+    if (Platform.isMacOS || Platform.isIOS && geoPermission == LocationPermission.whileInUse) {
       // Esse segundo pedido dispara o popup "Permitir sempre"
       geoPermission = await Geolocator.requestPermission();
     }
