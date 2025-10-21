@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
+import 'package:vocattio/widgets/text_field.dart';
 
 class ScanQrcode extends StatefulWidget {
   const ScanQrcode({super.key});
@@ -91,22 +92,7 @@ class _ScanQrcodeState extends State<ScanQrcode> {
                   const SizedBox(height: 16),
 
                   // Campo de texto
-                  TextField(
-                    controller: _codeController,
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      hintText: 'Digite o código temporário',
-                      filled: true,
-                      fillColor: theme.colorScheme.surfaceContainerHighest,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide.none,
-                      ),
-                      hintStyle: TextStyle(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                      ),
-                    ),
-                  ),
+                  TextFieldDesign(controller: _codeController, hintText: "Digite o código temporário", context: context),
 
                   const SizedBox(height: 36),
 
