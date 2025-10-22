@@ -6,6 +6,7 @@ import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/dialog_exc.dart';
 import 'package:vocattio/widgets/animated_button.dart';
 import 'package:vocattio/utils/responsive_helper.dart';
+import 'package:vocattio/widgets/snackbars.dart';
 
 class DetalhesTurmaScreen extends StatefulWidget {
   final String nomeTurma;
@@ -187,11 +188,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
     );
 
     if (confirm == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Turma excluída com sucesso!'),
-        ),
-      );
+      showSuccessSnackBar('Turma excluída com sucesso!', context);
       Navigator.pop(context);
     }
   },

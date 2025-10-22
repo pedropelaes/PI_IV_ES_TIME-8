@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
+import 'package:vocattio/widgets/snackbars.dart';
 import 'package:vocattio/widgets/text_field.dart';
 
 class ScanQrcode extends StatefulWidget {
@@ -174,13 +175,8 @@ class _ScanQrcodeState extends State<ScanQrcode> {
         _isGettingLocation = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('✅ Localização obtida com sucesso!'),
-          backgroundColor: Colors.green,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      if(mounted) showSuccessSnackBar('Localização obtida com sucesso!', context);
+      
 
     } catch (e) {
       print('ERRO ao obter localização: $e');
@@ -198,14 +194,8 @@ class _ScanQrcodeState extends State<ScanQrcode> {
         errorMessage = '📍 Não foi possível determinar sua localização.';
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(errorMessage),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 5),
-        ),
-      );
+      if(mounted) showErrorSnackBar(errorMessage, context);
+
     }
   }
 
@@ -216,92 +206,22 @@ class _ScanQrcodeState extends State<ScanQrcode> {
     
    
     if (_currentLocation != null && _codeController.text.isNotEmpty) {
-    
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Chamada concluída!\n'
-            'QR Code: ${_codeController.text}\n'
-            'Localização: ${_currentLocation!.latitude.toStringAsFixed(4)}, ${_currentLocation!.longitude.toStringAsFixed(4)}'
-          ),
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 4),
-        ),
-      );
+
+      if(mounted){
+        showSuccessSnackBar('Chamada concluída!\n'
+          'QR Code: ${_codeController.text}\n'
+          'Localização: ${_currentLocation!.latitude.toStringAsFixed(4)}, ${_currentLocation!.longitude.toStringAsFixed(4)}', 
+          context
+        );  
+      }
       
       // Voltar para a tela anterior
       Navigator.pop(context);
     } else if (_codeController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Por favor, escaneie um QR Code primeiro.'),
-          backgroundColor: Theme.of(context).colorScheme.error,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      if(mounted) showErrorSnackBar('Por favor, escaneie um QR Code primeiro.', context);
     }
   }
 
-  // Método para testar permissões de forma detalhada
-  Future<void> _testPermissions() async {
-    print('=== TESTE DE PERMISSÕES ===');
-    
-    try {
-      // Verificar status atual
-      PermissionStatus status = await Permission.location.status;
-      print('Status atual: $status');
-      
-      // Verificar se serviços estão habilitados
-      bool servicesEnabled = await Geolocator.isLocationServiceEnabled();
-      print('Serviços habilitados: $servicesEnabled');
-      
-      String message = '';
-      Color backgroundColor = Colors.blue;
-      
-      if (!servicesEnabled) {
-        message = ' Serviços de localização estão DESABILITADOS';
-        backgroundColor = Colors.orange;
-      } else if (status.isGranted) {
-        message = ' Permissões de localização estão OK!';
-        backgroundColor = Colors.green;
-      } else if (status.isDenied) {
-        message = ' Permissão negada. Clique para solicitar.';
-        backgroundColor = Colors.orange;
-      } else if (status.isPermanentlyDenied) {
-        message = ' Permissão negada permanentemente. Vá para configurações.';
-        backgroundColor = Colors.red;
-      } else {
-        message = '❓ Status desconhecido: $status';
-        backgroundColor = Colors.grey;
-      }
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: backgroundColor,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 4),
-        ),
-      );
-      
-      // Se permissão foi negada, tentar solicitar
-      if (status.isDenied) {
-        await Future.delayed(const Duration(seconds: 2));
-        await _checkLocationPermission();
-      }
-      
-    } catch (e) {
-      print('Erro no teste de permissões: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao testar permissões: $e'),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -353,13 +273,7 @@ class _ScanQrcodeState extends State<ScanQrcode> {
                           _scanned = true;
                           final barcode = capture.barcodes.first.rawValue ?? '';
                           setState(() => _codeController.text = barcode);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('QR Code lido: $barcode'),
-                              backgroundColor: theme.colorScheme.primary,
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
+                          showSuccessSnackBar('QR Code lido: $barcode', context);
                         },
                       ) : Row()
                     ),
@@ -417,23 +331,6 @@ class _ScanQrcodeState extends State<ScanQrcode> {
                           ],
                         ),
                       ),
-                
-                    const SizedBox(height: 16),
-                
-                    // Botão para testar permissões
-                    TextButton(
-                      onPressed: () async {
-                        await _testPermissions();
-                      },
-                      child: Text(
-                        '🔍 Testar Permissões de Localização',
-                        style: TextStyle(
-                          color: theme.colorScheme.primary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
                 
                     const SizedBox(height: 24),
                 

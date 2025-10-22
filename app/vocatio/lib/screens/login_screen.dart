@@ -11,6 +11,7 @@ import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/dialog_exc.dart';
+import 'package:vocattio/widgets/snackbars.dart';
 import 'package:vocattio/widgets/text_field.dart';
 
 class LoginScreen extends StatefulWidget{
@@ -37,37 +38,18 @@ class _LoginScreenState extends State<LoginScreen>{
   // Método para validar os campos do formulário
   bool _validateForm() {
     if (emailController.text.trim().isEmpty) {
-      _showErrorSnackBar('Por favor, digite seu e-mail');
+      showErrorSnackBar('Por favor, digite seu e-mail', context);
       return false;
     }
     
     if (passwordController.text.trim().isEmpty) {
-      _showErrorSnackBar('Por favor, digite sua senha');
+      showErrorSnackBar('Por favor, digite sua senha', context);
       return false;
     }
     
     return true;
   }
 
-  // Método para mostrar mensagens de erro
-  void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
-
-  // Método para mostrar mensagens de sucesso
-  void _showSuccessSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
 
   Future<void> _login() async {
     if (!_validateForm()) return; 
@@ -84,14 +66,16 @@ class _LoginScreenState extends State<LoginScreen>{
       );
       
       if (result.containsKey('error')) {
-        _showErrorSnackBar(result['error']['message']);
+        if(mounted){
+          showErrorSnackBar(result['error']['message'], context);
+        }
       }else {
         final userInfo = await _authService.userLookUp(result['idToken']);
         bool isVerified = userInfo['emailVerified'];
 
         if(isVerified){
-          _showSuccessSnackBar('Login realizado com sucesso!');
           if(mounted){
+            showSuccessSnackBar('Login realizado com sucesso!', context);
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (_) => HomeScreen(uid: result['localId'])),
@@ -106,9 +90,13 @@ class _LoginScreenState extends State<LoginScreen>{
               () async {
                 try {
                   await _authService.sendEmailVerification(result['idToken']);
-                  _showSuccessSnackBar('E-mail de verificação enviado!');
+                  if(mounted){
+                    showSuccessSnackBar('E-mail de verificação enviado!', context);
+                  }
                 } catch (e) {
-                  _showErrorSnackBar('Erro ao enviar e-mail: $e');
+                  if(mounted){
+                    showErrorSnackBar('Erro ao enviar e-mail: $e', context);
+                  }
                 }
               },
               'Enviar e-mail'
@@ -117,7 +105,9 @@ class _LoginScreenState extends State<LoginScreen>{
         }
       }
     } catch (e) {
-      _showErrorSnackBar('Erro inesperado: $e');
+      if(mounted){
+        showErrorSnackBar('Erro inesperado: $e', context);
+      }
     } finally {
       setState(() {
         _isLoading = false;
