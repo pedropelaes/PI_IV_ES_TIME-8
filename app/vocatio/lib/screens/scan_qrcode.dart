@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:vocattio/services/location/location_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/snackbars.dart';
@@ -20,6 +21,7 @@ class ScanQrcode extends StatefulWidget {
 class _ScanQrcodeState extends State<ScanQrcode> {
   final TextEditingController _codeController = TextEditingController();
   final MobileScannerController _scannerController = MobileScannerController();
+  final _locationService = LocationService();
   bool _scanned = false;
   Position? _currentLocation;
   bool _isGettingLocation = false;
@@ -34,90 +36,9 @@ class _ScanQrcodeState extends State<ScanQrcode> {
   @override
   void initState(){
     super.initState();
-   _checkLocationPermission();
+    _locationService.checkLocationPermission();
   }
 
-  bool get hasScanner =>
-    kIsWeb || Platform.isAndroid || Platform.isIOS;
-
-
-
-  Future<bool> _checkLocationPermission() async {
-  if (kIsWeb) {
-    // Lógica específica para a Web
-    LocationPermission geoPermission = await Geolocator.checkPermission();
-    
-    if (geoPermission == LocationPermission.denied) {
-      // No navegador, requestPermission abre o popup de permissão
-      geoPermission = await Geolocator.requestPermission();
-    }
-    
-    if (geoPermission == LocationPermission.whileInUse || geoPermission == LocationPermission.always) {
-      print("Permissão de localização concedida na Web: $geoPermission");
-      return true;
-    } else {
-      print("Permissão de localização negada na Web: $geoPermission");
-      return false;
-    }
-
-  } else {
-    // Passo 1: Verifica permissão atual
-    LocationPermission geoPermission = await Geolocator.checkPermission();
-
-    // Passo 2: Solicita "When in Use" se ainda não tiver
-    if (geoPermission == LocationPermission.denied ||
-        geoPermission == LocationPermission.deniedForever) {
-      geoPermission = await Geolocator.requestPermission();
-    }
-
-    // Passo 3: Se for iOS e já tiver "When in Use", tenta pedir "Always"
-    if ( Platform.isMacOS|| Platform.isIOS && geoPermission == LocationPermission.whileInUse) {
-      geoPermission = await Geolocator.requestPermission();
-    }
-
-    // Passo 4: Confere resultado final
-    if (geoPermission == LocationPermission.always ||
-        geoPermission == LocationPermission.whileInUse) {
-      print("Permissão de localização concedida no Mobile: $geoPermission");
-      return true;
-    } else {
-      print("Permissão de localização negada no Mobile: $geoPermission");
-      return false;
-    }
-  }
-}
-
-
-  // Mostrar diálogo de permissão
-  void _showPermissionDialog(String title, String message, String buttonText, VoidCallback onPressed) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                onPressed();
-              },
-              child: Text(buttonText),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // Obter localização atual
   Future<void> _getCurrentLocation() async {
     if (_isGettingLocation) return;
 
@@ -129,7 +50,7 @@ class _ScanQrcodeState extends State<ScanQrcode> {
     try {
       // PASSO 1: Verificar permissões primeiro
       print('PASSO 1: Verificando permissões...');
-      bool hasPermission = await _checkLocationPermission();
+      bool hasPermission = await _locationService.checkLocationPermission();
       if (!hasPermission) {
         print('Permissões não concedidas, abortando...');
         setState(() {
@@ -143,14 +64,17 @@ class _ScanQrcodeState extends State<ScanQrcode> {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         print('Serviços de localização desabilitados');
-        _showPermissionDialog(
-          'Serviços de Localização Desabilitados',
-          'Os serviços de localização estão desabilitados. Por favor, habilite-os nas configurações do dispositivo.',
-          'Ir para Configurações',
-          () async {
-            await Geolocator.openLocationSettings();
-          },
-        );
+        if(mounted) {
+          _locationService.showPermissionDialog(
+            context,
+            'Serviços de Localização Desabilitados',
+            'Os serviços de localização estão desabilitados. Por favor, habilite-os nas configurações do dispositivo.',
+            'Ir para Configurações',
+            () async {
+              await Geolocator.openLocationSettings();
+            },
+          );
+        }
         setState(() {
           _isGettingLocation = false;
         });
@@ -198,6 +122,9 @@ class _ScanQrcodeState extends State<ScanQrcode> {
 
     }
   }
+
+  bool get hasScanner =>
+    kIsWeb || Platform.isAndroid || Platform.isIOS;
 
   // Método para lidar com a conclusão da chamada
   Future<void> _handleCompleteAttendance() async {

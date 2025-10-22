@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:vocattio/services/location/location_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
+import 'package:vocattio/widgets/snackbars.dart';
 import 'package:vocattio/widgets/text_field.dart';
 
 class ViaCode extends StatefulWidget {
@@ -16,7 +19,15 @@ class ViaCode extends StatefulWidget {
 class _ViaCodeState extends State<ViaCode> {
   final TextEditingController _codeController = TextEditingController();
   final TextEditingController _tempCodeController = TextEditingController();
+  final _locationService = LocationService();
+  Position? _currentLocation;
+  bool _isGettingLocation = false;
 
+  @override
+  void initState(){
+    super.initState();
+    _locationService.checkLocationPermission();
+  }
 
   @override
   void dispose() {
@@ -24,6 +35,88 @@ class _ViaCodeState extends State<ViaCode> {
     _codeController.dispose();
     super.dispose();
   }
+
+  Future<void> _getCurrentLocation() async {
+    if (_isGettingLocation) return;
+
+    print('=== INICIANDO OBTENÇÃO DE LOCALIZAÇÃO ===');
+    setState(() {
+      _isGettingLocation = true;
+    });
+
+    try {
+      print('PASSO 1: Verificando permissões...');
+      bool hasPermission = await _locationService.checkLocationPermission();
+      if (!hasPermission) {
+        print('Permissões não concedidas, abortando...');
+        setState(() {
+          _isGettingLocation = false;
+        });
+        return;
+      }
+
+      print('PASSO 2: Verificando serviços de localização...');
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        print('Serviços de localização desabilitados');
+        if(mounted) {
+          _locationService.showPermissionDialog(
+            context,
+            'Serviços de Localização Desabilitados',
+            'Os serviços de localização estão desabilitados. Por favor, habilite-os nas configurações do dispositivo.',
+            'Ir para Configurações',
+            () async {
+              await Geolocator.openLocationSettings();
+            },
+          );
+        }
+        setState(() {
+          _isGettingLocation = false;
+        });
+        return;
+      }
+
+      print('PASSO 3: Obtendo posição atual...');
+      LocationSettings locationSettings = LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+        timeLimit: const Duration(seconds: 20),
+      );
+
+      Position position = await Geolocator.getCurrentPosition(
+        locationSettings: locationSettings,
+      );
+
+      print('SUCESSO: Localização obtida - Lat: ${position.latitude}, Lng: ${position.longitude}');
+      setState(() {
+        _currentLocation = position;
+        _isGettingLocation = false;
+      });
+
+      if(mounted) showSuccessSnackBar('Localização obtida com sucesso!', context);
+      
+
+    } catch (e) {
+      print('ERRO ao obter localização: $e');
+      setState(() {
+        _isGettingLocation = false;
+      });
+
+      String errorMessage = 'Erro ao obter localização.';
+      
+      if (e.toString().contains('timeout')) {
+        errorMessage = '⏰ Timeout: GPS pode estar desabilitado ou em ambiente fechado.';
+      } else if (e.toString().contains('permission')) {
+        errorMessage = '🚫 Permissão de localização necessária.';
+      } else if (e.toString().contains('location')) {
+        errorMessage = '📍 Não foi possível determinar sua localização.';
+      }
+
+      if(mounted) showErrorSnackBar(errorMessage, context);
+
+    }
+  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +184,7 @@ class _ViaCodeState extends State<ViaCode> {
                           width: 255,
                           height: 55.0,
                           onTap: () {
+                            _getCurrentLocation();
                           },
                         ),
                       ],

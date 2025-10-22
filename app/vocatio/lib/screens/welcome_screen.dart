@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:vocattio/screens/login_screen.dart';
 import 'package:vocattio/screens/scan_qrcode.dart';
 import 'package:vocattio/screens/signup_screen.dart';
+import 'package:vocattio/screens/via_code.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/background_containers.dart';
@@ -59,7 +61,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   void initState(){
     super.initState();
     _initConnection();
-    _audioAbertura();
+    if(!kIsWeb)_audioAbertura();
   }
 
   @override
@@ -131,6 +133,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               label: 'ScanQRCode', 
                               onTap: (){
                                 Navigator.push(context, MaterialPageRoute(builder: (_) => ScanQrcode()));
+                              }
+                            ),
+                            SizedBox(height: smallSpacing,),
+                            primaryButtonDesign(
+                              context: context, 
+                              width: 255.0,
+                              height: 55.0,
+                              label: 'Via codigo', 
+                              onTap: (){
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => ViaCode()));
                               }
                             )
                           ],
