@@ -131,6 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DetalhesTurmaScreen(
+                                      tipoUsuario: user!.tipo,
                                       nomeTurma: turma['nome'],
                                       descricao: turma['descricao'],
                                       numeroAlunos: turma['alunos'],

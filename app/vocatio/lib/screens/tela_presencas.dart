@@ -47,7 +47,7 @@ class _PresencasScreenState extends State<PresencasScreen> {
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       appBar: AppHeader(
-        title: 'Registrar',
+        title: 'Presenças',
         onMenuPressed: () {
         },
         hasGoBack: true,

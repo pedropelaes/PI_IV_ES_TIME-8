@@ -125,26 +125,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 Navigator.push(context, MaterialPageRoute(builder: (_) => SignupScreen()));
                               }
                             ),
-                            SizedBox(height: smallSpacing,),
-                            primaryButtonDesign(
-                              context: context, 
-                              width: 255.0,
-                              height: 55.0,
-                              label: 'ScanQRCode', 
-                              onTap: (){
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => ScanQrcode()));
-                              }
-                            ),
-                            SizedBox(height: smallSpacing,),
-                            primaryButtonDesign(
-                              context: context, 
-                              width: 255.0,
-                              height: 55.0,
-                              label: 'Via codigo', 
-                              onTap: (){
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => ViaCode()));
-                              }
-                            )
                           ],
                         ),
                       ),

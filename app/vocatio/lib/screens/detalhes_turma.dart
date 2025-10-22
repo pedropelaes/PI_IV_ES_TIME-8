@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:vocattio/screens/scan_qrcode.dart';
 import 'package:vocattio/screens/tela_presencas.dart';
 import 'package:vocattio/screens/gerar_qrcode_screen.dart';
+import 'package:vocattio/screens/validate_attendance_screen.dart';
+import 'package:vocattio/screens/via_code.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/dialog_exc.dart';
@@ -9,12 +12,14 @@ import 'package:vocattio/utils/responsive_helper.dart';
 import 'package:vocattio/widgets/snackbars.dart';
 
 class DetalhesTurmaScreen extends StatefulWidget {
+  final String tipoUsuario;
   final String nomeTurma;
   final String descricao;
   final int numeroAlunos;
 
   const DetalhesTurmaScreen({
     super.key,
+    required this.tipoUsuario,
     required this.nomeTurma,
     required this.descricao,
     required this.numeroAlunos,
@@ -96,7 +101,8 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                   Expanded(
                     child: ListView(
                       children: [
-                        AnimatedButton(
+
+                        widget.tipoUsuario == 'professor' ? AnimatedButton(
                           text: 'Gerar QR CODE',
                           onPressed: () {
                             Navigator.push(
@@ -105,6 +111,17 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                                 builder: (context) => GerarQRCodeScreen(
                                   codigoTurma: 'TURMA001',
                                 ),
+                              ),
+                            );
+                          },
+                        )
+                        : AnimatedButton(
+                          text: 'Registrar Presença',
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ValidateAttendanceScreen(),
                               ),
                             );
                           },
@@ -126,7 +143,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                         
                         const SizedBox(height: 16),
                         
-                        AnimatedButton(
+                        if(widget.tipoUsuario == 'professor') AnimatedButton(
                           text: 'Exportar Lista de Presença',
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -137,9 +154,9 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                           },
                         ),
                         
-                        const SizedBox(height: 16),
+                        if(widget.tipoUsuario == 'professor') const SizedBox(height: 16),
                         
-                        AnimatedButton(
+                        if(widget.tipoUsuario == 'professor') AnimatedButton(
                           text: 'Relatório Mensal',
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -150,7 +167,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                           },
                         ),
                         
-                        const SizedBox(height: 16),
+                        if(widget.tipoUsuario == 'professor') const SizedBox(height: 16),
                         
                         AnimatedButton(
                           text: 'Alunos',
@@ -171,28 +188,28 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-  backgroundColor: const Color(0xFF9B71D9),
-  child: const Icon(Icons.delete, color: Colors.white),
-  onPressed: () async {
-    final confirm = await showCustomDialog(
-      context, 
-      Icons.delete_forever,
-      'Deseja apagar essa turma?',
-      'Não será possível restaurar essa turma, deve ter certeza que deseja excluir permanentemente.',
-      (){
-        // logica de apagar
-      },
-      'Apagar',
-      isCritical: true,
-    );
+      floatingActionButton: widget.tipoUsuario == 'professor' ? FloatingActionButton(
+        backgroundColor: const Color(0xFF9B71D9),
+        child: const Icon(Icons.delete, color: Colors.white),
+        onPressed: () async {
+          final confirm = await showCustomDialog(
+            context, 
+            Icons.delete_forever,
+            'Deseja apagar essa turma?',
+            'Não será possível restaurar essa turma, deve ter certeza que deseja excluir permanentemente.',
+            (){
+              // logica de apagar
+            },
+            'Apagar',
+            isCritical: true,
+          );
 
-    if (confirm == true) {
-      showSuccessSnackBar('Turma excluída com sucesso!', context);
-      Navigator.pop(context);
-    }
-  },
-),
+          if (confirm == true) {
+            showSuccessSnackBar('Turma excluída com sucesso!', context);
+            Navigator.pop(context);
+          }
+        },
+      )  : null
     );
   }
 }
