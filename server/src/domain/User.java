@@ -1,4 +1,4 @@
-import org.bson.types.ObjectId;
+package src.domain;
 
 public class User {
     private String _id;
@@ -27,7 +27,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "src.domain.User{" +
                 "uid='" + uid + '\'' +
                 ", email='" + email + '\'' +
                 ", nome='" + nome + '\'' +

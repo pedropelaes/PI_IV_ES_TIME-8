@@ -1,3 +1,5 @@
+package src.protocol.requests;
+
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -70,7 +72,7 @@ public class CriarTurma {
 
     @Override
     public String toString() {
-        return "CriarTurma{" +
+        return "src.protocol.requests.CriarTurma{" +
                 "turma = " + nome +
                 ", operacao='" + operacao + '\'' +
                 '}';

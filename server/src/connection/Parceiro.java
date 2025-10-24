@@ -1,18 +1,19 @@
+package src.connection;
+
 import java.io.*;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
 import java.util.concurrent.Semaphore;
 import com.google.gson.Gson;
+import src.protocol.Comunicado;
+import src.protocol.ComunicadoJson;
 
-public class Parceiro
+public class Parceiro implements IParceiro
 {
     private Socket             conexao;
     private BufferedReader   receptor;
     private BufferedWriter transmissor;
     private Gson gson;
-    
-    private /*Comunicado*/ String proximoComunicado=null;
+    private /*src.protocol.Comunicado*/ String proximoComunicado=null;
 
     private Semaphore mutEx = new Semaphore (1,true);
 
@@ -36,6 +37,7 @@ public class Parceiro
         this.gson = new Gson();
     }
 
+    @Override
     public void receba (Comunicado x) throws Exception
     {
         try
@@ -50,12 +52,12 @@ public class Parceiro
         }
     }
 
-//    public Comunicado espie () throws Exception
+//    public src.protocol.Comunicado espie () throws Exception
 //    {
 //        try
 //        {
 //            this.mutEx.acquireUninterruptibly();
-//            if (this.proximoComunicado==null) this.proximoComunicado = (Comunicado)this.receptor.read();
+//            if (this.proximoComunicado==null) this.proximoComunicado = (src.protocol.Comunicado)this.receptor.read();
 //            this.mutEx.release();
 //            return this.proximoComunicado;
 //        }
@@ -85,6 +87,7 @@ public class Parceiro
         }
     }
 
+    @Override
     public void adeus () throws Exception
     {
         try

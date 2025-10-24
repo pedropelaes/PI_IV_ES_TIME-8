@@ -1,7 +1,10 @@
+package src.protocol.requests;
+
 import com.mongodb.client.model.Filters;
 import io.github.cdimascio.dotenv.Dotenv;
 import com.mongodb.client.*;
 import org.bson.Document;
+import src.domain.User;
 
 
 public class Login {

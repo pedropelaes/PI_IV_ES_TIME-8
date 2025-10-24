@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import 'socket_client_mobile.dart' 
   if (dart.library.html) 'socket_client_web.dart';
 
@@ -8,7 +10,7 @@ import 'socket_client.dart';
 
 class SocketService {
   static const String host = '10.147.19.224';
-  static const int port = 3000;
+  static int  get port => kIsWeb ? 3001 : 3000;
 
   final SocketClient _client = getSocketClient();
   final _controller = StreamController<dynamic>.broadcast();

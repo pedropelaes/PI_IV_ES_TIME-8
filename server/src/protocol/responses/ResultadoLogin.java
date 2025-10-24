@@ -1,6 +1,9 @@
-import com.google.gson.Gson;
+package src.protocol.responses;
 
-public class ResultadoLogin extends ResultadoOperacao{
+import com.google.gson.Gson;
+import src.domain.User;
+
+public class ResultadoLogin extends ResultadoOperacao {
     private User user;
 
     public ResultadoLogin(boolean resultado, String operacao, User user) {

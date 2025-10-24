@@ -1,3 +1,5 @@
+package src.util;
+
 import java.io.*;
 
 public class Teclado

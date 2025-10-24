@@ -1,3 +1,7 @@
+package src.protocol.responses;
+
+import src.protocol.Comunicado;
+
 public class ResultadoOperacao extends Comunicado {
     private boolean resultado;
     private String operacao;

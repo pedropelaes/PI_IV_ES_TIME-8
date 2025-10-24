@@ -1,3 +1,5 @@
+package src.protocol;
+
 public class ComunicadoJson extends Comunicado
 {
     private String json;
