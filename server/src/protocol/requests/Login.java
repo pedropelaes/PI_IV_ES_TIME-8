@@ -4,7 +4,12 @@ import com.mongodb.client.model.Filters;
 import io.github.cdimascio.dotenv.Dotenv;
 import com.mongodb.client.*;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import src.domain.User;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class Login {
@@ -32,13 +37,19 @@ public class Login {
             Document doc = colecao.find(Filters.eq("uid", this.uid)).first();
             if(doc == null){return null;}
 
+            List<ObjectId> turmasIds = doc.getList("turmas", ObjectId.class, new ArrayList<>());
+            List<String> turmas = turmasIds.stream()
+                    .map(ObjectId::toHexString)
+                    .collect(Collectors.toList());
+
             User user = new User(
                     doc.getObjectId("_id").toHexString(),
                 doc.getString("uid"),
                 doc.getString("nome"),
                 doc.getString("email"),
                 doc.getString("tipo"),
-                doc.getString("codigo")
+                doc.getString("codigo"),
+                turmas
             );
 
 

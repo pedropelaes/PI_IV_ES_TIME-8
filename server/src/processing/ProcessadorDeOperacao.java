@@ -3,14 +3,17 @@ package src.processing;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import src.connection.IParceiro;
+import src.domain.Turma;
 import src.domain.User;
 import src.protocol.requests.*;
 import src.protocol.responses.ResultadoAbrirChamada;
+import src.protocol.responses.ResultadoGetTurmas;
 import src.protocol.responses.ResultadoLogin;
 import src.protocol.responses.ResultadoOperacao;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ProcessadorDeOperacao {
     private static final Gson gson = new Gson();
@@ -56,7 +59,12 @@ public class ProcessadorDeOperacao {
                     boolean codigoChamadaNotNull = codigoChamada != null;
                     remetente.receba(new ResultadoAbrirChamada(codigoChamadaNotNull,"ResultadoAbrirChamada", codigoChamada));
                     break;
-
+                case "GetTurmas":
+                    GetTurmas getTurmas = gson.fromJson(json, GetTurmas.class);
+                    List<Turma> turmas = getTurmas.getTurmas();
+                    boolean turmasEmpty = turmas != null;
+                    remetente.receba(new ResultadoGetTurmas(turmasEmpty, "ResultadoGetTurmas", turmas));
+                    break;
                 default:
                     System.err.println("Comunicado desconhecido: " + tipo);
                     break;

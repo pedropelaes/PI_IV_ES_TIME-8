@@ -4,6 +4,8 @@ import io.github.cdimascio.dotenv.Dotenv;
 import com.mongodb.client.*;
 import org.bson.Document;
 
+import java.util.ArrayList;
+
 public class Cadastro {
     private String uid;
     private String nome;
@@ -25,7 +27,8 @@ public class Cadastro {
                     .append("nome", this.nome)
                     .append("email", this.email)
                     .append("tipo", this.tipo)
-                    .append("codigo", this.codigo);
+                    .append("codigo", this.codigo)
+                    .append("turmas", new ArrayList<>());
 
 
 

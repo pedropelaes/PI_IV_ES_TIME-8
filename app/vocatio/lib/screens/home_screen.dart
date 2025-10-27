@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:vocattio/extensions/string_extensions.dart';
+import 'package:vocattio/models/turma.dart';
 import 'package:vocattio/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:vocattio/models/user.dart';
@@ -28,24 +29,64 @@ class _HomeScreenState extends State<HomeScreen> {
   final SocketService _socketService = getIt<SocketService>();
   final AuthService _authService = AuthService();
   late Future<User?> _user;
+  Future<List<Turma>?>? _turmas;
+
+  Future<List<Turma>?> _getTurmas(final List<String>? turmasIds) async{
+    if(turmasIds == null || turmasIds.isEmpty){
+      print("Ta caindo aqui");
+      return [];
+    }
+
+    Map<String, dynamic> jsonGetTurmas = {
+      "operacao" : "GetTurmas",
+      "turmasId" : turmasIds
+    };
+
+    try{
+      final futureResponse = _socketService.messages.firstWhere((data) {
+        try{
+          final message = jsonDecode(data is String ? data : utf8.decode(data));
+          return message['operacao'] == 'ResultadoGetTurmas';
+        }catch(e){
+          return false;
+        }
+      }).timeout(const Duration(seconds: 10));
+      _socketService.send(jsonGetTurmas);
+
+      final responseData = await futureResponse;
+      final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
+
+      final List<dynamic>? turmasJsonList = responseJson['turmas'];
+
+      if (turmasJsonList == null) {
+        print("Erro: Resposta do servidor não continha o campo 'turmas'.");
+        return []; 
+      }
+      
+      final List<Turma> resultado = turmasJsonList
+          .map((turmaJson) => Turma.fromJson(turmaJson as Map<String, dynamic>))
+          .toList();
+
+      print("Resposta GetTurmas: $resultado");
+      return resultado;
+    }on TimeoutException{
+      print("Erro: tempo de resposta esgotado para a busca das turmas");
+      return null;
+    }
+    catch(e){
+      print("Erro ao processar resposta do servidor: $e");
+      return null;
+    }
+  }
   
 
   // Dados das turmas baseados na imagem
-  final List<Map<String, dynamic>> turmas = [];
+  //final List<Map<String, dynamic>> turmas = [];
 
   @override
   void initState(){
     super.initState();
     _user = _authService.getUser(widget.uid);
-
-    _user.then((user) {
-    if (user != null && user.turmas!.isNotEmpty) {
-      setState(() {
-        turmas.clear();
-        turmas.addAll(user.turmas as Iterable<Map<String, dynamic>>);
-      });
-    }
-  });
   }
 
   @override
@@ -101,6 +142,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   final user = asyncSnapshot.data;
 
+                  _turmas ??= _getTurmas(user!.turmas);
+
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -117,38 +160,66 @@ class _HomeScreenState extends State<HomeScreen> {
                       
                       // Grid de turmas
                       Expanded(
-                        child: GridView.builder(
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: ResponsiveHelper.getGridCrossAxisCount(context),
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
-                            childAspectRatio: ResponsiveHelper.isDesktop(context) ? 1.0 : 0.85,
-                          ),
-                          itemCount: turmas.length,
-                          itemBuilder: (context, index) {
-                            final turma = turmas[index];
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => DetalhesTurmaScreen(
-                                      tipoUsuario: user!.tipo,
-                                      nomeTurma: turma['nome'],
-                                      descricao: turma['descricao'],
-                                      numeroAlunos: turma['alunos'],
-                                    ),
+                        child: FutureBuilder(
+                          future: _turmas,
+                          builder: (context, turmasSnapshot) {
+                            if (turmasSnapshot.connectionState == ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator(color: theme.colorScheme.onSurface));
+                            }
+
+                            if (turmasSnapshot.hasError || !turmasSnapshot.hasData || turmasSnapshot.data == null) {
+                              return Center(child: Text('Erro ao carregar as turmas.'));
+                            }
+                            
+                            final turmas = turmasSnapshot.data!;
+                            print("Turmas: $turmas");
+
+                            if(turmas.isEmpty){
+                              return Center(
+                                child: Text(
+                                  user!.tipo == 'professor' ? 'Você ainda não tem nenhuma turma' : 'Você ainda não está em nenhuma turma',
+                                  textAlign: TextAlign.center,
+                                  style: textTheme.displaySmall?.copyWith(
+                                    color: theme.colorScheme.error
+                                  ),
+                                ),
+                              );
+                            }
+                            
+                            return GridView.builder(
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: ResponsiveHelper.getGridCrossAxisCount(context),
+                                crossAxisSpacing: 16,
+                                mainAxisSpacing: 16,
+                                childAspectRatio: ResponsiveHelper.isDesktop(context) ? 1.0 : 0.85,
+                              ),
+                              itemCount: turmas.length,
+                              itemBuilder: (context, index) {
+                                final turma = turmas[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => DetalhesTurmaScreen(
+                                          tipoUsuario: user!.tipo,
+                                          nomeTurma: turma.nome,
+                                          descricao: turma.descricao,
+                                          numeroAlunos: turma.alunos.length,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: TurmaCard(
+                                    nomeTurma: turma.nome,
+                                    descricao: turma.descricao,
+                                    numeroAlunos: turma.alunos.length,
                                   ),
                                 );
                               },
-                              child: TurmaCard(
-                                nomeTurma: turma['nome'],
-                                descricao: turma['descricao'],
-                                numeroAlunos: turma['alunos'],
-                              ),
                             );
-                          },
-                        ),
+                          }
+                        )
                       ),
                     ],
                   );

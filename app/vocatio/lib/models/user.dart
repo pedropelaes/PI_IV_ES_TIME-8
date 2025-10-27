@@ -7,7 +7,7 @@ class User{
   final String email;
   final String tipo;
   final String codigo;
-  final List<Map<String, dynamic>>? turmas;
+  final List<String>? turmas;
 
   const User({
     this.objectId,
@@ -39,7 +39,7 @@ class User{
     return codigo;
   }
 
-  List<Map<String, dynamic>>? getTurmas(){
+  List<String>? getTurmas(){
     return turmas;
   }
 
@@ -50,7 +50,7 @@ class User{
     String? email,
     String? tipo,
     String? codigo,
-    List<Map<String, dynamic>>? turmas
+    List<String>? turmas
   }) {
     return User(
       objectId: objectId ?? this.objectId,
@@ -71,7 +71,9 @@ class User{
       email: json['email'] ?? '',
       tipo: json['tipo'] ?? '',
       codigo: json['codigo'] ?? '',
-      turmas: json['turmas'] ?? ''
+      turmas: json['turmas'] != null 
+                            ? List<String>.from(json['turmas']) 
+                            : null
     );
   }
 

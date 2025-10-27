@@ -32,32 +32,43 @@ public class EntrarEmTurma {
         String uri = dotenv.get("MONGO_URI");
 
         try (MongoClient client = MongoClients.create(uri)) {
-            MongoDatabase db = client.getDatabase("vocattio_db");
-            MongoCollection<Document> turmas = db.getCollection("turmas");
+            try (ClientSession clientSession = client.startSession()) {
 
-            Document turma = turmas.find(Filters.eq("codigo", codigoTurma)).first();
+                return clientSession.withTransaction(() -> {
+                    MongoDatabase db = client.getDatabase("vocattio_db");
+                    MongoCollection<Document> turmasCollection = db.getCollection("turmas");
+                    MongoCollection<Document> usersCollection = db.getCollection("users");
 
-            if (turma == null) {
-                System.out.println("Turma não encontrada: " + codigoTurma);
-                return false;
+                    Document turma = turmasCollection.find(clientSession, Filters.eq("codigo", codigoTurma)).first();
+
+                    if (turma == null) {
+                        System.out.println("Turma não encontrada com o código: " + codigoTurma);
+                        return false;
+                    }
+
+                    ObjectId turmaId = turma.getObjectId("_id");
+                    ObjectId alunoId = new ObjectId(objectId);
+
+                    List<ObjectId> alunos = turma.getList("Alunos", ObjectId.class);
+                    if (alunos != null && alunos.contains(alunoId)) {
+                        System.out.println("Aluno já está na turma.");
+                        return false;
+                    }
+
+                    turmasCollection.updateOne(clientSession,
+                            Filters.eq("_id", turmaId),
+                            Updates.push("alunos", alunoId)
+                    );
+
+                    usersCollection.updateOne(clientSession,
+                            Filters.eq("_id", alunoId),
+                            Updates.push("turmas", turmaId)
+                    );
+
+                    System.out.println("Aluno adicionado à turma e turma adicionada ao aluno com sucesso!");
+                    return true;
+                });
             }
-
-            List<ObjectId> alunos = (List<ObjectId>) turma.get("alunos");
-            ObjectId objId = new  ObjectId(objectId);
-            if (alunos != null && alunos.contains(objId)) {
-                System.out.println("Aluno já está na turma.");
-                return false;
-            }
-
-            // Adiciona o aluno à lista de alunos
-            turmas.updateOne(
-                    Filters.eq("codigo", codigoTurma),
-                    Updates.push("alunos", objId)
-            );
-
-            System.out.println("Aluno adicionado à turma com sucesso!");
-            return true;
-
         } catch (Exception e) {
             e.printStackTrace();
             return false;

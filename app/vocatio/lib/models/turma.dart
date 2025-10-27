@@ -8,7 +8,7 @@ class Turma {
   final String descricao;
   final String professorId;
   final String codigo;
-  final List<User> alunos;
+  final List<String> alunos;
   final DateTime criadoEm;
   final DateTime atualizadoEm;
 
@@ -30,11 +30,14 @@ class Turma {
       descricao: json['descricao'] ?? '',
       professorId: json['professorId'] ?? '',
       codigo: json['codigo'] ?? '',
-      alunos: (json['alunos'] as List<dynamic>? ?? [])
-          .map((e) => User.fromJson(e))
-          .toList(),
+      alunos: List<String>.from(json['alunos'] ?? []),
       criadoEm: DateTime.tryParse(json['criadoEm'] ?? '') ?? DateTime.now(),
       atualizadoEm: DateTime.tryParse(json['atualizadoEm'] ?? '') ?? DateTime.now(),
     );
+  }
+
+  @override
+  String toString(){
+    return "Turma: {$nome, $descricao, $professorId, $codigo, $alunos, $criadoEm, $atualizadoEm}";
   }
 }
