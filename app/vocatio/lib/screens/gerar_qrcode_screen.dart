@@ -1,4 +1,10 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:vocattio/services/locator.dart';
+import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/animated_button.dart';
 import 'package:vocattio/utils/responsive_helper.dart';
 
@@ -15,6 +21,16 @@ class GerarQRCodeScreen extends StatefulWidget {
 }
 
 class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
+  final SocketService _socketService = getIt<SocketService>();
+  String? codigoChamada; // o código/ID que vem do servidor
+  bool carregando = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _gerarChamada(); // assim que a tela abre, já pede o QR Code
+  }
+  
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -72,31 +88,46 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
                         ),
                       ],
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.qr_code_scanner,
-                          size: ResponsiveHelper.isDesktop(context) ? 100 : 80,
-                          color: Colors.grey.shade400,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Visualização da Câmera',
-                          style: textTheme.titleMedium?.copyWith(
-                            color: Colors.grey.shade600,
-                            fontSize: ResponsiveHelper.getResponsiveFontSize(context, 18),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'QR Code será exibido aqui',
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey.shade500,
-                            fontSize: ResponsiveHelper.getResponsiveFontSize(context, 16),
-                          ),
-                        ),
-                      ],
+                    child: Center(
+                      child: carregando
+                          ? const CircularProgressIndicator()
+                          : codigoChamada != null
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    QrImageView(
+                                      data: codigoChamada!,
+                                      version: QrVersions.auto,
+                                      size: 200,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'Escaneie para registrar presença',
+                                      style: textTheme.bodyMedium?.copyWith(
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.qr_code_scanner,
+                                      size: ResponsiveHelper.isDesktop(context) ? 100 : 80,
+                                      color: Colors.grey.shade400,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'QR Code será exibido aqui',
+                                      style: textTheme.titleMedium?.copyWith(
+                                        color: Colors.grey.shade600,
+                                        fontSize:
+                                            ResponsiveHelper.getResponsiveFontSize(context, 18),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                     ),
                   ),
                   
@@ -184,4 +215,49 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
       ),
     );
   }
+
+  Future<void> _gerarChamada() async {
+  setState(() => carregando = true);
+
+  Map<String, dynamic> jsonGerarChamada = {
+    "operacao": "AbrirChamada",
+    "codigoTurma": widget.codigoTurma
+  };
+
+  try {
+    _socketService.send(jsonGerarChamada);
+
+    final responseData = await _socketService.messages.firstWhere((data) {
+      try {
+        final message = jsonDecode(data is String ? data : utf8.decode(data));
+        return message['operacao'] == 'ResultadoGerarChamada';
+      } catch (e) {
+        return false;
+      }
+    }).timeout(const Duration(seconds: 10));
+
+    final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
+
+    if (responseJson['sucesso'] == true) {
+      setState(() {
+        codigoChamada = responseJson['codigoChamada'];
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Erro ao gerar chamada.")),
+      );
+    }
+  } on TimeoutException {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Tempo de resposta esgotado.")),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Erro ao gerar chamada: $e")),
+    );
+  } finally {
+    setState(() => carregando = false);
+  }
+}
+
 }

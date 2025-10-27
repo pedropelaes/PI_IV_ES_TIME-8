@@ -4,13 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import src.connection.IParceiro;
 import src.domain.User;
-import src.protocol.requests.Cadastro;
-import src.protocol.requests.CriarTurma;
-import src.protocol.requests.EntrarEmTurma;
-import src.protocol.requests.Login;
+import src.protocol.requests.*;
 import src.protocol.responses.ResultadoLogin;
 import src.protocol.responses.ResultadoOperacao;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class ProcessadorDeOperacao {

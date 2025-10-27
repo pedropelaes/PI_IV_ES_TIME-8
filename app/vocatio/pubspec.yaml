@@ -27,6 +27,7 @@ dependencies:
   web: ^1.1.1
   bson: ^5.0.7
   audioplayers: ^6.0.0
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:

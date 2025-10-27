@@ -5,50 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="835ce07a-16a5-48fc-93cd-fcf22f86460b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/connection/IParceiro.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/connection/ParceiroWebSocket.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/connection/ServidorWebSocket.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/connection/SupervisoraDeConexao.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/processing/ProcessadorDeOperacao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/services/socket/socket_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/services/socket/socket_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AceitadoraDeConexao.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AceitadoraDeConexao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/connection/AceitadoraDeConexao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cadastro.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cadastro.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/Cadastro.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Comunicado.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Comunicado.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/Comunicado.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ComunicadoDeDesligamento.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ComunicadoDeDesligamento.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/ComunicadoDeDesligamento.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ComunicadoJson.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ComunicadoJson.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/ComunicadoJson.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CriarTurma.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CriarTurma.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/CriarTurma.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EntrarEmTurma.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/EntrarEmTurma.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/EntrarEmTurma.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Login.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Login.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/Login.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parceiro.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Parceiro.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/connection/Parceiro.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PedidoParaSair.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PedidoParaSair.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/PedidoParaSair.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ResultadoLogin.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ResultadoLogin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/responses/ResultadoLogin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ResultadoOperacao.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ResultadoOperacao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/responses/ResultadoOperacao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Servidor.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Servidor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Servidor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SupervisoraDeConexao.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SupervisoraDeConexao.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Teclado.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Teclado.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/util/Teclado.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Turma.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/User.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run.bat" beforeDir="false" afterPath="$PROJECT_DIR$/run.bat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/simplelogger.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/simplelogger.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/processing/ProcessadorDeOperacao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/processing/ProcessadorDeOperacao.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,7 +38,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "develop",
+    "git-widget-placeholder": "feature/abrirChamada",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/projects/PI_IV_ES_TIME-8/server",
@@ -101,8 +59,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-125ca727e0f0-intellij.indexing.shared.core-IU-243.24978.46" />
-        <option value="bundled-js-predefined-d6986cc7102b-76f8388c3a79-JavaScript-IU-243.24978.46" />
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.23892.409" />
+        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-IU-252.23892.409" />
       </set>
     </attachedChunks>
   </component>
@@ -124,6 +82,7 @@
       <workItem from="1760994119895" duration="3877000" />
       <workItem from="1761079738177" duration="304000" />
       <workItem from="1761330024846" duration="7276000" />
+      <workItem from="1761590309491" duration="3092000" />
     </task>
     <servers />
   </component>

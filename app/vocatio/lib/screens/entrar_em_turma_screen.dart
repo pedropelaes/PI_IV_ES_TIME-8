@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:bson/bson.dart';
 import 'package:flutter/material.dart';
 import 'package:vocattio/models/user.dart';
-import 'package:vocattio/screens/home_screen.dart';
 import 'package:vocattio/services/auth_service.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
