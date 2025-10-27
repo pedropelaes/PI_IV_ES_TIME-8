@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import src.connection.IParceiro;
 import src.domain.User;
 import src.protocol.requests.*;
+import src.protocol.responses.ResultadoAbrirChamada;
 import src.protocol.responses.ResultadoLogin;
 import src.protocol.responses.ResultadoOperacao;
 
@@ -49,6 +50,13 @@ public class ProcessadorDeOperacao {
                     resultado = entrarEmTurma.entrar();
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoEntrarEmTurma"));
                     break;
+                case "AbrirChamada":
+                    AbrirChamada abrirChamada = gson.fromJson(json, AbrirChamada.class);
+                    String codigoChamada = abrirChamada.abrir();
+                    boolean codigoChamadaNotNull = codigoChamada != null;
+                    remetente.receba(new ResultadoAbrirChamada(codigoChamadaNotNull,"ResultadoAbrirChamada", codigoChamada));
+                    break;
+
                 default:
                     System.err.println("Comunicado desconhecido: " + tipo);
                     break;

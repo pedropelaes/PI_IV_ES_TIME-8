@@ -31,14 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   
 
   // Dados das turmas baseados na imagem
-  final List<Map<String, dynamic>> turmas = [
-    {'nome': 'Turma 1', 'descricao': 'Descrição *', 'alunos': 32},
-    {'nome': 'Turma 2', 'descricao': 'Descrição *', 'alunos': 51},
-    {'nome': 'Turma 3', 'descricao': 'Descrição *', 'alunos': 17},
-    {'nome': 'Turma 4', 'descricao': 'Descrição *', 'alunos': 30},
-    {'nome': 'Turma 5', 'descricao': 'Descrição *', 'alunos': 42},
-    {'nome': 'Turma 6', 'descricao': 'Descrição *', 'alunos': 0},
-  ];
+  final List<Map<String, dynamic>> turmas = [];
 
   @override
   void initState(){

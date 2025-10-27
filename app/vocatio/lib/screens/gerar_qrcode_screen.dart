@@ -221,7 +221,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
 
   Map<String, dynamic> jsonGerarChamada = {
     "operacao": "AbrirChamada",
-    "codigoTurma": widget.codigoTurma
+    "aulaId": widget.codigoTurma,
   };
 
   try {

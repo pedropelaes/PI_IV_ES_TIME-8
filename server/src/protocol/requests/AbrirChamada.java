@@ -35,7 +35,29 @@ public class AbrirChamada {
             MongoCollection<Document> aulas = db.getCollection("aulas");
 
             // Procura a aula pelo _id
-            Document aula = aulas.find(Filters.eq("_id", new ObjectId(aulaId))).first();
+            if (aulaId == null || aulaId.isEmpty()) {
+                System.out.println("Erro: aulaId está null ou vazio!");
+                return null;
+            }
+
+            if (aulaId == null || aulaId.isEmpty()) {
+                System.out.println("Erro: aulaId está null ou vazio!");
+                return null;
+            }
+
+            Document aula = aulas.find(Filters.eq("codigoTurma", aulaId)).first();
+
+            if (aula == null) {
+                System.out.println("Aula não encontrada!");
+                return null;
+            }
+
+
+            if (aula == null) {
+                System.out.println("Aula não encontrada!");
+                return null;
+            }
+
             if (aula == null) {
                 System.out.println("Aula não encontrada!");
                 return null;

@@ -5,8 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="835ce07a-16a5-48fc-93cd-fcf22f86460b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/screens/gerar_qrcode_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/screens/gerar_qrcode_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/processing/ProcessadorDeOperacao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/processing/ProcessadorDeOperacao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/protocol/requests/AbrirChamada.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/AbrirChamada.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/protocol/responses/ResultadoAbrirChamada.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/responses/ResultadoAbrirChamada.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,7 +85,7 @@
       <workItem from="1760994119895" duration="3877000" />
       <workItem from="1761079738177" duration="304000" />
       <workItem from="1761330024846" duration="7276000" />
-      <workItem from="1761590309491" duration="3092000" />
+      <workItem from="1761590309491" duration="5557000" />
     </task>
     <servers />
   </component>
