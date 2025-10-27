@@ -37,6 +37,15 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState(){
     super.initState();
     _user = _authService.getUser(widget.uid);
+
+    _user.then((user) {
+    if (user != null && user.turmas!.isNotEmpty) {
+      setState(() {
+        turmas.clear();
+        turmas.addAll(user.turmas as Iterable<Map<String, dynamic>>);
+      });
+    }
+  });
   }
 
   @override

@@ -107,6 +107,7 @@ class _SignupScreenState extends State<SignupScreen> {
           email: emailController.text.trim(),
           tipo: _typeSelector.first.name,
           codigo: idController.text.trim(),
+          turmas: []
         ),
       );
 
