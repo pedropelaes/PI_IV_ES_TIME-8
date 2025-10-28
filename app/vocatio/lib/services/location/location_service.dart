@@ -81,3 +81,106 @@ class LocationService {
   }
 
 }
+
+class ValidadorLocalizacao {
+  // Coordenadas do Campus I com raio permitido
+  static const Map<String, Map<String, double>> campi = {
+    'Campus I': {
+      'lat': -22.8197,
+      'lon': -47.0586,
+      'raio': 600, 
+    },
+  };
+
+  
+  static Future<bool> validarLocalizacao() async {
+    try {
+      // Obter posição atual do usuário
+      Position posicaoAtual = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
+      );
+
+      print('Posição atual: Latitude ${posicaoAtual.latitude}, Longitude ${posicaoAtual.longitude}');
+
+
+      for (var campus in campi.values) {
+        double latCampus = campus['lat']!;
+        double lonCampus = campus['lon']!;
+        double raioPermitido = campus['raio']!;
+
+       
+        double distancia = Geolocator.distanceBetween(
+          latCampus,
+          lonCampus,
+          posicaoAtual.latitude,
+          posicaoAtual.longitude,
+        );
+
+        print('Distância do campus: ${distancia.toStringAsFixed(2)} metros (raio permitido: ${raioPermitido}m)');
+
+      
+        if (distancia <= raioPermitido) {
+          print(' Usuário está dentro do campus');
+          return true;
+        }
+      }
+
+      print(' Usuário está fora do campus');
+      return false;
+    } catch (e) {
+      print('Erro ao validar localização: $e');
+      return false;
+    }
+  }
+
+  /// Obtém a posição atual do usuário
+  static Future<Position?> obterPosicaoAtual() async {
+    try {
+      Position posicao = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
+      );
+      return posicao;
+    } catch (e) {
+      print('Erro ao obter posição atual: $e');
+      return null;
+    }
+  }
+
+  /// Calcula a distância até o campus mais próximo
+  static Future<double?> calcularDistanciaAteCampus() async {
+    try {
+      Position? posicaoAtual = await obterPosicaoAtual();
+      
+      if (posicaoAtual == null) {
+        return null;
+      }
+
+      double menorDistancia = double.infinity;
+
+      for (var campus in campi.values) {
+        double latCampus = campus['lat']!;
+        double lonCampus = campus['lon']!;
+
+        double distancia = Geolocator.distanceBetween(
+          latCampus,
+          lonCampus,
+          posicaoAtual.latitude,
+          posicaoAtual.longitude,
+        );
+
+        if (distancia < menorDistancia) {
+          menorDistancia = distancia;
+        }
+      }
+
+      return menorDistancia;
+    } catch (e) {
+      print('Erro ao calcular distância até o campus: $e');
+      return null;
+    }
+  }
+}

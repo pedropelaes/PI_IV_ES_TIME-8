@@ -1,8 +1,5 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:vocattio/services/location/location_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
@@ -105,18 +102,59 @@ class _ViaCodeState extends State<ViaCode> {
       String errorMessage = 'Erro ao obter localização.';
       
       if (e.toString().contains('timeout')) {
-        errorMessage = '⏰ Timeout: GPS pode estar desabilitado ou em ambiente fechado.';
+        errorMessage = ' Timeout: GPS pode estar desabilitado ou em ambiente fechado.';
       } else if (e.toString().contains('permission')) {
-        errorMessage = '🚫 Permissão de localização necessária.';
+        errorMessage = 'Permissão de localização necessária.';
       } else if (e.toString().contains('location')) {
-        errorMessage = '📍 Não foi possível determinar sua localização.';
+        errorMessage = 'Não foi possível determinar sua localização.';
       }
 
       if(mounted) showErrorSnackBar(errorMessage, context);
 
     }
   }
-  
+
+  // Método para lidar com a conclusão da chamada
+  Future<void> _handleCompleteAttendance() async {
+    // Verificar se os campos estão preenchidos
+    if (_codeController.text.isEmpty || _tempCodeController.text.isEmpty) {
+      if(mounted) showErrorSnackBar('Por favor, preencha todos os campos.', context);
+      return;
+    }
+
+    // Obter a localização atual
+    await _getCurrentLocation();
+
+    if (_currentLocation == null) {
+      if(mounted) showErrorSnackBar('Não foi possível obter sua localização.', context);
+      return;
+    }
+
+    // Validar se está dentro do campus
+    bool estaNoCampus = await ValidadorLocalizacao.validarLocalizacao();
+    
+    if (!estaNoCampus) {
+      if(mounted) {
+        showErrorSnackBar(
+          'Você precisa estar no campus para registrar sua presença.', 
+          context
+        );
+      }
+      return;
+    }
+
+    if(mounted){
+      showSuccessSnackBar('Chamada concluída!\n'
+        'Código: ${_codeController.text}\n'
+        'Código Temporário: ${_tempCodeController.text}\n'
+        'Localização: ${_currentLocation!.latitude.toStringAsFixed(4)}, ${_currentLocation!.longitude.toStringAsFixed(4)}', 
+        context
+      );  
+    }
+    
+    // Voltar para a tela anterior
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -183,8 +221,8 @@ class _ViaCodeState extends State<ViaCode> {
                           label: 'Concluir chamada',
                           width: 255,
                           height: 55.0,
-                          onTap: () {
-                            _getCurrentLocation();
+                          onTap: () async {
+                            await _handleCompleteAttendance();
                           },
                         ),
                       ],

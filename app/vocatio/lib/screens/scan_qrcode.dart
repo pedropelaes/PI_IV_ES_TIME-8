@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:vocattio/services/location/location_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
@@ -111,11 +110,11 @@ class _ScanQrcodeState extends State<ScanQrcode> {
       String errorMessage = 'Erro ao obter localização.';
       
       if (e.toString().contains('timeout')) {
-        errorMessage = '⏰ Timeout: GPS pode estar desabilitado ou em ambiente fechado.';
+        errorMessage = ' Timeout: GPS pode estar desabilitado ou em ambiente fechado.';
       } else if (e.toString().contains('permission')) {
-        errorMessage = '🚫 Permissão de localização necessária.';
+        errorMessage = ' Permissão de localização necessária.';
       } else if (e.toString().contains('location')) {
-        errorMessage = '📍 Não foi possível determinar sua localização.';
+        errorMessage = ' Não foi possível determinar sua localização.';
       }
 
       if(mounted) showErrorSnackBar(errorMessage, context);
@@ -131,22 +130,39 @@ class _ScanQrcodeState extends State<ScanQrcode> {
     // Primeiro obtém a localização
     await _getCurrentLocation();
     
-   
-    if (_currentLocation != null && _codeController.text.isNotEmpty) {
-
-      if(mounted){
-        showSuccessSnackBar('Chamada concluída!\n'
-          'QR Code: ${_codeController.text}\n'
-          'Localização: ${_currentLocation!.latitude.toStringAsFixed(4)}, ${_currentLocation!.longitude.toStringAsFixed(4)}', 
-          context
-        );  
-      }
-      
-      // Voltar para a tela anterior
-      Navigator.pop(context);
-    } else if (_codeController.text.isEmpty) {
+    if (_codeController.text.isEmpty) {
       if(mounted) showErrorSnackBar('Por favor, escaneie um QR Code primeiro.', context);
+      return;
     }
+
+    if (_currentLocation == null) {
+      if(mounted) showErrorSnackBar('Não foi possível obter sua localização.', context);
+      return;
+    }
+
+    // Validar se está dentro do campus
+    bool estaNoCampus = await ValidadorLocalizacao.validarLocalizacao();
+    
+    if (!estaNoCampus) {
+      if(mounted) {
+        showErrorSnackBar(
+          'Você precisa estar no campus para registrar sua presença.', 
+          context
+        );
+      }
+      return;
+    }
+
+    if(mounted){
+      showSuccessSnackBar('Chamada concluída!\n'
+        'QR Code: ${_codeController.text}\n'
+        'Localização: ${_currentLocation!.latitude.toStringAsFixed(4)}, ${_currentLocation!.longitude.toStringAsFixed(4)}', 
+        context
+      );  
+    }
+    
+    // Voltar para a tela anterior
+    Navigator.pop(context);
   }
 
 
