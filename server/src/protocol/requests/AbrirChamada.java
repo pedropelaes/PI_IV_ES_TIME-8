@@ -32,9 +32,10 @@ public class AbrirChamada {
 
         try (MongoClient client = MongoClients.create(uri)) {
             MongoDatabase db = client.getDatabase("vocattio_db");
+            MongoCollection<Document> turmas = db.getCollection("turmas");
             MongoCollection<Document> aulas = db.getCollection("aulas");
 
-            // Procura a aula pelo _id
+            // Procura a turma pelo _id
             if (aulaId == null || aulaId.isEmpty()) {
                 System.out.println("Erro: aulaId está null ou vazio!");
                 return null;
@@ -45,21 +46,10 @@ public class AbrirChamada {
                 return null;
             }
 
-            Document aula = aulas.find(Filters.eq("codigoTurma", aulaId)).first();
+            Document turma = turmas.find(Filters.eq("_id", new ObjectId(aulaId))).first();
 
-            if (aula == null) {
-                System.out.println("Aula não encontrada!");
-                return null;
-            }
-
-
-            if (aula == null) {
-                System.out.println("Aula não encontrada!");
-                return null;
-            }
-
-            if (aula == null) {
-                System.out.println("Aula não encontrada!");
+            if (turma == null) {
+                System.out.println("Turma não encontrada!");
                 return null;
             }
 
@@ -75,8 +65,10 @@ public class AbrirChamada {
                     .append("dataAbertura", Instant.now().toString())
                     .append("presentes", new ArrayList<>());
 
-            // Atualiza a aula
-            aulas.updateOne(
+            // chamada.append("aulas",aulas);
+
+            // Atualiza a turma
+            turmas.updateOne(
                     Filters.eq("_id", new ObjectId(aulaId)),
                     Updates.combine(
                             Updates.set("chamada", chamada),

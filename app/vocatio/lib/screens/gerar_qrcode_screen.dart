@@ -65,149 +65,151 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
             ),
             child: Padding(
               padding: EdgeInsets.all(ResponsiveHelper.getResponsivePadding(context)),
-              child: Column(
-                children: [
-                  const SizedBox(height: 40),
-                  
-                  // Box branco para simular a câmera
-                  Container(
-                    width: double.infinity,
-                    height: ResponsiveHelper.isDesktop(context) ? 400 : 300,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Colors.grey.shade300,
-                        width: 2,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 40),
+                    
+                    // Box branco para simular a câmera
+                    Container(
+                      width: double.infinity,
+                      height: ResponsiveHelper.isDesktop(context) ? 400 : 300,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 2,
                         ),
-                      ],
-                    ),
-                    child: Center(
-                      child: carregando
-                          ? const CircularProgressIndicator()
-                          : codigoChamada != null
-                              ? Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    QrImageView(
-                                      data: codigoChamada!,
-                                      version: QrVersions.auto,
-                                      size: 200,
-                                    ),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      'Escaneie para registrar presença',
-                                      style: textTheme.bodyMedium?.copyWith(
-                                        color: Colors.grey.shade600,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.qr_code_scanner,
-                                      size: ResponsiveHelper.isDesktop(context) ? 100 : 80,
-                                      color: Colors.grey.shade400,
-                                    ),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      'QR Code será exibido aqui',
-                                      style: textTheme.titleMedium?.copyWith(
-                                        color: Colors.grey.shade600,
-                                        fontSize:
-                                            ResponsiveHelper.getResponsiveFontSize(context, 18),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 40),
-                  
-                  // Box do código da turma
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(ResponsiveHelper.isDesktop(context) ? 24 : 20),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(0xFF523C73),
-                          Color(0xFF9B71D9),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
                         ],
                       ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: theme.colorScheme.primary.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+                      child: Center(
+                        child: carregando
+                            ? const CircularProgressIndicator()
+                            : codigoChamada != null
+                                ? Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      QrImageView(
+                                        data: codigoChamada!,
+                                        version: QrVersions.auto,
+                                        size: 200,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'Escaneie para registrar presença',
+                                        style: textTheme.bodyMedium?.copyWith(
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.qr_code_scanner,
+                                        size: ResponsiveHelper.isDesktop(context) ? 100 : 80,
+                                        color: Colors.grey.shade400,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'QR Code será exibido aqui',
+                                        style: textTheme.titleMedium?.copyWith(
+                                          color: Colors.grey.shade600,
+                                          fontSize:
+                                              ResponsiveHelper.getResponsiveFontSize(context, 18),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                      ),
                     ),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Código da Turma',
-                          style: textTheme.titleMedium?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: ResponsiveHelper.getResponsiveFontSize(context, 18),
-                          ),
+                    
+                    const SizedBox(height: 40),
+                    
+                    // Box do código da turma
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(ResponsiveHelper.isDesktop(context) ? 24 : 20),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color(0xFF523C73),
+                            Color(0xFF9B71D9),
+                          ],
                         ),
-                        const SizedBox(height: 12),
-                        Text(
-                          widget.codigoTurma,
-                          style: textTheme.headlineLarge?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 2,
-                            fontSize: ResponsiveHelper.getResponsiveFontSize(context, 32),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: theme.colorScheme.primary.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Apresente este código para os alunos',
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: ResponsiveHelper.getResponsiveFontSize(context, 16),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Código da Turma',
+                            style: textTheme.titleMedium?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: ResponsiveHelper.getResponsiveFontSize(context, 18),
+                            ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 12),
+                          Text(
+                            widget.codigoTurma,
+                            style: textTheme.headlineLarge?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2,
+                              fontSize: ResponsiveHelper.getResponsiveFontSize(context, 32),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Apresente este código para os alunos',
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: Colors.white.withOpacity(0.9),
+                              fontSize: ResponsiveHelper.getResponsiveFontSize(context, 16),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  
-                  const Spacer(),
-                  
-                  // Botão Concluir Chamada
-                  AnimatedButton(
-                    text: 'Concluir Chamada',
-                    backgroundColor: const Color(0xFFD5BBFC),
-                    textColor: const Color(0xFF3A255B),
-                    borderRadius: 12,
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Chamada concluída com sucesso!'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                      Navigator.pop(context);
-                    },
-                  ),
-                  
-                  const SizedBox(height: 20),
-                ],
+                    
+                    const Spacer(),
+                    
+                    // Botão Concluir Chamada
+                    AnimatedButton(
+                      text: 'Concluir Chamada',
+                      backgroundColor: const Color(0xFFD5BBFC),
+                      textColor: const Color(0xFF3A255B),
+                      borderRadius: 12,
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Chamada concluída com sucesso!'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                        Navigator.pop(context);
+                      },
+                    ),
+                    
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           ),
@@ -217,7 +219,11 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
   }
 
   Future<void> _gerarChamada() async {
-  setState(() => carregando = true);
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+  if (mounted) {
+    setState(() => carregando = true);
+  }
+});
 
   Map<String, dynamic> jsonGerarChamada = {
     "operacao": "AbrirChamada",
@@ -239,9 +245,13 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
     final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
 
     if (responseJson['sucesso'] == true) {
-      setState(() {
-        codigoChamada = responseJson['codigoChamada'];
-      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          codigoChamada = responseJson['codigoChamada'];
+        });
+      }
+    });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Erro ao gerar chamada.")),

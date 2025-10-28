@@ -11,7 +11,10 @@ import org.bson.types.ObjectId;
 import src.domain.Turma;
 import io.github.cdimascio.dotenv.Dotenv;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +49,33 @@ public class GetTurmas {
                 List<ObjectId> alunosIds = doc.getList("alunos", ObjectId.class, new ArrayList<>());
                 List<String> alunos = alunosIds.stream().map(ObjectId::toHexString).collect(Collectors.toList());
 
+                Date criadoEm = null;
+                Object criadoObj = doc.get("criadoEm");
+
+                if (criadoObj instanceof Date) {
+                    criadoEm = (Date) criadoObj;
+                } else if (criadoObj instanceof String) {
+                    try {
+                        // ajuste o formato conforme como a string está salva
+                        criadoEm = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX").parse((String) criadoObj);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                // converter atualizadoEm
+                Date atualizadoEm = null;
+                Object atualizadoObj = doc.get("atualizadoEm");
+                if (atualizadoObj instanceof Date) {
+                    atualizadoEm = (Date) atualizadoObj;
+                } else if (atualizadoObj instanceof String) {
+                    try {
+                        atualizadoEm = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX").parse((String) atualizadoObj);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 Turma turma = new Turma(
                         doc.getObjectId("_id").toHexString(),
                         doc.getString("nome"),
@@ -53,8 +83,8 @@ public class GetTurmas {
                         doc.getString("codigo"),
                         doc.getObjectId("professorId").toHexString(),
                         alunos,
-                        doc.getDate("criadoEm"),
-                        doc.getDate("atualizadoEm")
+                        criadoEm,
+                        atualizadoEm
                 );
                 turmas.add(turma);
             }

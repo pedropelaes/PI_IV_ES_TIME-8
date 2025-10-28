@@ -16,6 +16,7 @@ class DetalhesTurmaScreen extends StatefulWidget {
   final String nomeTurma;
   final String descricao;
   final int numeroAlunos;
+  //final String objectId;
 
   const DetalhesTurmaScreen({
     super.key,
@@ -23,6 +24,7 @@ class DetalhesTurmaScreen extends StatefulWidget {
     required this.nomeTurma,
     required this.descricao,
     required this.numeroAlunos,
+    //required this.objectId
   });
 
   @override
@@ -103,13 +105,13 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                       children: [
 
                         widget.tipoUsuario == 'professor' ? AnimatedButton(
-                          text: 'Gerar QR CODE',
+                          text: 'Realizar chamada',
                           onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => GerarQRCodeScreen(
-                                  codigoTurma: 'TURMA001',
+                                  codigoTurma: '69013034a3285416f6050314',
                                 ),
                               ),
                             );
