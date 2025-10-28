@@ -26,7 +26,7 @@ class CustomFAB extends StatelessWidget {
         tipo == "professor"?
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const CriarTurmaScreen()),
+          MaterialPageRoute(builder: (context) => CriarTurmaScreen(objectId: objectId,)),
         ):Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => EntrarEmTurmaScreen(objectId: objectId,)),

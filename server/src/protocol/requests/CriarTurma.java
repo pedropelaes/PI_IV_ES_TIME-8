@@ -4,6 +4,8 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -17,6 +19,7 @@ public class CriarTurma {
     private String nome;
     private String descricao;
     private String operacao;
+    private String objectId;
 
 
     public CriarTurma(){}
@@ -50,6 +53,11 @@ public class CriarTurma {
         try (MongoClient client = MongoClients.create(uri)) {
             MongoDatabase db = client.getDatabase("vocattio_db");
             MongoCollection<Document> colecao = db.getCollection("turmas");
+            MongoCollection<Document> usersCol = db.getCollection("users");
+
+
+            ObjectId professorObjectId = new ObjectId(objectId);
+            Document professor = usersCol.find(Filters.eq("_id", professorObjectId)).first();
 
             Document turma = new Document("nome", this.nome)
                     .append("descricao", this.descricao)
@@ -59,10 +67,14 @@ public class CriarTurma {
                     .append("criadoEm", new Date())
                     .append("atualizadoEm", new Date());
 
-
-
-
             colecao.insertOne(turma);
+            ObjectId turmaId = turma.getObjectId("_id");
+
+            usersCol.updateOne(
+                    Filters.eq("_id", professorObjectId),
+                    Updates.push("turmas", turmaId)
+            );
+
             return true;
         } catch (Exception e) {
             e.printStackTrace();

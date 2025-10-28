@@ -10,7 +10,8 @@ import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/text_field.dart';
 
 class CriarTurmaScreen extends StatefulWidget {
-  const CriarTurmaScreen({super.key});
+  final String objectId;
+  const CriarTurmaScreen({super.key, required this.objectId});
 
   @override
   State<CriarTurmaScreen> createState() => _CriarTurmaScreenState();
@@ -52,7 +53,8 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
     Map<String, dynamic> jsonCriarTurma = {
       "operacao": "CriarTurma",
       "nome": nameController.text,
-      "descricao": descriptionController.text
+      "descricao": descriptionController.text,
+      "objectId": widget.objectId
     };
 
     try {
