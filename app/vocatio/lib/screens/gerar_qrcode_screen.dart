@@ -188,7 +188,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
                       ),
                     ),
                     
-                    const Spacer(),
+                    SizedBox(height: ResponsiveHelper.isDesktop(context) ? 40 : 24),
                     
                     // Botão Concluir Chamada
                     AnimatedButton(
@@ -217,7 +217,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
       ),
     );
   }
-
+  
   Future<void> _gerarChamada() async {
   WidgetsBinding.instance.addPostFrameCallback((_) {
   if (mounted) {
@@ -266,8 +266,9 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
       SnackBar(content: Text("Erro ao gerar chamada: $e")),
     );
   } finally {
-    setState(() => carregando = false);
+    if (mounted) {
+      setState(() => carregando = false);
+    }
   }
 }
-
 }
