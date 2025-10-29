@@ -1,10 +1,15 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:vocattio/services/auth_service.dart';
 import 'package:vocattio/services/location/location_service.dart';
+import 'package:vocattio/services/locator.dart';
+import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/snackbars.dart';
@@ -122,6 +127,49 @@ class _ScanQrcodeState extends State<ScanQrcode> {
     }
   }
 
+  Future<bool> _registrarPresenca({required String aulaId, required String alunoId}) async {
+  final socket = getIt<SocketService>();
+
+  final jsonRegistrar = {
+    "operacao": "RegistrarPresenca",
+    "aulaId": aulaId,
+    "alunoId": AuthService.currentUser.id, // o id do aluno logado
+  };
+
+  socket.send(jsonRegistrar);
+
+  try {
+    final responseData = await socket.messages.firstWhere((data) {
+      try {
+        final message = jsonDecode(data is String ? data : utf8.decode(data));
+        return message['operacao'] == 'ResultadoRegistrarPresenca';
+      } catch (_) {
+        return false;
+      }
+    }).timeout(const Duration(seconds: 10));
+
+    final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
+
+    if (responseJson['resultado'] == true) {
+      if (mounted) {
+        showSuccessSnackBar("Presença registrada com sucesso!", context);
+      }
+      return true;
+    } else {
+      if (mounted) {
+        showErrorSnackBar("Erro: ${responseJson['mensagem']}", context);
+      }
+      return false;
+    }
+  } catch (e) {
+    if (mounted) {
+      showErrorSnackBar("Erro ao registrar presença: $e", context);
+    }
+    return false;
+  }
+}
+
+
   bool get hasScanner =>
     kIsWeb || Platform.isAndroid || Platform.isIOS;
 
@@ -153,16 +201,26 @@ class _ScanQrcodeState extends State<ScanQrcode> {
       return;
     }
 
-    if(mounted){
-      showSuccessSnackBar('Chamada concluída!\n'
-        'QR Code: ${_codeController.text}\n'
-        'Localização: ${_currentLocation!.latitude.toStringAsFixed(4)}, ${_currentLocation!.longitude.toStringAsFixed(4)}', 
-        context
-      );  
-    }
-    
-    // Voltar para a tela anterior
-    Navigator.pop(context);
+      final alunoId = AuthService.currentUser.id;
+      final resultado = await _registrarPresenca(
+        aulaId: _codeController.text,
+        alunoId: alunoId,
+      );
+
+      if (resultado != 'true') {
+        if (mounted) showErrorSnackBar("Erro ao registrar presença.", context);
+        return;
+      }
+
+      if (mounted) {
+        showSuccessSnackBar(
+          'Chamada concluída!\n'
+          'QR Code: ${_codeController.text}\n'
+          'Localização: ${_currentLocation!.latitude.toStringAsFixed(4)}, ${_currentLocation!.longitude.toStringAsFixed(4)}',
+          context,
+        );
+      }
+      Navigator.pop(context);
   }
 
 
@@ -293,4 +351,3 @@ class _ScanQrcodeState extends State<ScanQrcode> {
           );
         }
       }
-      

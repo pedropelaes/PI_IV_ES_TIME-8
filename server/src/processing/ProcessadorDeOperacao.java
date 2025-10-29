@@ -2,6 +2,7 @@ package src.processing;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import org.bson.Document;
 import src.connection.IParceiro;
 import src.domain.Turma;
 import src.domain.User;
@@ -64,6 +65,11 @@ public class ProcessadorDeOperacao {
                     List<Turma> turmas = getTurmas.getTurmas();
                     boolean turmasEmpty = turmas != null;
                     remetente.receba(new ResultadoGetTurmas(turmasEmpty, "ResultadoGetTurmas", turmas));
+                    break;
+                case "RegistrarPresenca":
+                    RegistrarPresenca registrarPresenca = gson.fromJson(json, RegistrarPresenca.class);
+                    resultado = registrarPresenca.registrarPresenca();
+                    remetente.receba(new ResultadoOperacao(resultado, "ResultadoRegistrarPresenca"));
                     break;
                 default:
                     System.err.println("Comunicado desconhecido: " + tipo);
