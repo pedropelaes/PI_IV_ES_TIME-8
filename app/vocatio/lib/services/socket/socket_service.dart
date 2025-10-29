@@ -9,7 +9,7 @@ import 'socket_client_mobile.dart'
 import 'socket_client.dart';
 
 class SocketService {
-  static const String host = '192.168.15.46';
+  static const String host = '10.147.19.224';
   static int  get port => kIsWeb ? 3001 : 3000;
 
   final SocketClient _client = getSocketClient();
@@ -55,5 +55,16 @@ class SocketService {
   void disconnect() {
     _client.disconnect();
     print('Desconectado.');
+  }
+
+  Future<void> pedidoParaSair() async {
+    if(isConnected){
+      print("Enviando pedido para sair");
+
+      send({'operacao' : 'PedidoParaSair'});
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      disconnect();
+    }
   }
 }
