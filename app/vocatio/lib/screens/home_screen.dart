@@ -94,6 +94,16 @@ class _HomeScreenState extends State<HomeScreen> {
     final ThemeData theme = Theme.of(context);
     final TextTheme textTheme = theme.textTheme;
 
+    void _refreshData() async {
+      final updatedUser = await _authService.getUser(widget.uid);
+      if (updatedUser != null) {
+        setState(() {
+          _user = Future.value(updatedUser);
+          _turmas = _getTurmas(updatedUser.turmas);
+        });
+      }
+    }
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: theme.colorScheme.surface,
@@ -242,7 +252,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
           final user = asyncSnapshot.data!;
           print(user.objectId);
-          return CustomFAB(tipo: user.tipo, objectId: user.objectId ?? "");
+          return CustomFAB(
+            tipo: user.tipo, 
+            objectId: user.objectId ?? "",
+            onPressed: (){
+              setState(() {
+                _refreshData();
+              });
+            },
+            );
   },
 ),
 

@@ -155,7 +155,7 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
                           if(resultado == true){
                             _showSuccessSnackBar("Turma Criada!");
                             if (mounted) {
-                              Navigator.of(context).pop();
+                              Navigator.of(context).pop(true);
                             }
                           }
                           else {

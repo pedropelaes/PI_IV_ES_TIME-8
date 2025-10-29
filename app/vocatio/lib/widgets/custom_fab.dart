@@ -21,15 +21,30 @@ class CustomFAB extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     
     return FloatingActionButton(
-      onPressed: onPressed ?? () {
-        tipo == "professor"?
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => CriarTurmaScreen(objectId: objectId,)),
-        ):Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => EntrarEmTurmaScreen(objectId: objectId,)),
-        );
+      onPressed: () async {
+        bool? entrouOuCriou;
+
+        // Decide qual tela abrir
+        if (tipo == "professor") {
+          entrouOuCriou = await Navigator.push<bool>(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CriarTurmaScreen(objectId: objectId),
+            ),
+          );
+        } else {
+          entrouOuCriou = await Navigator.push<bool>(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EntrarEmTurmaScreen(objectId: objectId),
+            ),
+          );
+        }
+
+        // Ao voltar da tela, se houve sucesso, chama o onPressed do pai (HomeScreen)
+        if (entrouOuCriou == true && onPressed != null) {
+          onPressed!();
+        }
       },
       backgroundColor: theme.colorScheme.primary,
       foregroundColor: theme.colorScheme.onPrimary,

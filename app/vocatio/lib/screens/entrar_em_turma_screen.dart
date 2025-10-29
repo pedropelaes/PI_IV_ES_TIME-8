@@ -150,11 +150,11 @@ class _EntrarEmTurmaScreenState extends State<EntrarEmTurmaScreen> {
                           if(resultado == true){
                             _showSuccessSnackBar("Entrada Realizada");
                             if (mounted) {
-                              Navigator.of(context).pop();
+                              Navigator.of(context).pop(true);
                             }
                           }
                           else {
-                            _showErrorSnackBar("Erro ao entrar na turma");
+                            _showErrorSnackBar("Erro ao entrar na turma. Verifique o código");
                           }
                         },
                       ),
