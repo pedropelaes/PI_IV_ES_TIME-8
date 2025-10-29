@@ -236,7 +236,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
     final responseData = await _socketService.messages.firstWhere((data) {
       try {
         final message = jsonDecode(data is String ? data : utf8.decode(data));
-        return message['operacao'] == 'ResultadoGerarChamada';
+        return message['operacao'] == 'ResultadoAbrirChamada';
       } catch (e) {
         return false;
       }
@@ -244,7 +244,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
 
     final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
 
-    if (responseJson['sucesso'] == true) {
+    if (responseJson['resultado'] == true) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         setState(() {
