@@ -12,15 +12,15 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class AbrirChamada {
-    private String aulaId;      // _id da aula (string enviada pelo app)
+    private String codigoTurma;      // _id da aula (string enviada pelo app)
     private double latitude;
     private double longitude;
     private String operacao;
 
     public AbrirChamada() {}
 
-    public AbrirChamada(String aulaId, double latitude, double longitude, String operacao) {
-        this.aulaId = aulaId;
+    public AbrirChamada(String codigoTurma, double latitude, double longitude, String operacao) {
+        this.codigoTurma = codigoTurma;
         this.latitude = latitude;
         this.longitude = longitude;
         this.operacao = operacao;
@@ -36,17 +36,12 @@ public class AbrirChamada {
             MongoCollection<Document> aulas = db.getCollection("aulas");
 
             // Procura a turma pelo _id
-            if (aulaId == null || aulaId.isEmpty()) {
-                System.out.println("Erro: aulaId está null ou vazio!");
+            if (codigoTurma == null || codigoTurma.isEmpty()) {
+                System.out.println("Erro: codigoTurma está null ou vazio!");
                 return null;
             }
 
-            if (aulaId == null || aulaId.isEmpty()) {
-                System.out.println("Erro: aulaId está null ou vazio!");
-                return null;
-            }
-
-            Document turma = turmas.find(Filters.eq("_id", new ObjectId(aulaId))).first();
+            Document turma = turmas.find(Filters.eq("_id", new ObjectId(codigoTurma))).first();
 
             if (turma == null) {
                 System.out.println("Turma não encontrada!");
@@ -56,8 +51,9 @@ public class AbrirChamada {
             // Gera um código único para a chamada
             String codigoChamada = "CHAMADA-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
 
-            // Cria o documento de chamada
-            Document chamada = new Document()
+            // Cria o documento de aula
+            Document aula = new Document()
+                    .append("turmaId", new ObjectId(codigoTurma))
                     .append("codigo", codigoChamada)
                     .append("aberta", true)
                     .append("latitude", latitude)
@@ -65,13 +61,13 @@ public class AbrirChamada {
                     .append("dataAbertura", Instant.now().toString())
                     .append("presentes", new ArrayList<>());
 
-            // chamada.append("aulas",aulas);
+            aulas.insertOne(aula);
 
             // Atualiza a turma
             turmas.updateOne(
-                    Filters.eq("_id", new ObjectId(aulaId)),
+                    Filters.eq("_id", new ObjectId(codigoTurma)),
                     Updates.combine(
-                            Updates.set("chamada", chamada),
+                            Updates.push("aulas", aula.getObjectId("_id")),
                             Updates.set("atualizadoEm", Instant.now().toString())
                     )
             );
@@ -86,7 +82,7 @@ public class AbrirChamada {
 
     @Override
     public String toString() {
-        return operacao + " " + aulaId + " " + latitude + " " + longitude;
+        return operacao + " " + codigoTurma + " " + latitude + " " + longitude;
     }
 }
 

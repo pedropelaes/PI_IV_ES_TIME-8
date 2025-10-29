@@ -64,6 +64,7 @@ public class CriarTurma {
                     .append("professorId", new ObjectId())
                     .append("codigo", gerarCodigo(this.nome))
                     .append("alunos", new ArrayList<ObjectId>())
+                    .append("aulas", new ArrayList<ObjectId>())
                     .append("criadoEm", new Date())
                     .append("atualizadoEm", new Date());
 
