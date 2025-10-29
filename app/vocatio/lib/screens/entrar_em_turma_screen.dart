@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:vocattio/models/user.dart';
-import 'package:vocattio/services/auth_service.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
@@ -22,8 +20,7 @@ class _EntrarEmTurmaScreenState extends State<EntrarEmTurmaScreen> {
 
     final TextEditingController codeController = TextEditingController();
     final SocketService _socketService = getIt<SocketService>();
-    final AuthService _authService = AuthService();
-    late Future<User?> _user;
+
 
   @override
   void dispose(){

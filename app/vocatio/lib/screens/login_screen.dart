@@ -6,8 +6,6 @@ import 'package:vocattio/screens/home_screen.dart';
 import 'package:vocattio/screens/reset_password_screen.dart';
 import 'package:vocattio/screens/signup_screen.dart';
 import 'package:vocattio/services/auth_service.dart';
-import 'package:vocattio/services/locator.dart';
-import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/dialog_exc.dart';
@@ -25,7 +23,6 @@ class _LoginScreenState extends State<LoginScreen>{
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final _authService = AuthService();
-  final SocketService _socketService = getIt<SocketService>();
   bool _isLoading = false;
 
   @override

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:vocattio/screens/scan_qrcode.dart';
 import 'package:vocattio/screens/tela_presencas.dart';
 import 'package:vocattio/screens/gerar_qrcode_screen.dart';
 import 'package:vocattio/screens/validate_attendance_screen.dart';
-import 'package:vocattio/screens/via_code.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/dialog_exc.dart';

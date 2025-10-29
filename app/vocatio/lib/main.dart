@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:provider/provider.dart';
 import 'package:vocattio/screens/welcome_screen.dart';
 import 'package:vocattio/services/locator.dart';
@@ -22,13 +23,15 @@ void main() async {
   
   setupLocator();
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider<ThemeNotifier>.value(value: themeNotifier,)
-      ],
-      child: DevicePreview(
-        enabled: kIsWeb || !(Platform.isAndroid || Platform.isIOS),
-        builder: (context) => const MainApp()
+    Phoenix(
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ThemeNotifier>.value(value: themeNotifier,)
+        ],
+        child: DevicePreview(
+          enabled: kIsWeb || !(Platform.isAndroid || Platform.isIOS),
+          builder: (context) => const MainApp()
+        ),
       ),
     )
   );
@@ -65,6 +68,7 @@ class _MainAppState extends State<MainApp> {
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
     final textTheme = createTextTheme(context, "Poppins", "Lato");
@@ -73,7 +77,14 @@ class _MainAppState extends State<MainApp> {
     final themeNotifier = Provider.of<ThemeNotifier>(context); 
     final isHighContrast = themeNotifier.isHighContrast;
 
-    return MaterialApp( // provavelmente sera preciso trocar para PlatformApp na build final
+    getIt<SocketService>().onConnectionLost = (){
+      if(mounted){
+        print("Reiniciando o app via phoenix");
+        Phoenix.rebirth(context);
+      }
+    };
+
+    return MaterialApp( 
       builder: DevicePreview.appBuilder,
       theme: isHighContrast ? lightScheme.lightHighContrast() : lightScheme.light(), 
       darkTheme: isHighContrast ? darkScheme.darkHighContrast() : darkScheme.dark(), 

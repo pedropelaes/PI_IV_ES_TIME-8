@@ -28,6 +28,7 @@ dependencies:
   bson: ^5.0.7
   audioplayers: ^6.0.0
   qr_flutter: ^4.1.0
+  flutter_phoenix: ^1.1.1
 
 dev_dependencies:
   flutter_test:

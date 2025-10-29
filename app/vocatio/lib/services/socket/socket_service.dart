@@ -19,6 +19,8 @@ class SocketService {
 
   Stream<dynamic> get messages => _controller.stream;
 
+  VoidCallback? onConnectionLost;
+
   SocketService() {
     _client.stream.listen((data) {
       print('Servidor disse: $data');
@@ -29,6 +31,8 @@ class SocketService {
     }, onDone: () {
       print('Conexão encerrada pelo servidor');
       _controller.close();
+
+      onConnectionLost?.call();
     });
   }
 
@@ -39,6 +43,7 @@ class SocketService {
       print('Conectado com sucesso em $host:$port');
     } catch (e) {
       print('Falha ao conectar: $e');
+      rethrow;
     }
   }
 

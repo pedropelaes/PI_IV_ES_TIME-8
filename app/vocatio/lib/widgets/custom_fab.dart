@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:vocattio/models/user.dart';
 import 'package:vocattio/screens/criar_turma_screen.dart';
 import 'package:vocattio/screens/entrar_em_turma_screen.dart';
 
