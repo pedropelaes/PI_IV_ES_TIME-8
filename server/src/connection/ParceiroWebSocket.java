@@ -18,7 +18,10 @@ public class ParceiroWebSocket implements IParceiro {
     public void receba(Comunicado comunicado) throws Exception {
         if (conexao != null && conexao.isOpen()) {
             String json = gson.toJson(comunicado);
+            System.out.println("Enviando resposta para cliente: " + json);
             conexao.send(json);
+        } else {
+            System.out.println("Conexão não está aberta! Não é possível enviar resposta.");
         }
     }
 

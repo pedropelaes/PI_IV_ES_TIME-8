@@ -28,11 +28,20 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
   bool carregando = false;
   final _locationService = LocationService();
   Position? _profLocation;
+  Timer? _timer;
+  int _tempoRestante = 60; // 1 minuto
+  bool _chamadaFechada = false;
 
   @override
   void initState() {
     super.initState();
     _gerarChamada(); // assim que a tela abre, já pede o QR Code
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
   
   @override
@@ -74,6 +83,40 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
                   children: [
                     const SizedBox(height: 40),
                     
+                    // Indicador de tempo restante
+                    if (codigoChamada != null && !_chamadaFechada)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: _tempoRestante <= 10 ? Colors.red.shade100 : Colors.orange.shade100,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _tempoRestante <= 10 ? Colors.red : Colors.orange,
+                            width: 2,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.timer,
+                              color: _tempoRestante <= 10 ? Colors.red : Colors.orange,
+                              size: 24,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Tempo restante: ${_tempoRestante}s',
+                              style: textTheme.titleMedium?.copyWith(
+                                color: _tempoRestante <= 10 ? Colors.red : Colors.orange,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    
+                    const SizedBox(height: 20),
+                    
                     // Box branco para simular a câmera
                     Container(
                       width: double.infinity,
@@ -96,7 +139,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
                       child: Center(
                         child: carregando
                             ? const CircularProgressIndicator()
-                            : codigoChamada != null
+                            : codigoChamada != null && !_chamadaFechada
                                 ? Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -114,25 +157,44 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
                                       ),
                                     ],
                                   )
-                                : Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.qr_code_scanner,
-                                        size: ResponsiveHelper.isDesktop(context) ? 100 : 80,
-                                        color: Colors.grey.shade400,
+                                : codigoChamada != null && _chamadaFechada
+                                    ? Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.check_circle,
+                                            size: 100,
+                                            color: Colors.green,
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Text(
+                                            'Chamada encerrada',
+                                            style: textTheme.titleLarge?.copyWith(
+                                              color: Colors.grey.shade800,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.qr_code_scanner,
+                                            size: ResponsiveHelper.isDesktop(context) ? 100 : 80,
+                                            color: Colors.grey.shade400,
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Text(
+                                            'QR Code será exibido aqui',
+                                            style: textTheme.titleMedium?.copyWith(
+                                              color: Colors.grey.shade600,
+                                              fontSize:
+                                                  ResponsiveHelper.getResponsiveFontSize(context, 18),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      const SizedBox(height: 16),
-                                      Text(
-                                        'QR Code será exibido aqui',
-                                        style: textTheme.titleMedium?.copyWith(
-                                          color: Colors.grey.shade600,
-                                          fontSize:
-                                              ResponsiveHelper.getResponsiveFontSize(context, 18),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
                       ),
                     ),
                     
@@ -196,19 +258,17 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
                     
                     // Botão Concluir Chamada
                     AnimatedButton(
-                      text: 'Concluir Chamada',
-                      backgroundColor: const Color(0xFFD5BBFC),
-                      textColor: const Color(0xFF3A255B),
+                      text: _chamadaFechada ? 'Voltar' : 'Concluir Chamada',
+                      backgroundColor: _chamadaFechada ? Colors.grey : const Color(0xFFD5BBFC),
+                      textColor: _chamadaFechada ? Colors.white : const Color(0xFF3A255B),
                       borderRadius: 12,
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Chamada concluída com sucesso!'),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                        Navigator.pop(context);
-                      },
+                      onPressed: _chamadaFechada
+                          ? () {
+                              Navigator.pop(context);
+                            }
+                          : () {
+                              _fecharChamada();
+                            },
                     ),
                     
                     const SizedBox(height: 20),
@@ -272,6 +332,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
         setState(() {
           codigoChamada = responseJson['codigoChamada'];
         });
+        _iniciarTimer();
       }
     });
     } else {
@@ -290,6 +351,107 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
   } finally {
     if (mounted) {
       setState(() => carregando = false);
+    }
+  }
+}
+
+void _iniciarTimer() {
+  _tempoRestante = 60;
+  _timer?.cancel();
+  _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    if (mounted) {
+      setState(() {
+        if (_tempoRestante > 0) {
+          _tempoRestante--;
+        } else {
+          timer.cancel();
+          _fecharChamadaAutomaticamente();
+        }
+      });
+    } else {
+      timer.cancel();
+    }
+  });
+}
+
+Future<void> _fecharChamadaAutomaticamente() async {
+  if (_chamadaFechada) return;
+  
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('Tempo esgotado! Chamada encerrada automaticamente.'),
+      backgroundColor: Colors.orange,
+      duration: Duration(seconds: 2),
+    ),
+  );
+  
+  await _fecharChamada();
+  
+  // Aguarda 2 segundos e retorna para a home
+  await Future.delayed(const Duration(seconds: 2));
+  if (mounted) {
+    Navigator.pop(context);
+  }
+}
+
+Future<void> _fecharChamada() async {
+  if (codigoChamada == null || _chamadaFechada) return;
+  
+  _timer?.cancel();
+  
+  final jsonFecharChamada = {
+    "operacao": "FecharChamada",
+    "codigoChamada": codigoChamada,
+  };
+  
+  print('Enviando FecharChamada: $jsonFecharChamada');
+  
+  try {
+    _socketService.send(jsonFecharChamada);
+    print('Mensagem enviada. Aguardando resposta...');
+    
+    final responseData = await _socketService.messages.firstWhere((data) {
+      try {
+        final message = jsonDecode(data is String ? data : utf8.decode(data));
+        return message['operacao'] == 'ResultadoFecharChamada';
+      } catch (e) {
+        return false;
+      }
+    }).timeout(const Duration(seconds: 10));
+    
+    final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
+    print('Resposta recebida: $responseJson');
+    
+    if (responseJson['resultado'] == true) {
+      if (mounted) {
+        setState(() {
+          _chamadaFechada = true;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Chamada encerrada com sucesso!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Erro ao encerrar chamada.")),
+        );
+      }
+    }
+  } on TimeoutException {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Tempo de resposta esgotado ao encerrar.")),
+      );
+    }
+  } catch (e) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erro ao encerrar chamada: $e")),
+      );
     }
   }
 }

@@ -23,6 +23,11 @@ public class ResultadoOperacao extends Comunicado {
         this.mensagem = mensagem;
     }
 
+    // Getters usados pelo Gson para serialização
+    public boolean getResultado(){
+        return resultado;
+    }
+    
     public boolean getResultadoOperacao(){
         return resultado;
     }

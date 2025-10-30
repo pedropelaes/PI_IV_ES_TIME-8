@@ -1,8 +1,5 @@
 package src.protocol.responses;
 
-
-import com.google.gson.Gson;
-
 public class ResultadoAbrirChamada extends ResultadoOperacao {
     private String codigoChamada;
 
@@ -11,8 +8,11 @@ public class ResultadoAbrirChamada extends ResultadoOperacao {
         this.codigoChamada = codigoChamada;
     }
 
-    public String getResultado() {
-        Gson gson = new Gson();
-        return gson.toJson(this);
+    public String getCodigoChamada() {
+        return codigoChamada;
+    }
+
+    public void setCodigoChamada(String codigoChamada) {
+        this.codigoChamada = codigoChamada;
     }
 }

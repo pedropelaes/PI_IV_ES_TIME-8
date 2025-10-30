@@ -23,6 +23,7 @@ public class ProcessadorDeOperacao {
         try{
             JsonObject obj = gson.fromJson(json, JsonObject.class);
             String tipo = obj.get("operacao").getAsString();
+            System.out.println("Operação recebida: '" + tipo + "'");
             boolean resultado;
 
             switch (tipo) {
@@ -72,8 +73,17 @@ public class ProcessadorDeOperacao {
                     String mensagem = registrarPresenca.getMensagem();
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoRegistrarPresenca", mensagem));
                     break;
+                case "FecharChamada":
+                    System.out.println("CASE FecharChamada ACIONADO! JSON: " + json);
+                    FecharChamada fecharChamada = gson.fromJson(json, FecharChamada.class);
+                    System.out.println("Parsing FecharChamada concluído. Código: " + fecharChamada.getCodigoChamada());
+                    resultado = fecharChamada.fechar();
+                    System.out.println("Resultado FecharChamada: " + resultado);
+                    remetente.receba(new ResultadoOperacao(resultado, "ResultadoFecharChamada"));
+                    break;
                 default:
-                    System.err.println("Comunicado desconhecido: " + tipo);
+                    System.err.println("Comunicado desconhecido: '" + tipo + "'");
+                    System.err.println("JSON completo recebido: " + json);
                     break;
             }
         } catch (Exception e) {

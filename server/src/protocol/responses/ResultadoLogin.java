@@ -1,6 +1,5 @@
 package src.protocol.responses;
 
-import com.google.gson.Gson;
 import src.domain.User;
 
 public class ResultadoLogin extends ResultadoOperacao {
@@ -11,8 +10,11 @@ public class ResultadoLogin extends ResultadoOperacao {
         this.user = user;
     }
 
-    public String getResultado() {
-        Gson gson = new Gson();
-        return gson.toJson(this);
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
