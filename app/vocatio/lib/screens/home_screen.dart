@@ -206,6 +206,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           nomeTurma: turma.nome,
                                           descricao: turma.descricao,
                                           numeroAlunos: turma.alunos.length,
+                                          codigoTurma: turma.codigo, // código humano da turma
+                                          turmaId: turma.objectId,   // ObjectId para backend
                                         ),
                                       ),
                                     );

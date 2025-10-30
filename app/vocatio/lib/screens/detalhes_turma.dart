@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:vocattio/screens/scan_qrcode.dart';
 import 'package:vocattio/screens/tela_presencas.dart';
 import 'package:vocattio/screens/gerar_qrcode_screen.dart';
 import 'package:vocattio/screens/validate_attendance_screen.dart';
-import 'package:vocattio/screens/via_code.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/dialog_exc.dart';
@@ -16,7 +14,8 @@ class DetalhesTurmaScreen extends StatefulWidget {
   final String nomeTurma;
   final String descricao;
   final int numeroAlunos;
-  //final String objectId;
+  final String codigoTurma;
+  final String turmaId;
 
   const DetalhesTurmaScreen({
     super.key,
@@ -24,7 +23,8 @@ class DetalhesTurmaScreen extends StatefulWidget {
     required this.nomeTurma,
     required this.descricao,
     required this.numeroAlunos,
-    //required this.objectId
+    required this.codigoTurma,
+    required this.turmaId,
   });
 
   @override
@@ -77,7 +77,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'TURMA001', // Código fixo por enquanto
+                          widget.codigoTurma,
                           style: textTheme.headlineMedium?.copyWith(
                             color: theme.colorScheme.primaryFixed,
                             fontWeight: FontWeight.bold,
@@ -111,7 +111,8 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => GerarQRCodeScreen(
-                                  codigoTurma: '69013034a3285416f6050314',
+                                  // Para abrir chamada no backend, usa-se o ObjectId da turma
+                                  codigoTurma: widget.turmaId,
                                 ),
                               ),
                             );

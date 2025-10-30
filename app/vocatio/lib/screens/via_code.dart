@@ -160,7 +160,8 @@ class _ViaCodeState extends State<ViaCode> {
   Future<bool> _registrarPresenca({required String aulaId, required String alunoId}) async {
     final payload = {
       "operacao": "RegistrarPresenca",
-      "aulaId": aulaId,
+      // via código: usa o código textual da chamada
+      "codigoChamada": aulaId,
       "alunoId": alunoId,
       if (_currentLocation != null) "latitude": _currentLocation!.latitude,
       if (_currentLocation != null) "longitude": _currentLocation!.longitude,
@@ -179,7 +180,10 @@ class _ViaCodeState extends State<ViaCode> {
       }).timeout(const Duration(seconds: 10));
 
       final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
-      return responseJson['resultado'] == true;
+      if (responseJson['resultado'] == true) return true;
+      final msg = responseJson['mensagem'];
+      if (mounted) showErrorSnackBar(msg ?? 'Erro ao registrar presença', context);
+      return false;
     } catch (e) {
       return false;
     }

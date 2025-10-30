@@ -138,7 +138,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
                     
                     const SizedBox(height: 40),
                     
-                    // Box do código da turma
+                    // Box do código da chamada
                     Container(
                       width: double.infinity,
                       padding: EdgeInsets.all(ResponsiveHelper.isDesktop(context) ? 24 : 20),
@@ -163,7 +163,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
                       child: Column(
                         children: [
                           Text(
-                            'Código da Turma',
+                            'Código da Chamada',
                             style: textTheme.titleMedium?.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -172,7 +172,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            widget.codigoTurma,
+                            codigoChamada ?? 'Gerando... ',
                             style: textTheme.headlineLarge?.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,

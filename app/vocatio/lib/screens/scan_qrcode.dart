@@ -132,7 +132,8 @@ class _ScanQrcodeState extends State<ScanQrcode> {
 
   final jsonRegistrar = {
     "operacao": "RegistrarPresenca",
-    "aulaId": aulaId,
+    // Envia preferencialmente o código da chamada (QR)
+    "codigoChamada": aulaId,
     "alunoId": AuthService.currentUser.id, // o id do aluno logado
     if (_currentLocation != null) "latitude": _currentLocation!.latitude,
     if (_currentLocation != null) "longitude": _currentLocation!.longitude,
@@ -159,7 +160,8 @@ class _ScanQrcodeState extends State<ScanQrcode> {
       return true;
     } else {
       if (mounted) {
-        showErrorSnackBar("Erro: ${responseJson['mensagem']}", context);
+        final msg = responseJson['mensagem'] ?? 'Erro ao registrar presença';
+        showErrorSnackBar("Erro: ${msg}", context);
       }
       return false;
     }
