@@ -134,6 +134,8 @@ class _ScanQrcodeState extends State<ScanQrcode> {
     "operacao": "RegistrarPresenca",
     "aulaId": aulaId,
     "alunoId": AuthService.currentUser.id, // o id do aluno logado
+    if (_currentLocation != null) "latitude": _currentLocation!.latitude,
+    if (_currentLocation != null) "longitude": _currentLocation!.longitude,
   };
 
   socket.send(jsonRegistrar);
@@ -188,18 +190,7 @@ class _ScanQrcodeState extends State<ScanQrcode> {
       return;
     }
 
-    // Validar se está dentro do campus
-    bool estaNoCampus = await ValidadorLocalizacao.validarLocalizacao();
-    
-    if (!estaNoCampus) {
-      if(mounted) {
-        showErrorSnackBar(
-          'Você precisa estar no campus para registrar sua presença.', 
-          context
-        );
-      }
-      return;
-    }
+    // A validação de geofence é feita no servidor (100m).
 
       final alunoId = AuthService.currentUser.id;
       final resultado = await _registrarPresenca(
@@ -207,7 +198,7 @@ class _ScanQrcodeState extends State<ScanQrcode> {
         alunoId: alunoId,
       );
 
-      if (resultado != 'true') {
+      if (!resultado) {
         if (mounted) showErrorSnackBar("Erro ao registrar presença.", context);
         return;
       }

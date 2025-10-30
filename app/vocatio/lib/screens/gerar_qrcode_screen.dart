@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:vocattio/services/location/location_service.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/animated_button.dart';
@@ -24,6 +26,8 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
   final SocketService _socketService = getIt<SocketService>();
   String? codigoChamada; // o código/ID que vem do servidor
   bool carregando = false;
+  final _locationService = LocationService();
+  Position? _profLocation;
 
   @override
   void initState() {
@@ -225,9 +229,27 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
   }
 });
 
-  Map<String, dynamic> jsonGerarChamada = {
+  // Obtém localização do professor automaticamente
+  try {
+    bool hasPermission = await _locationService.checkLocationPermission();
+    if (!hasPermission) throw Exception('Permissão de localização negada');
+    final position = await Geolocator.getCurrentPosition(
+      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+    );
+    _profLocation = position;
+  } catch (e) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Não foi possível obter a localização: $e')),
+      );
+    }
+  }
+
+  final jsonGerarChamada = {
     "operacao": "AbrirChamada",
     "codigoTurma": widget.codigoTurma,
+    if (_profLocation != null) "latitude": _profLocation!.latitude,
+    if (_profLocation != null) "longitude": _profLocation!.longitude,
   };
 
   try {

@@ -5,6 +5,11 @@ import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/snackbars.dart';
 import 'package:vocattio/widgets/text_field.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:vocattio/services/auth_service.dart';
+import 'package:vocattio/services/locator.dart';
+import 'package:vocattio/services/socket/socket_service.dart';
 
 class ViaCode extends StatefulWidget {
   const ViaCode({super.key});
@@ -19,6 +24,7 @@ class _ViaCodeState extends State<ViaCode> {
   final _locationService = LocationService();
   Position? _currentLocation;
   bool _isGettingLocation = false;
+  final SocketService _socketService = getIt<SocketService>();
 
   @override
   void initState(){
@@ -130,30 +136,53 @@ class _ViaCodeState extends State<ViaCode> {
       return;
     }
 
-    // Validar se está dentro do campus
-    bool estaNoCampus = await ValidadorLocalizacao.validarLocalizacao();
-    
-    if (!estaNoCampus) {
-      if(mounted) {
-        showErrorSnackBar(
-          'Você precisa estar no campus para registrar sua presença.', 
-          context
-        );
-      }
+    // Envia presença ao servidor; validação de 100m ocorre no backend
+    final sucesso = await _registrarPresenca(
+      aulaId: _codeController.text.trim(),
+      alunoId: AuthService.currentUser.id,
+    );
+
+    if (!sucesso) {
+      if (mounted) showErrorSnackBar('Erro ao registrar presença.', context);
       return;
     }
 
     if(mounted){
       showSuccessSnackBar('Chamada concluída!\n'
         'Código: ${_codeController.text}\n'
-        'Código Temporário: ${_tempCodeController.text}\n'
         'Localização: ${_currentLocation!.latitude.toStringAsFixed(4)}, ${_currentLocation!.longitude.toStringAsFixed(4)}', 
         context
       );  
+      Navigator.pop(context);
     }
-    
-    // Voltar para a tela anterior
-    Navigator.pop(context);
+  }
+
+  Future<bool> _registrarPresenca({required String aulaId, required String alunoId}) async {
+    final payload = {
+      "operacao": "RegistrarPresenca",
+      "aulaId": aulaId,
+      "alunoId": alunoId,
+      if (_currentLocation != null) "latitude": _currentLocation!.latitude,
+      if (_currentLocation != null) "longitude": _currentLocation!.longitude,
+    };
+
+    _socketService.send(payload);
+
+    try {
+      final responseData = await _socketService.messages.firstWhere((data) {
+        try {
+          final message = jsonDecode(data is String ? data : utf8.decode(data));
+          return message['operacao'] == 'ResultadoRegistrarPresenca';
+        } catch (_) {
+          return false;
+        }
+      }).timeout(const Duration(seconds: 10));
+
+      final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
+      return responseJson['resultado'] == true;
+    } catch (e) {
+      return false;
+    }
   }
 
   @override
