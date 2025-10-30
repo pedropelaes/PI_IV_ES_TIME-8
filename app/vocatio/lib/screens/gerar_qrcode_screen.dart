@@ -356,7 +356,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
 }
 
 void _iniciarTimer() {
-  _tempoRestante = 60;
+  _tempoRestante = 300;
   _timer?.cancel();
   _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
     if (mounted) {

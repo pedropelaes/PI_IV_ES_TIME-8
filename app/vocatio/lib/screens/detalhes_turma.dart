@@ -16,6 +16,7 @@ class DetalhesTurmaScreen extends StatefulWidget {
   final int numeroAlunos;
   final String codigoTurma;
   final String turmaId;
+  final String? uid;
 
   const DetalhesTurmaScreen({
     super.key,
@@ -25,6 +26,7 @@ class DetalhesTurmaScreen extends StatefulWidget {
     required this.numeroAlunos,
     required this.codigoTurma,
     required this.turmaId,
+    this.uid,
   });
 
   @override
@@ -124,7 +126,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ValidateAttendanceScreen(),
+                                builder: (context) => ValidateAttendanceScreen(uid: widget.uid),
                               ),
                             );
                           },
@@ -138,7 +140,10 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const PresencasScreen(),
+                                builder: (context) => PresencasScreen(
+                                  nomeTurma: widget.nomeTurma,
+                                  turmaId: widget.turmaId,
+                                ),
                               ),
                             );
                           },

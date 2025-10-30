@@ -65,8 +65,9 @@ public class RegistrarPresenca {
             }
 
             // Adiciona o ID do aluno no array "presentes" (sem duplicar)
+            ObjectId aulaObjectId = aula.getObjectId("_id");
             aulas.updateOne(
-                    Filters.eq("_id", new ObjectId(aulaId)),
+                    Filters.eq("_id", aulaObjectId),
                     Updates.addToSet("presentes", new ObjectId(alunoId))
             );
 

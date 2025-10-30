@@ -1,10 +1,23 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:vocattio/services/locator.dart';
+import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 
 class PresencasScreen extends StatefulWidget {
-  const PresencasScreen({super.key});
+  final String? codigoChamada;
+  final String? nomeTurma;
+  final String? turmaId;
+
+  const PresencasScreen({
+    super.key,
+    this.codigoChamada,
+    this.nomeTurma,
+    this.turmaId,
+  });
 
   @override
   State<PresencasScreen> createState() => _PresencasScreenState();
@@ -12,6 +25,10 @@ class PresencasScreen extends StatefulWidget {
 
 class _PresencasScreenState extends State<PresencasScreen> {
   DateTime? _selectedDate;
+  final SocketService _socketService = getIt<SocketService>();
+  List<String> _alunosPresentes = [];
+  bool _carregando = false;
+  String? _erro;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -38,6 +55,82 @@ class _PresencasScreenState extends State<PresencasScreen> {
       return 'Selecione a Data';
     }
     return '${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.codigoChamada != null || widget.turmaId != null) {
+      _buscarPresencas();
+    }
+  }
+
+  Future<void> _buscarPresencas() async {
+    if ((widget.codigoChamada == null || widget.codigoChamada!.isEmpty) &&
+        (widget.turmaId == null || widget.turmaId!.isEmpty)) {
+      setState(() {
+        _erro = 'Código da chamada ou ID da turma não fornecido';
+        _carregando = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _carregando = true;
+      _erro = null;
+      _alunosPresentes = [];
+    });
+
+    final jsonGetPresencas = {
+      "operacao": "GetPresencas",
+      if (widget.codigoChamada != null && widget.codigoChamada!.isNotEmpty)
+        "codigoChamada": widget.codigoChamada,
+      if (widget.turmaId != null && widget.turmaId!.isNotEmpty)
+        "turmaId": widget.turmaId,
+    };
+
+    try {
+      _socketService.send(jsonGetPresencas);
+
+      final responseData = await _socketService.messages
+          .firstWhere((data) {
+            try {
+              final message = jsonDecode(data is String ? data : utf8.decode(data));
+              return message['operacao'] == 'ResultadoGetPresencas';
+            } catch (e) {
+              return false;
+            }
+          })
+          .timeout(const Duration(seconds: 10));
+
+      final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
+
+      if (mounted) {
+        setState(() {
+          _carregando = false;
+          if (responseJson['resultado'] == true && responseJson['alunos'] != null) {
+            _alunosPresentes = List<String>.from(responseJson['alunos']);
+          } else {
+            _alunosPresentes = [];
+            _erro = 'Nenhum aluno presente encontrado';
+          }
+        });
+      }
+    } on TimeoutException {
+      if (mounted) {
+        setState(() {
+          _carregando = false;
+          _erro = 'Tempo de resposta esgotado';
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _carregando = false;
+          _erro = 'Erro ao buscar presenças: $e';
+        });
+      }
+    }
   }
 
   @override
@@ -70,24 +163,86 @@ class _PresencasScreenState extends State<PresencasScreen> {
                 primaryFixedGradientContainer(
                 width: double.maxFinite,
                 theme: theme,
-                child: ListView.builder(
-                  itemCount: 7,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text('Aluno ${index + 1}', style: textTheme.bodyLarge?.copyWith(
-                        color: theme.colorScheme.primaryFixed
-                      )),
-                      trailing: Icon(Icons.check_circle, color: theme.colorScheme.primaryFixed),
-                    );
-                  },
-                ), 
+                child: _carregando
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: CircularProgressIndicator(
+                            color: theme.colorScheme.primaryFixed,
+                          ),
+                        ),
+                      )
+                    : _erro != null
+                        ? Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.error_outline,
+                                    color: theme.colorScheme.error,
+                                    size: 48,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    _erro!,
+                                    style: textTheme.bodyLarge?.copyWith(
+                                      color: theme.colorScheme.error,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : _alunosPresentes.isEmpty
+                            ? Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.people_outline,
+                                        color: theme.colorScheme.primaryFixed,
+                                        size: 48,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'Nenhum aluno presente',
+                                        style: textTheme.bodyLarge?.copyWith(
+                                          color: theme.colorScheme.primaryFixed,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : ListView.builder(
+                                itemCount: _alunosPresentes.length,
+                                itemBuilder: (context, index) {
+                                  return ListTile(
+                                    title: Text(
+                                      _alunosPresentes[index],
+                                      style: textTheme.bodyLarge?.copyWith(
+                                        color: theme.colorScheme.primaryFixed,
+                                      ),
+                                    ),
+                                    trailing: Icon(
+                                      Icons.check_circle,
+                                      color: theme.colorScheme.primaryFixed,
+                                    ),
+                                  );
+                                },
+                              ),
               );
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    'Turma 1',
+                    widget.nomeTurma ?? 'Presenças',
                     style: textTheme.headlineSmall?.copyWith(
                       color: theme.colorScheme.onSurface
                     ),
@@ -112,15 +267,16 @@ class _PresencasScreenState extends State<PresencasScreen> {
                     height: 55
                   ),
                   SizedBox(height: smallSpacing),
-                  primaryButtonDesign(
-                    context: context, 
-                    label: 'Reabrir chamada', 
-                    onTap: (){
-
-                    }, 
-                    width: 255, 
-                    height: 55
-                  ),
+                  if (widget.codigoChamada != null || widget.turmaId != null)
+                    primaryButtonDesign(
+                      context: context, 
+                      label: 'Atualizar', 
+                      onTap: () {
+                        _buscarPresencas();
+                      }, 
+                      width: 255, 
+                      height: 55
+                    ),
                   SizedBox(height: largeSpacing,),
                 ],
               );

@@ -6,7 +6,9 @@ import 'package:vocattio/widgets/animated_button.dart';
 import 'package:vocattio/widgets/app_header.dart';
 
 class ValidateAttendanceScreen extends StatelessWidget {
-  const ValidateAttendanceScreen({super.key});
+  final String? uid;
+  
+  const ValidateAttendanceScreen({super.key, this.uid});
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +79,7 @@ class ValidateAttendanceScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ScanQrcode(),
+                            builder: (context) => ScanQrcode(uid: uid),
                           ),
                         );
                       },
@@ -89,7 +91,7 @@ class ValidateAttendanceScreen extends StatelessWidget {
                        Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ViaCode(),
+                            builder: (context) => ViaCode(uid: uid),
                           ),
                         );
                       },

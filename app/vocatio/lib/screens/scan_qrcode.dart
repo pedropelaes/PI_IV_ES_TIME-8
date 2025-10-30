@@ -14,9 +14,12 @@ import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/snackbars.dart';
 import 'package:vocattio/widgets/text_field.dart';
+import 'package:vocattio/models/user.dart';
 
 class ScanQrcode extends StatefulWidget {
-  const ScanQrcode({super.key});
+  final String? uid;
+  
+  const ScanQrcode({super.key, this.uid});
 
   @override
   State<ScanQrcode> createState() => _ScanQrcodeState();
@@ -26,9 +29,11 @@ class _ScanQrcodeState extends State<ScanQrcode> {
   final TextEditingController _codeController = TextEditingController();
   final MobileScannerController _scannerController = MobileScannerController();
   final _locationService = LocationService();
+  final AuthService _authService = AuthService();
   bool _scanned = false;
   Position? _currentLocation;
   bool _isGettingLocation = false;
+  User? _currentUser;
 
   @override
   void dispose() {
@@ -41,6 +46,22 @@ class _ScanQrcodeState extends State<ScanQrcode> {
   void initState(){
     super.initState();
     _locationService.checkLocationPermission();
+    if (widget.uid != null) {
+      _carregarUsuario();
+    }
+  }
+
+  Future<void> _carregarUsuario() async {
+    try {
+      final user = await _authService.getUser(widget.uid!);
+      if (mounted) {
+        setState(() {
+          _currentUser = user;
+        });
+      }
+    } catch (e) {
+      print('Erro ao carregar usuário: $e');
+    }
   }
 
   Future<void> _getCurrentLocation() async {
@@ -127,14 +148,21 @@ class _ScanQrcodeState extends State<ScanQrcode> {
     }
   }
 
-  Future<bool> _registrarPresenca({required String aulaId, required String alunoId}) async {
-  final socket = getIt<SocketService>();
+  Future<bool> _registrarPresenca({required String aulaId}) async {
+  // Verifica se o usuário foi carregado
+    if (_currentUser == null || _currentUser!.objectId == null) {
+      if (mounted) {
+        showErrorSnackBar('Erro: Usuário não identificado. Por favor, faça login novamente.', context);
+      }
+      return false;
+    }
 
+  final socket = getIt<SocketService>();
   final jsonRegistrar = {
     "operacao": "RegistrarPresenca",
     // Envia preferencialmente o código da chamada (QR)
     "codigoChamada": aulaId,
-    "alunoId": AuthService.currentUser.id, // o id do aluno logado
+    "alunoId": _currentUser!.objectId!, // o id do aluno logado
     if (_currentLocation != null) "latitude": _currentLocation!.latitude,
     if (_currentLocation != null) "longitude": _currentLocation!.longitude,
   };
@@ -194,10 +222,8 @@ class _ScanQrcodeState extends State<ScanQrcode> {
 
     // A validação de geofence é feita no servidor (100m).
 
-      final alunoId = AuthService.currentUser.id;
       final resultado = await _registrarPresenca(
         aulaId: _codeController.text,
-        alunoId: alunoId,
       );
 
       if (!resultado) {

@@ -9,6 +9,7 @@ import src.domain.User;
 import src.protocol.requests.*;
 import src.protocol.responses.ResultadoAbrirChamada;
 import src.protocol.responses.ResultadoGetTurmas;
+import src.protocol.responses.ResultadoGetPresencas;
 import src.protocol.responses.ResultadoLogin;
 import src.protocol.responses.ResultadoOperacao;
 
@@ -80,6 +81,12 @@ public class ProcessadorDeOperacao {
                     resultado = fecharChamada.fechar();
                     System.out.println("Resultado FecharChamada: " + resultado);
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoFecharChamada"));
+                    break;
+                case "GetPresencas":
+                    GetPresencas getPresencas = gson.fromJson(json, GetPresencas.class);
+                    List<String> alunos = getPresencas.getPresencas();
+                    boolean alunosNaoVazios = alunos != null && !alunos.isEmpty();
+                    remetente.receba(new ResultadoGetPresencas(alunosNaoVazios, "ResultadoGetPresencas", alunos != null ? alunos : new ArrayList<>()));
                     break;
                 default:
                     System.err.println("Comunicado desconhecido: '" + tipo + "'");
