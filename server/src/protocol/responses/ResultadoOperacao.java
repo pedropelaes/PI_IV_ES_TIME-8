@@ -5,6 +5,7 @@ import src.protocol.Comunicado;
 public class ResultadoOperacao extends Comunicado {
     private boolean resultado;
     private String operacao;
+    private String mensagem;
 
     public ResultadoOperacao() {}
 
@@ -12,6 +13,14 @@ public class ResultadoOperacao extends Comunicado {
     {
         this.resultado = resultado;
         this.operacao = operacao;
+        this.mensagem = null;
+    }
+
+    public ResultadoOperacao (boolean resultado, String operacao, String mensagem)
+    {
+        this.resultado = resultado;
+        this.operacao = operacao;
+        this.mensagem = mensagem;
     }
 
     public boolean getResultadoOperacao(){
@@ -22,9 +31,11 @@ public class ResultadoOperacao extends Comunicado {
         return operacao;
     }
 
+    public String getMensagem() { return mensagem; }
+
     public String toString ()
     {
-        return "{ Operacao: "+this.operacao + "Resultado: " +this.resultado +" }";
+        return "{ Operacao: "+this.operacao + " Resultado: " +this.resultado + (this.mensagem != null ? (" Mensagem: "+this.mensagem) : "") +" }";
     }
 
 }

@@ -69,7 +69,8 @@ public class ProcessadorDeOperacao {
                 case "RegistrarPresenca":
                     RegistrarPresenca registrarPresenca = gson.fromJson(json, RegistrarPresenca.class);
                     resultado = registrarPresenca.registrarPresenca();
-                    remetente.receba(new ResultadoOperacao(resultado, "ResultadoRegistrarPresenca"));
+                    String mensagem = registrarPresenca.getMensagem();
+                    remetente.receba(new ResultadoOperacao(resultado, "ResultadoRegistrarPresenca", mensagem));
                     break;
                 default:
                     System.err.println("Comunicado desconhecido: " + tipo);

@@ -15,6 +15,8 @@ public class RegistrarPresenca {
     private String alunoId;
     private Double latitude;   // latitude do aluno
     private Double longitude;  // longitude do aluno
+    private String codigoChamada; // código textual da chamada (QR)
+    private String mensagem;
 
     public RegistrarPresenca() {}
 
@@ -27,29 +29,38 @@ public class RegistrarPresenca {
             MongoDatabase database = mongoClient.getDatabase("vocattio_db");
             MongoCollection<Document> aulas = database.getCollection("aulas");
 
-            if (aulaId == null || alunoId == null || latitude == null || longitude == null) {
-                System.out.println("Parâmetros insuficientes para registrar presença");
+            if (alunoId == null || latitude == null || longitude == null) {
+                this.mensagem = "Parâmetros insuficientes para registrar presença";
+                System.out.println(this.mensagem);
                 return false;
             }
 
-            // Busca a aula para obter a localização do professor
-            Document aula = aulas.find(Filters.eq("_id", new ObjectId(aulaId))).first();
+            // Busca a aula: por codigoChamada (preferencial) ou por _id
+            Document aula = null;
+            if (codigoChamada != null && !codigoChamada.isEmpty()) {
+                aula = aulas.find(Filters.eq("codigo", codigoChamada)).first();
+            } else if (aulaId != null && !aulaId.isEmpty()) {
+                aula = aulas.find(Filters.eq("_id", new ObjectId(aulaId))).first();
+            }
             if (aula == null) {
-                System.out.println("Aula não encontrada para o id: " + aulaId);
+                this.mensagem = "Aula não encontrada";
+                System.out.println(this.mensagem);
                 return false;
             }
 
             Double latProfessor = aula.getDouble("latitude");
             Double lonProfessor = aula.getDouble("longitude");
             if (latProfessor == null || lonProfessor == null) {
-                System.out.println("Aula sem latitude/longitude do professor");
+                this.mensagem = "Aula sem latitude/longitude do professor";
+                System.out.println(this.mensagem);
                 return false;
             }
 
             double distancia = haversineMeters(latProfessor, lonProfessor, latitude, longitude);
             System.out.println("Distância aluno-professor: " + distancia + "m");
             if (distancia > 100.0) {
-                System.out.println("Aluno fora do raio permitido (100m)");
+                this.mensagem = "Fora do raio permitido (100m)";
+                System.out.println(this.mensagem);
                 return false;
             }
 
@@ -77,4 +88,17 @@ public class RegistrarPresenca {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }
+
+    // getters/setters usados pelo Gson
+    public String getAulaId() { return aulaId; }
+    public void setAulaId(String aulaId) { this.aulaId = aulaId; }
+    public String getAlunoId() { return alunoId; }
+    public void setAlunoId(String alunoId) { this.alunoId = alunoId; }
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
+    public String getCodigoChamada() { return codigoChamada; }
+    public void setCodigoChamada(String codigoChamada) { this.codigoChamada = codigoChamada; }
+    public String getMensagem() { return mensagem; }
 }
