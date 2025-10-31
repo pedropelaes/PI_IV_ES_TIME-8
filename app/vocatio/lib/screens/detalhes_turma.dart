@@ -14,7 +14,9 @@ class DetalhesTurmaScreen extends StatefulWidget {
   final String nomeTurma;
   final String descricao;
   final int numeroAlunos;
-  //final String objectId;
+  final String codigoTurma;
+  final String turmaId;
+  final String? uid;
 
   const DetalhesTurmaScreen({
     super.key,
@@ -22,7 +24,9 @@ class DetalhesTurmaScreen extends StatefulWidget {
     required this.nomeTurma,
     required this.descricao,
     required this.numeroAlunos,
-    //required this.objectId
+    required this.codigoTurma,
+    required this.turmaId,
+    this.uid,
   });
 
   @override
@@ -75,7 +79,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'TURMA001', // Código fixo por enquanto
+                          widget.codigoTurma,
                           style: textTheme.headlineMedium?.copyWith(
                             color: theme.colorScheme.primaryFixed,
                             fontWeight: FontWeight.bold,
@@ -109,7 +113,8 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => GerarQRCodeScreen(
-                                  codigoTurma: '69013034a3285416f6050314',
+                                  // Para abrir chamada no backend, usa-se o ObjectId da turma
+                                  codigoTurma: widget.turmaId,
                                 ),
                               ),
                             );
@@ -121,7 +126,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ValidateAttendanceScreen(),
+                                builder: (context) => ValidateAttendanceScreen(uid: widget.uid),
                               ),
                             );
                           },
@@ -135,7 +140,10 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const PresencasScreen(),
+                                builder: (context) => PresencasScreen(
+                                  nomeTurma: widget.nomeTurma,
+                                  turmaId: widget.turmaId,
+                                ),
                               ),
                             );
                           },

@@ -5,9 +5,17 @@ import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/snackbars.dart';
 import 'package:vocattio/widgets/text_field.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:vocattio/services/auth_service.dart';
+import 'package:vocattio/services/locator.dart';
+import 'package:vocattio/services/socket/socket_service.dart';
+import 'package:vocattio/models/user.dart';
 
 class ViaCode extends StatefulWidget {
-  const ViaCode({super.key});
+  final String? uid;
+  
+  const ViaCode({super.key, this.uid});
 
   @override
   State<ViaCode> createState() => _ViaCodeState();
@@ -17,13 +25,32 @@ class _ViaCodeState extends State<ViaCode> {
   final TextEditingController _codeController = TextEditingController();
   final TextEditingController _tempCodeController = TextEditingController();
   final _locationService = LocationService();
+  final AuthService _authService = AuthService();
   Position? _currentLocation;
   bool _isGettingLocation = false;
+  final SocketService _socketService = getIt<SocketService>();
+  User? _currentUser;
 
   @override
   void initState(){
     super.initState();
     _locationService.checkLocationPermission();
+    if (widget.uid != null) {
+      _carregarUsuario();
+    }
+  }
+
+  Future<void> _carregarUsuario() async {
+    try {
+      final user = await _authService.getUser(widget.uid!);
+      if (mounted) {
+        setState(() {
+          _currentUser = user;
+        });
+      }
+    } catch (e) {
+      print('Erro ao carregar usuário: $e');
+    }
   }
 
   @override
@@ -130,30 +157,72 @@ class _ViaCodeState extends State<ViaCode> {
       return;
     }
 
-    // Validar se está dentro do campus
-    bool estaNoCampus = await ValidadorLocalizacao.validarLocalizacao();
-    
-    if (!estaNoCampus) {
-      if(mounted) {
-        showErrorSnackBar(
-          'Você precisa estar no campus para registrar sua presença.', 
-          context
-        );
+    // Verifica se o usuário foi carregado
+    if (_currentUser == null || _currentUser!.objectId == null) {
+      if (mounted) {
+        showErrorSnackBar('Erro: Usuário não identificado. Por favor, faça login novamente.', context);
       }
+      return;
+    }
+
+    // Envia presença ao servidor; validação de 100m ocorre no backend
+    final sucesso = await _registrarPresenca(
+      aulaId: _codeController.text.trim(),
+    );
+
+    if (!sucesso) {
+      if (mounted) showErrorSnackBar('Erro ao registrar presença.', context);
       return;
     }
 
     if(mounted){
       showSuccessSnackBar('Chamada concluída!\n'
         'Código: ${_codeController.text}\n'
-        'Código Temporário: ${_tempCodeController.text}\n'
         'Localização: ${_currentLocation!.latitude.toStringAsFixed(4)}, ${_currentLocation!.longitude.toStringAsFixed(4)}', 
         context
       );  
+      Navigator.pop(context);
     }
-    
-    // Voltar para a tela anterior
-    Navigator.pop(context);
+  }
+
+  Future<bool> _registrarPresenca({required String aulaId}) async {
+    // Verifica se o usuário foi carregado
+    if (_currentUser == null || _currentUser!.objectId == null) {
+      if (mounted) {
+        showErrorSnackBar('Erro: Usuário não identificado. Por favor, faça login novamente.', context);
+      }
+      return false;
+    }
+
+    final payload = {
+      "operacao": "RegistrarPresenca",
+      // via código: usa o código textual da chamada
+      "codigoChamada": aulaId,
+      "alunoId": _currentUser!.objectId!,
+      if (_currentLocation != null) "latitude": _currentLocation!.latitude,
+      if (_currentLocation != null) "longitude": _currentLocation!.longitude,
+    };
+
+    _socketService.send(payload);
+
+    try {
+      final responseData = await _socketService.messages.firstWhere((data) {
+        try {
+          final message = jsonDecode(data is String ? data : utf8.decode(data));
+          return message['operacao'] == 'ResultadoRegistrarPresenca';
+        } catch (_) {
+          return false;
+        }
+      }).timeout(const Duration(seconds: 10));
+
+      final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
+      if (responseJson['resultado'] == true) return true;
+      final msg = responseJson['mensagem'];
+      if (mounted) showErrorSnackBar(msg ?? 'Erro ao registrar presença', context);
+      return false;
+    } catch (e) {
+      return false;
+    }
   }
 
   @override

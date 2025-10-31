@@ -2,14 +2,13 @@ package src.processing;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import org.bson.Document;
 import src.connection.IParceiro;
+import src.domain.Aula;
 import src.domain.Turma;
 import src.domain.User;
 import src.protocol.requests.*;
-import src.protocol.responses.ResultadoAbrirChamada;
-import src.protocol.responses.ResultadoGetTurmas;
-import src.protocol.responses.ResultadoLogin;
-import src.protocol.responses.ResultadoOperacao;
+import src.protocol.responses.*;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -22,6 +21,7 @@ public class ProcessadorDeOperacao {
         try{
             JsonObject obj = gson.fromJson(json, JsonObject.class);
             String tipo = obj.get("operacao").getAsString();
+            System.out.println("Operação recebida: '" + tipo + "'");
             boolean resultado;
 
             switch (tipo) {
@@ -65,8 +65,35 @@ public class ProcessadorDeOperacao {
                     boolean turmasEmpty = turmas != null;
                     remetente.receba(new ResultadoGetTurmas(turmasEmpty, "ResultadoGetTurmas", turmas));
                     break;
+                case "RegistrarPresenca":
+                    RegistrarPresenca registrarPresenca = gson.fromJson(json, RegistrarPresenca.class);
+                    resultado = registrarPresenca.registrarPresenca();
+                    String mensagem = registrarPresenca.getMensagem();
+                    remetente.receba(new ResultadoOperacao(resultado, "ResultadoRegistrarPresenca", mensagem));
+                    break;
+                case "FecharChamada":
+                    System.out.println("CASE FecharChamada ACIONADO! JSON: " + json);
+                    FecharChamada fecharChamada = gson.fromJson(json, FecharChamada.class);
+                    System.out.println("Parsing FecharChamada concluído. Código: " + fecharChamada.getCodigoChamada());
+                    resultado = fecharChamada.fechar();
+                    System.out.println("Resultado FecharChamada: " + resultado);
+                    remetente.receba(new ResultadoOperacao(resultado, "ResultadoFecharChamada"));
+                    break;
+                case "GetPresencas":
+                    GetPresencas getPresencas = gson.fromJson(json, GetPresencas.class);
+                    List<String> alunos = getPresencas.getPresencas();
+                    boolean alunosNaoVazios = alunos != null && !alunos.isEmpty();
+                    remetente.receba(new ResultadoGetPresencas(alunosNaoVazios, "ResultadoGetPresencas", alunos != null ? alunos : new ArrayList<>()));
+                    break;
+                case "GetAulas":
+                    GetAulas getAulas = gson.fromJson(json, GetAulas.class);
+                    List<Aula> aulas = getAulas.getAulasFromTurma();
+                    boolean aulasNaoVazios = aulas != null && !aulas.isEmpty();
+                    remetente.receba(new ResultadoGetAulas(aulasNaoVazios, "ResultadoGetAulas", aulas));
+                    break;
                 default:
-                    System.err.println("Comunicado desconhecido: " + tipo);
+                    System.err.println("Comunicado desconhecido: '" + tipo + "'");
+                    System.err.println("JSON completo recebido: " + json);
                     break;
             }
         } catch (Exception e) {

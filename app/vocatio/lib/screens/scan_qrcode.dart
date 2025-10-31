@@ -1,17 +1,25 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:vocattio/services/auth_service.dart';
 import 'package:vocattio/services/location/location_service.dart';
+import 'package:vocattio/services/locator.dart';
+import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/snackbars.dart';
 import 'package:vocattio/widgets/text_field.dart';
+import 'package:vocattio/models/user.dart';
 
 class ScanQrcode extends StatefulWidget {
-  const ScanQrcode({super.key});
+  final String? uid;
+  
+  const ScanQrcode({super.key, this.uid});
 
   @override
   State<ScanQrcode> createState() => _ScanQrcodeState();
@@ -21,9 +29,11 @@ class _ScanQrcodeState extends State<ScanQrcode> {
   final TextEditingController _codeController = TextEditingController();
   final MobileScannerController _scannerController = MobileScannerController();
   final _locationService = LocationService();
+  final AuthService _authService = AuthService();
   bool _scanned = false;
   Position? _currentLocation;
   bool _isGettingLocation = false;
+  User? _currentUser;
 
   @override
   void dispose() {
@@ -36,6 +46,22 @@ class _ScanQrcodeState extends State<ScanQrcode> {
   void initState(){
     super.initState();
     _locationService.checkLocationPermission();
+    if (widget.uid != null) {
+      _carregarUsuario();
+    }
+  }
+
+  Future<void> _carregarUsuario() async {
+    try {
+      final user = await _authService.getUser(widget.uid!);
+      if (mounted) {
+        setState(() {
+          _currentUser = user;
+        });
+      }
+    } catch (e) {
+      print('Erro ao carregar usuário: $e');
+    }
   }
 
   Future<void> _getCurrentLocation() async {
@@ -122,6 +148,60 @@ class _ScanQrcodeState extends State<ScanQrcode> {
     }
   }
 
+  Future<bool> _registrarPresenca({required String aulaId}) async {
+  // Verifica se o usuário foi carregado
+    if (_currentUser == null || _currentUser!.objectId == null) {
+      if (mounted) {
+        showErrorSnackBar('Erro: Usuário não identificado. Por favor, faça login novamente.', context);
+      }
+      return false;
+    }
+
+  final socket = getIt<SocketService>();
+  final jsonRegistrar = {
+    "operacao": "RegistrarPresenca",
+    // Envia preferencialmente o código da chamada (QR)
+    "codigoChamada": aulaId,
+    "alunoId": _currentUser!.objectId!, // o id do aluno logado
+    if (_currentLocation != null) "latitude": _currentLocation!.latitude,
+    if (_currentLocation != null) "longitude": _currentLocation!.longitude,
+  };
+
+  socket.send(jsonRegistrar);
+
+  try {
+    final responseData = await socket.messages.firstWhere((data) {
+      try {
+        final message = jsonDecode(data is String ? data : utf8.decode(data));
+        return message['operacao'] == 'ResultadoRegistrarPresenca';
+      } catch (_) {
+        return false;
+      }
+    }).timeout(const Duration(seconds: 10));
+
+    final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
+
+    if (responseJson['resultado'] == true) {
+      if (mounted) {
+        showSuccessSnackBar("Presença registrada com sucesso!", context);
+      }
+      return true;
+    } else {
+      if (mounted) {
+        final msg = responseJson['mensagem'] ?? 'Erro ao registrar presença';
+        showErrorSnackBar("Erro: ${msg}", context);
+      }
+      return false;
+    }
+  } catch (e) {
+    if (mounted) {
+      showErrorSnackBar("Erro ao registrar presença: $e", context);
+    }
+    return false;
+  }
+}
+
+
   bool get hasScanner =>
     kIsWeb || Platform.isAndroid || Platform.isIOS;
 
@@ -140,29 +220,26 @@ class _ScanQrcodeState extends State<ScanQrcode> {
       return;
     }
 
-    // Validar se está dentro do campus
-    bool estaNoCampus = await ValidadorLocalizacao.validarLocalizacao();
-    
-    if (!estaNoCampus) {
-      if(mounted) {
-        showErrorSnackBar(
-          'Você precisa estar no campus para registrar sua presença.', 
-          context
+    // A validação de geofence é feita no servidor (100m).
+
+      final resultado = await _registrarPresenca(
+        aulaId: _codeController.text,
+      );
+
+      if (!resultado) {
+        if (mounted) showErrorSnackBar("Erro ao registrar presença.", context);
+        return;
+      }
+
+      if (mounted) {
+        showSuccessSnackBar(
+          'Chamada concluída!\n'
+          'QR Code: ${_codeController.text}\n'
+          'Localização: ${_currentLocation!.latitude.toStringAsFixed(4)}, ${_currentLocation!.longitude.toStringAsFixed(4)}',
+          context,
         );
       }
-      return;
-    }
-
-    if(mounted){
-      showSuccessSnackBar('Chamada concluída!\n'
-        'QR Code: ${_codeController.text}\n'
-        'Localização: ${_currentLocation!.latitude.toStringAsFixed(4)}, ${_currentLocation!.longitude.toStringAsFixed(4)}', 
-        context
-      );  
-    }
-    
-    // Voltar para a tela anterior
-    Navigator.pop(context);
+      Navigator.pop(context);
   }
 
 
@@ -293,4 +370,3 @@ class _ScanQrcodeState extends State<ScanQrcode> {
           );
         }
       }
-      

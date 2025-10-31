@@ -5,16 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="835ce07a-16a5-48fc-93cd-fcf22f86460b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../app/vocatio/linux/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/linux/flutter/generated_plugin_registrant.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/vocatio/linux/flutter/generated_plugin_registrant.h" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/linux/flutter/generated_plugin_registrant.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/vocatio/linux/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/linux/flutter/generated_plugins.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/vocatio/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/vocatio/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/vocatio/windows/flutter/generated_plugin_registrant.h" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/windows/flutter/generated_plugin_registrant.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/vocatio/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/windows/flutter/generated_plugins.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/protocol/requests/AbrirChamada.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/AbrirChamada.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/protocol/requests/CriarTurma.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/CriarTurma.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/screens/tela_presencas.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/screens/tela_presencas.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/pubspec.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,10 +38,10 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "feature/validacaoGeo",
+    "git-widget-placeholder": "feature/qr__code",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/swe/PI_IV_ES_TIME-8/server",
+    "last_opened_file_path": "D:/projects/PI_IV_ES_TIME-8/server",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -93,6 +85,8 @@
       <workItem from="1761590309491" duration="6675000" />
       <workItem from="1761683788226" duration="6973000" />
       <workItem from="1761692649090" duration="3660000" />
+      <workItem from="1761773169796" duration="3430000" />
+      <workItem from="1761928446039" duration="4350000" />
     </task>
     <servers />
   </component>
