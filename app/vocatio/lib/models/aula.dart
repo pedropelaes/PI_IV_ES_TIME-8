@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Aula {
   final String objectId;
   final String turmaId;
@@ -22,6 +24,23 @@ class Aula {
   });
 
   factory Aula.fromJson(Map<String, dynamic> json) {
+    DateTime parseCustomDate(String? dateString) {
+      if (dateString == null || dateString.isEmpty) {
+        return DateTime.now();
+      }
+      try {
+        // --- INÍCIO DA CORREÇÃO ---
+        // Substitui qualquer sequência de espaços (normais ou não) por um único espaço normal
+        final cleanedDateString = dateString.replaceAll(RegExp(r'\s+'), ' ');
+        // --- FIM DA CORREÇÃO ---
+
+        return DateFormat("MMM d, yyyy, h:mm:ss a", 'en_US').parse(cleanedDateString); // <-- Use a string limpa
+      } catch (e) {
+        print("Erro ao converter data: $e");
+        return DateTime.now();
+      }
+    }
+    
     return Aula(
       objectId: json['_id'] as String,
       turmaId: json['turmaId'] as String,
@@ -29,11 +48,11 @@ class Aula {
       aberta: json['aberta'] as bool,
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
-      dataAbertura: DateTime.tryParse(json['dataAbertura'] ?? '') ?? DateTime.now(),
+      dataAbertura: parseCustomDate(json['dataAbertura']),
       presentes: List<String>.from(json['presentes'] as List),
       dataFechamento: json['dataFechamento'] == null
           ? null
-          : DateTime.tryParse(json['dataFechamento']),
+          : parseCustomDate(json['dataFechamento']),
     );
   }
 

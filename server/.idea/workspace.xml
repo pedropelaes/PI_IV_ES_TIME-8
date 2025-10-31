@@ -5,16 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="835ce07a-16a5-48fc-93cd-fcf22f86460b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/domain/Aula.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/protocol/requests/GetAulas.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/protocol/responses/ResultadoGetAulas.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/screens/gerar_qrcode_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/screens/gerar_qrcode_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/services/socket/socket_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/services/socket/socket_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/screens/tela_presencas.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/screens/tela_presencas.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/vocatio/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/processing/ProcessadorDeOperacao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/processing/ProcessadorDeOperacao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/protocol/requests/AbrirChamada.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/AbrirChamada.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/protocol/requests/FecharChamada.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/FecharChamada.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,7 +86,7 @@
       <workItem from="1761683788226" duration="6973000" />
       <workItem from="1761692649090" duration="3660000" />
       <workItem from="1761773169796" duration="3430000" />
-      <workItem from="1761928446039" duration="3757000" />
+      <workItem from="1761928446039" duration="4350000" />
     </task>
     <servers />
   </component>
