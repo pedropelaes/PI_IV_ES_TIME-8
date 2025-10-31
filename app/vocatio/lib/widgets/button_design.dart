@@ -44,6 +44,32 @@ Widget bigTransparentButtonDesign({
   );
 }
 
+Widget cancelButtonDesign({
+  required BuildContext context,
+  required String label,
+  required VoidCallback onTap,
+  required double width,
+  required double height,
+}){
+  final ThemeData theme = Theme.of(context);
+  return InkWell(
+    onTap: onTap,
+    child: redTransparentContainer(
+      theme: theme, 
+      width: width,
+      height: height,
+      child: Center(
+        child: Text(
+          label,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: theme.colorScheme.error
+          ),
+        ),
+      )
+    ),
+  );
+}
+
 Widget primaryButtonDesign({
   required BuildContext context,
   required String label,

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:vocattio/models/aula.dart';
+import 'package:vocattio/screens/tela_alunos_presentes.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/utils/date_formater.dart';
@@ -10,13 +11,11 @@ import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 
 class PresencasScreen extends StatefulWidget {
-  //final String? codigoChamada;
   final String? nomeTurma;
   final String? turmaId;
 
   const PresencasScreen({
     super.key,
-    //this.codigoChamada,
     this.nomeTurma,
     this.turmaId,
   });
@@ -124,7 +123,7 @@ class _PresencasScreenState extends State<PresencasScreen> {
 
         } else {
           _aulas = [];
-          _erro = responseJson['mensagem'] ?? 'Erro ao buscar as aulas.';
+          _erro = responseJson['mensagem'] ?? 'Nenhuma aula encontrada para esta turma.';
         }
         });
       }
@@ -258,7 +257,7 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                   itemBuilder: (context, index) {
                                     final aula = _aulasFiltradas[index];
                                     return ListTile(
-                                      leading: Container(
+                                      leading: SizedBox(
                                         width: 60,
                                         child: Row(
                                           spacing: 12.0,
@@ -270,7 +269,7 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                             ),
                                             Icon(
                                               Icons.assignment,
-                                              color: theme.colorScheme.primary,
+                                              color: theme.colorScheme.primaryFixed,
                                             ),
                                           ],
                                         ),
@@ -278,13 +277,25 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                       title: Text(
                                         formatarDataAula(aula.dataAbertura),
                                         style: textTheme.bodyLarge?.copyWith(
-                                          color: theme.colorScheme.primary
+                                          color: theme.colorScheme.primaryFixed
                                         ),
                                       ),
                                       trailing: Icon(
                                         Icons.arrow_forward_ios,
-                                        color: theme.colorScheme.primary,
+                                        color: theme.colorScheme.primaryFixed,
                                       ),
+                                      onTap: (){
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => TelaAlunosPresentes(
+                                              idChamada: aula.objectId, 
+                                              nomeTurma: widget.nomeTurma!,
+                                              data: formatarDataAula(aula.dataAbertura)
+                                            )
+                                          )
+                                        );
+                                      },
                                     );
                                   },
                                 ),

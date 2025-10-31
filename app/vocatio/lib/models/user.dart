@@ -93,3 +93,20 @@ class User{
   }
 
 }
+
+class AlunoResumo {
+  final String objectId;
+  final String nome;
+
+  const AlunoResumo({
+    required this.objectId,
+    required this.nome,
+  });
+
+  factory AlunoResumo.fromJson(Map<String, dynamic> json) {
+    return AlunoResumo(
+      objectId: json['_id'],
+      nome: json['nome'],
+    );
+  }
+}
