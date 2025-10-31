@@ -41,6 +41,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
   @override
   void dispose() {
     _timer?.cancel();
+    _fecharChamada(); // fecha chamada caso professor saia da tela
     super.dispose();
   }
   

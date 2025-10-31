@@ -1,5 +1,3 @@
-import 'package:bson/bson.dart';
-
 class User{
   final String? objectId;
   final String uid;

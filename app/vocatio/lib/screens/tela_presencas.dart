@@ -1,20 +1,22 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:vocattio/models/aula.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
+import 'package:vocattio/utils/date_formater.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 
 class PresencasScreen extends StatefulWidget {
-  final String? codigoChamada;
+  //final String? codigoChamada;
   final String? nomeTurma;
   final String? turmaId;
 
   const PresencasScreen({
     super.key,
-    this.codigoChamada,
+    //this.codigoChamada,
     this.nomeTurma,
     this.turmaId,
   });
@@ -26,7 +28,8 @@ class PresencasScreen extends StatefulWidget {
 class _PresencasScreenState extends State<PresencasScreen> {
   DateTime? _selectedDate;
   final SocketService _socketService = getIt<SocketService>();
-  List<String> _alunosPresentes = [];
+  List<Aula> _aulas = [];
+  List<Aula> _aulasFiltradas = [];
   bool _carregando = false;
   String? _erro;
 
@@ -47,12 +50,13 @@ class _PresencasScreenState extends State<PresencasScreen> {
       setState(() {
         _selectedDate = picked;
       });
+      _filtrarAulas();
     }
   }
 
   String _getDateText() {
     if (_selectedDate == null) {
-      return 'Selecione a Data';
+      return 'Filtrar por data';
     }
     return '${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}';
   }
@@ -60,43 +64,39 @@ class _PresencasScreenState extends State<PresencasScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.codigoChamada != null || widget.turmaId != null) {
-      _buscarPresencas();
+    if (widget.turmaId != null) {
+      _buscarChamadas();
     }
   }
 
-  Future<void> _buscarPresencas() async {
-    if ((widget.codigoChamada == null || widget.codigoChamada!.isEmpty) &&
-        (widget.turmaId == null || widget.turmaId!.isEmpty)) {
+  Future<void> _buscarChamadas() async {
+    if (widget.turmaId == null || widget.turmaId!.isEmpty) {
       setState(() {
-        _erro = 'Código da chamada ou ID da turma não fornecido';
+        _erro = 'ID da turma não fornecido';
         _carregando = false;
       });
-      return;
-    }
+    return;
+  }
 
     setState(() {
       _carregando = true;
       _erro = null;
-      _alunosPresentes = [];
+      _aulas = [];
     });
 
-    final jsonGetPresencas = {
-      "operacao": "GetPresencas",
-      if (widget.codigoChamada != null && widget.codigoChamada!.isNotEmpty)
-        "codigoChamada": widget.codigoChamada,
-      if (widget.turmaId != null && widget.turmaId!.isNotEmpty)
-        "turmaId": widget.turmaId,
+    final jsonGetAulas = {
+      "operacao": "GetAulas",
+      "turmaId": widget.turmaId,
     };
 
     try {
-      _socketService.send(jsonGetPresencas);
+      _socketService.send(jsonGetAulas);
 
       final responseData = await _socketService.messages
           .firstWhere((data) {
             try {
               final message = jsonDecode(data is String ? data : utf8.decode(data));
-              return message['operacao'] == 'ResultadoGetPresencas';
+              return message['operacao'] == 'ResultadoGetAulas';
             } catch (e) {
               return false;
             }
@@ -108,12 +108,24 @@ class _PresencasScreenState extends State<PresencasScreen> {
       if (mounted) {
         setState(() {
           _carregando = false;
-          if (responseJson['resultado'] == true && responseJson['alunos'] != null) {
-            _alunosPresentes = List<String>.from(responseJson['alunos']);
-          } else {
-            _alunosPresentes = [];
-            _erro = 'Nenhum aluno presente encontrado';
+          if (responseJson['resultado'] == true && responseJson['aulas'] != null) {
+          
+          final List<dynamic> aulasData = responseJson['aulas'];
+
+          _aulas = aulasData
+              .map((data) => Aula.fromJson(data as Map<String, dynamic>))
+              .toList();
+
+          _filtrarAulas();
+
+          if (_aulas.isEmpty) {
+            _erro = 'Nenhuma aula encontrada para esta turma.';
           }
+
+        } else {
+          _aulas = [];
+          _erro = responseJson['mensagem'] ?? 'Erro ao buscar as aulas.';
+        }
         });
       }
     } on TimeoutException {
@@ -131,6 +143,26 @@ class _PresencasScreenState extends State<PresencasScreen> {
         });
       }
     }
+  }
+
+  void _filtrarAulas() {
+    if (_selectedDate == null) {
+      setState(() {
+        _aulasFiltradas = List.from(_aulas);
+      });
+      return;
+    }
+
+    final aulasFiltradas = _aulas.where((aula) {
+      final dataDaAula = aula.dataAbertura;
+      return dataDaAula.year == _selectedDate!.year &&
+             dataDaAula.month == _selectedDate!.month &&
+             dataDaAula.day == _selectedDate!.day;
+    }).toList();
+
+    setState(() {
+      _aulasFiltradas = aulasFiltradas;
+    });
   }
 
   @override
@@ -160,83 +192,103 @@ class _PresencasScreenState extends State<PresencasScreen> {
                 double largeSpacing = (screenHeight * 0.03 * scale).clamp(12, 72);
 
                 Widget _listaPresencas = 
-                primaryFixedGradientContainer(
-                width: double.maxFinite,
-                theme: theme,
-                child: _carregando
-                    ? Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: CircularProgressIndicator(
-                            color: theme.colorScheme.primaryFixed,
-                          ),
-                        ),
-                      )
-                    : _erro != null
-                        ? Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(20.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.error_outline,
-                                    color: theme.colorScheme.error,
-                                    size: 48,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    _erro!,
-                                    style: textTheme.bodyLarge?.copyWith(
-                                      color: theme.colorScheme.error,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
+                  primaryFixedGradientContainer(
+                  width: double.maxFinite,
+                  theme: theme,
+                  child: _carregando
+                      ? Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: CircularProgressIndicator(
+                              color: theme.colorScheme.primaryFixed,
                             ),
-                          )
-                        : _alunosPresentes.isEmpty
-                            ? Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.people_outline,
-                                        color: theme.colorScheme.primaryFixed,
-                                        size: 48,
+                          ),
+                        )
+                      : _erro != null
+                          ? Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.error_outline,
+                                      color: theme.colorScheme.error,
+                                      size: 48,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      _erro!,
+                                      style: textTheme.bodyLarge?.copyWith(
+                                        color: theme.colorScheme.error,
                                       ),
-                                      const SizedBox(height: 16),
-                                      Text(
-                                        'Nenhum aluno presente',
-                                        style: textTheme.bodyLarge?.copyWith(
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : _aulasFiltradas.isEmpty
+                              ? Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(20.0),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.people_outline,
                                           color: theme.colorScheme.primaryFixed,
+                                          size: 48,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          _selectedDate == null ?
+                                          'Nenhuma aula registrada para essa turma'
+                                          : 'Nenhuma aula registrada nessa data',
+                                          style: textTheme.bodyLarge?.copyWith(
+                                            color: theme.colorScheme.primaryFixed,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : ListView.builder(
+                                  itemCount: _aulasFiltradas.length,
+                                  itemBuilder: (context, index) {
+                                    final aula = _aulasFiltradas[index];
+                                    return ListTile(
+                                      leading: Container(
+                                        width: 60,
+                                        child: Row(
+                                          spacing: 12.0,
+                                          children: [
+                                            Icon(
+                                              Icons.circle,
+                                              size: 18,
+                                              color: aula.aberta ? theme.colorScheme.primary : theme.colorScheme.inversePrimary,
+                                            ),
+                                            Icon(
+                                              Icons.assignment,
+                                              color: theme.colorScheme.primary,
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            : ListView.builder(
-                                itemCount: _alunosPresentes.length,
-                                itemBuilder: (context, index) {
-                                  return ListTile(
-                                    title: Text(
-                                      _alunosPresentes[index],
-                                      style: textTheme.bodyLarge?.copyWith(
-                                        color: theme.colorScheme.primaryFixed,
+                                      title: Text(
+                                        formatarDataAula(aula.dataAbertura),
+                                        style: textTheme.bodyLarge?.copyWith(
+                                          color: theme.colorScheme.primary
+                                        ),
                                       ),
-                                    ),
-                                    trailing: Icon(
-                                      Icons.check_circle,
-                                      color: theme.colorScheme.primaryFixed,
-                                    ),
-                                  );
-                                },
-                              ),
-              );
+                                      trailing: Icon(
+                                        Icons.arrow_forward_ios,
+                                        color: theme.colorScheme.primary,
+                                      ),
+                                    );
+                                  },
+                                ),
+                );
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -246,8 +298,18 @@ class _PresencasScreenState extends State<PresencasScreen> {
                     style: textTheme.headlineSmall?.copyWith(
                       color: theme.colorScheme.onSurface
                     ),
+                    textAlign: TextAlign.start,
                   ),
                   SizedBox(height: smallSpacing,),
+                  onPrimaryStyleButtonDesign(
+                    context: context, 
+                    label: Text(_getDateText(), style: textTheme.bodyLarge?.copyWith(color: theme.colorScheme.primaryFixedDim)),
+                    icon: Icons.calendar_month_outlined, 
+                    onTap: () => _selectDate(context),
+                    width: 350,
+                    height: 55
+                  ),
+                  SizedBox(height: smallSpacing),
                   Expanded(
                     child: isLargeScreen ? Center(
                       child: SizedBox(
@@ -258,26 +320,6 @@ class _PresencasScreenState extends State<PresencasScreen> {
                     : _listaPresencas
                   ),
                   SizedBox(height: smallSpacing),
-                  onPrimaryStyleButtonDesign(
-                    context: context, 
-                    label: Text(_getDateText(), style: textTheme.bodyLarge?.copyWith(color: theme.colorScheme.primaryFixedDim)),
-                    icon: Icons.calendar_month_outlined, 
-                    onTap: () => _selectDate(context),
-                    width: 255,
-                    height: 55
-                  ),
-                  SizedBox(height: smallSpacing),
-                  if (widget.codigoChamada != null || widget.turmaId != null)
-                    primaryButtonDesign(
-                      context: context, 
-                      label: 'Atualizar', 
-                      onTap: () {
-                        _buscarPresencas();
-                      }, 
-                      width: 255, 
-                      height: 55
-                    ),
-                  SizedBox(height: largeSpacing,),
                 ],
               );
             },

@@ -1,7 +1,3 @@
-
-
-import 'package:vocattio/models/user.dart';
-
 class Turma {
   final String objectId;
   final String nome;

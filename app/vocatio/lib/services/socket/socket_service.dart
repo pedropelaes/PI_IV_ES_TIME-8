@@ -9,7 +9,11 @@ import 'socket_client_mobile.dart'
 import 'socket_client.dart';
 
 class SocketService {
+<<<<<<< HEAD
   static const String host = '192.168.15.46';
+=======
+  static const String host = '10.147.19.224';
+>>>>>>> 734be9b46ecce4698f0799398f73e59433549adc
   static int  get port => kIsWeb ? 3001 : 3000;
 
   final SocketClient _client = getSocketClient();
