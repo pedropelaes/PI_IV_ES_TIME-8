@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:vocattio/models/aula.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
@@ -8,13 +9,13 @@ import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 
 class PresencasScreen extends StatefulWidget {
-  final String? codigoChamada;
+  //final String? codigoChamada;
   final String? nomeTurma;
   final String? turmaId;
 
   const PresencasScreen({
     super.key,
-    this.codigoChamada,
+    //this.codigoChamada,
     this.nomeTurma,
     this.turmaId,
   });
@@ -26,7 +27,7 @@ class PresencasScreen extends StatefulWidget {
 class _PresencasScreenState extends State<PresencasScreen> {
   DateTime? _selectedDate;
   final SocketService _socketService = getIt<SocketService>();
-  List<String> _alunosPresentes = [];
+  List<Aula> _aulas = [];
   bool _carregando = false;
   String? _erro;
 
@@ -60,43 +61,39 @@ class _PresencasScreenState extends State<PresencasScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.codigoChamada != null || widget.turmaId != null) {
-      _buscarPresencas();
+    if (widget.turmaId != null) {
+      _buscarChamadas();
     }
   }
 
-  Future<void> _buscarPresencas() async {
-    if ((widget.codigoChamada == null || widget.codigoChamada!.isEmpty) &&
-        (widget.turmaId == null || widget.turmaId!.isEmpty)) {
+  Future<void> _buscarChamadas() async {
+    if (widget.turmaId == null || widget.turmaId!.isEmpty) {
       setState(() {
-        _erro = 'Código da chamada ou ID da turma não fornecido';
+        _erro = 'ID da turma não fornecido';
         _carregando = false;
       });
-      return;
-    }
+    return;
+  }
 
     setState(() {
       _carregando = true;
       _erro = null;
-      _alunosPresentes = [];
+      _aulas = [];
     });
 
-    final jsonGetPresencas = {
-      "operacao": "GetPresencas",
-      if (widget.codigoChamada != null && widget.codigoChamada!.isNotEmpty)
-        "codigoChamada": widget.codigoChamada,
-      if (widget.turmaId != null && widget.turmaId!.isNotEmpty)
-        "turmaId": widget.turmaId,
+    final jsonGetAulas = {
+      "operacao": "GetAulas",
+      "turmaId": widget.turmaId,
     };
 
     try {
-      _socketService.send(jsonGetPresencas);
+      _socketService.send(jsonGetAulas);
 
       final responseData = await _socketService.messages
           .firstWhere((data) {
             try {
               final message = jsonDecode(data is String ? data : utf8.decode(data));
-              return message['operacao'] == 'ResultadoGetPresencas';
+              return message['operacao'] == 'ResultadoGetAulas';
             } catch (e) {
               return false;
             }
@@ -108,12 +105,22 @@ class _PresencasScreenState extends State<PresencasScreen> {
       if (mounted) {
         setState(() {
           _carregando = false;
-          if (responseJson['resultado'] == true && responseJson['alunos'] != null) {
-            _alunosPresentes = List<String>.from(responseJson['alunos']);
-          } else {
-            _alunosPresentes = [];
-            _erro = 'Nenhum aluno presente encontrado';
+          if (responseJson['resultado'] == true && responseJson['aulas'] != null) {
+          
+          final List<dynamic> aulasData = responseJson['aulas'];
+
+          _aulas = aulasData
+              .map((data) => Aula.fromJson(data as Map<String, dynamic>))
+              .toList();
+
+          if (_aulas.isEmpty) {
+            _erro = 'Nenhuma aula encontrada para esta turma.';
           }
+
+        } else {
+          _aulas = [];
+          _erro = responseJson['mensagem'] ?? 'Erro ao buscar as aulas.';
+        }
         });
       }
     } on TimeoutException {
@@ -196,7 +203,7 @@ class _PresencasScreenState extends State<PresencasScreen> {
                               ),
                             ),
                           )
-                        : _alunosPresentes.isEmpty
+                        : _aulas.isEmpty
                             ? Center(
                                 child: Padding(
                                   padding: const EdgeInsets.all(20.0),
@@ -210,7 +217,7 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                       ),
                                       const SizedBox(height: 16),
                                       Text(
-                                        'Nenhum aluno presente',
+                                        'Nenhuma aula registrada para essa turma',
                                         style: textTheme.bodyLarge?.copyWith(
                                           color: theme.colorScheme.primaryFixed,
                                         ),
@@ -220,18 +227,22 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                 ),
                               )
                             : ListView.builder(
-                                itemCount: _alunosPresentes.length,
+                                itemCount: _aulas.length,
                                 itemBuilder: (context, index) {
                                   return ListTile(
+                                    leading: Icon(
+                                      Icons.assignment,
+                                      color: theme.colorScheme.primary,
+                                    ),
                                     title: Text(
-                                      _alunosPresentes[index],
+                                      _aulas[index].dataAbertura.toIso8601String(),
                                       style: textTheme.bodyLarge?.copyWith(
-                                        color: theme.colorScheme.primaryFixed,
+                                        color: theme.colorScheme.primary
                                       ),
                                     ),
                                     trailing: Icon(
-                                      Icons.check_circle,
-                                      color: theme.colorScheme.primaryFixed,
+                                      Icons.arrow_forward_ios,
+                                      color: theme.colorScheme.primary,
                                     ),
                                   );
                                 },
@@ -267,12 +278,12 @@ class _PresencasScreenState extends State<PresencasScreen> {
                     height: 55
                   ),
                   SizedBox(height: smallSpacing),
-                  if (widget.codigoChamada != null || widget.turmaId != null)
+                  if (widget.turmaId != null)
                     primaryButtonDesign(
                       context: context, 
                       label: 'Atualizar', 
                       onTap: () {
-                        _buscarPresencas();
+                        _buscarChamadas();
                       }, 
                       width: 255, 
                       height: 55

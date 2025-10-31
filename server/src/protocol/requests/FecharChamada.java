@@ -9,7 +9,8 @@ import com.mongodb.client.model.Updates;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.bson.Document;
 
-import java.time.Instant;
+import java.util.Date;
+
 
 public class FecharChamada {
     private String codigoChamada;
@@ -39,7 +40,7 @@ public class FecharChamada {
                 Filters.eq("codigo", codigoChamada),
                 Updates.combine(
                     Updates.set("aberta", false),
-                    Updates.set("dataFechamento", Instant.now().toString())
+                    Updates.set("dataFechamento", new Date())
                 )
             );
 

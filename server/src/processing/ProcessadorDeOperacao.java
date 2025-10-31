@@ -4,14 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.bson.Document;
 import src.connection.IParceiro;
+import src.domain.Aula;
 import src.domain.Turma;
 import src.domain.User;
 import src.protocol.requests.*;
-import src.protocol.responses.ResultadoAbrirChamada;
-import src.protocol.responses.ResultadoGetTurmas;
-import src.protocol.responses.ResultadoGetPresencas;
-import src.protocol.responses.ResultadoLogin;
-import src.protocol.responses.ResultadoOperacao;
+import src.protocol.responses.*;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -87,6 +84,12 @@ public class ProcessadorDeOperacao {
                     List<String> alunos = getPresencas.getPresencas();
                     boolean alunosNaoVazios = alunos != null && !alunos.isEmpty();
                     remetente.receba(new ResultadoGetPresencas(alunosNaoVazios, "ResultadoGetPresencas", alunos != null ? alunos : new ArrayList<>()));
+                    break;
+                case "GetAulas":
+                    GetAulas getAulas = gson.fromJson(json, GetAulas.class);
+                    List<Aula> aulas = getAulas.getAulasFromTurma();
+                    boolean aulasNaoVazios = aulas != null && !aulas.isEmpty();
+                    remetente.receba(new ResultadoGetAulas(aulasNaoVazios, "ResultadoGetAulas", aulas));
                     break;
                 default:
                     System.err.println("Comunicado desconhecido: '" + tipo + "'");

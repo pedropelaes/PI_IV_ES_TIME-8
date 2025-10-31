@@ -5,8 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="835ce07a-16a5-48fc-93cd-fcf22f86460b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/domain/Aula.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/protocol/requests/GetAulas.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/protocol/responses/ResultadoGetAulas.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/screens/gerar_qrcode_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/screens/gerar_qrcode_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/services/socket/socket_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/services/socket/socket_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/processing/ProcessadorDeOperacao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/processing/ProcessadorDeOperacao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/protocol/requests/AbrirChamada.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/AbrirChamada.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/protocol/requests/FecharChamada.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/FecharChamada.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,7 +49,7 @@
     "git-widget-placeholder": "feature/qr__code",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/swe/PI_IV_ES_TIME-8/server",
+    "last_opened_file_path": "D:/projects/PI_IV_ES_TIME-8/server",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -59,8 +67,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.23892.409" />
-        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-IU-252.23892.409" />
+        <option value="bundled-jdk-9823dce3aa75-125ca727e0f0-intellij.indexing.shared.core-IU-243.24978.46" />
+        <option value="bundled-js-predefined-d6986cc7102b-76f8388c3a79-JavaScript-IU-243.24978.46" />
       </set>
     </attachedChunks>
   </component>
@@ -86,6 +94,7 @@
       <workItem from="1761683788226" duration="6973000" />
       <workItem from="1761692649090" duration="3660000" />
       <workItem from="1761773169796" duration="3430000" />
+      <workItem from="1761928446039" duration="3757000" />
     </task>
     <servers />
   </component>

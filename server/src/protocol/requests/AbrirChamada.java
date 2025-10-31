@@ -7,8 +7,8 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
 public class AbrirChamada {
@@ -58,7 +58,7 @@ public class AbrirChamada {
                     .append("aberta", true)
                     .append("latitude", latitude)
                     .append("longitude", longitude)
-                    .append("dataAbertura", Instant.now().toString())
+                    .append("dataAbertura", new Date())
                     .append("presentes", new ArrayList<>());
 
             aulas.insertOne(aula);
@@ -68,7 +68,7 @@ public class AbrirChamada {
                     Filters.eq("_id", new ObjectId(codigoTurma)),
                     Updates.combine(
                             Updates.push("aulas", aula.getObjectId("_id")),
-                            Updates.set("atualizadoEm", Instant.now().toString())
+                            Updates.set("atualizadoEm", new Date())
                     )
             );
 
