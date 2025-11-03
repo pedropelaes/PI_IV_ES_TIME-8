@@ -244,7 +244,7 @@ class _PresencasScreenState extends State<PresencasScreen> {
                 double smallSpacing = (screenHeight * 0.015 * scale).clamp(6, 28);
                 double largeSpacing = (screenHeight * 0.03 * scale).clamp(12, 72);
 
-                Widget _listaPresencas = 
+                Widget listaPresencas = 
                   primaryFixedGradientContainer(
                   width: double.maxFinite,
                   theme: theme,
@@ -467,10 +467,10 @@ class _PresencasScreenState extends State<PresencasScreen> {
                     child: isLargeScreen ? Center(
                       child: SizedBox(
                         width: 1000,
-                        child: _listaPresencas,
+                        child: listaPresencas,
                       ),
                     )
-                    : _listaPresencas
+                    : listaPresencas
                   ),
                   SizedBox(height: smallSpacing),
                   if(widget.userType == 'aluno')

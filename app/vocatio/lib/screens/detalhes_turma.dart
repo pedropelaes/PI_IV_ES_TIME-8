@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vocattio/models/user.dart';
+import 'package:vocattio/screens/alunos_turma_screen.dart';
 import 'package:vocattio/screens/tela_presencas.dart';
 import 'package:vocattio/screens/gerar_qrcode_screen.dart';
 import 'package:vocattio/screens/validate_attendance_screen.dart';
@@ -181,9 +182,13 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                         AnimatedButton(
                           text: 'Alunos',
                           onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Funcionalidade de alunos será implementada'),
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AlunosTurmaScreen(
+                                  nomeTurma: widget.nomeTurma, 
+                                  turmaId: widget.turmaId
+                                )
                               ),
                             );
                           },

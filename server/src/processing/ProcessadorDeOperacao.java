@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.bson.Document;
 import src.connection.IParceiro;
+import src.domain.AlunoSimples;
 import src.domain.Aula;
 import src.domain.Turma;
 import src.domain.User;
@@ -90,6 +91,12 @@ public class ProcessadorDeOperacao {
                     List<Aula> aulas = getAulas.getAulasFromTurma();
                     boolean aulasNaoVazios = aulas != null && !aulas.isEmpty();
                     remetente.receba(new ResultadoGetAulas(aulasNaoVazios, "ResultadoGetAulas", aulas));
+                    break;
+                case "GetAlunosSimples":
+                    GetAlunosSimples getAlunos = gson.fromJson(json, GetAlunosSimples.class);
+                    List<AlunoSimples> alunosSimples = getAlunos.getStudents();
+                    boolean alunosNaoVazio = alunosSimples != null && !alunosSimples.isEmpty();
+                    remetente.receba(new ResultadoGetAlunosSimples(alunosNaoVazio, "ResultadoGetAlunosSimples", alunosSimples));
                     break;
                 default:
                     System.err.println("Comunicado desconhecido: '" + tipo + "'");
