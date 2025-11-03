@@ -1,12 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+// Certifique-se que ValidadorLocalizacao está em location_service.dart
+import 'package:vocattio/services/location/location_service.dart'; 
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/text_field.dart';
+import 'package:vocattio/widgets/snackbars.dart';
 
 class CriarTurmaScreen extends StatefulWidget {
   final String objectId;
@@ -17,10 +24,11 @@ class CriarTurmaScreen extends StatefulWidget {
 }
 
 class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
-
-    final TextEditingController nameController = TextEditingController();
-    final TextEditingController descriptionController = TextEditingController();
-    final SocketService _socketService = getIt<SocketService>();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final SocketService _socketService = getIt<SocketService>();
+  
+  LatLng _selectedLocation = const LatLng(-22.9068, -47.0616); // campinas padrao
 
   @override
   void dispose(){
@@ -29,31 +37,178 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
     super.dispose();
   }
 
-  void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
+  Future<void> _showLocationPickerDialog() async {
+    LatLng dialogSelectedLocation = _selectedLocation;
+    final Set<Marker> dialogMarkers = {};
+    GoogleMapController? dialogMapController;
+    bool isDialogMapLoading = true;
 
-  // Método para mostrar mensagens de sucesso
-  void _showSuccessSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green,
-      ),
+    final TextEditingController dialogLatController = TextEditingController();
+    final TextEditingController dialogLonController = TextEditingController();
+
+    void updateDialogState(LatLng location, Function dialogSetState) {
+      dialogSelectedLocation = location;
+      dialogMarkers.clear();
+      dialogMarkers.add(
+        Marker(
+          markerId: const MarkerId("selected_location"),
+          position: location,
+          draggable: true,
+          onDragEnd: (newPosition) {
+            updateDialogState(newPosition, dialogSetState);
+          },
+        ),
+      );
+      dialogLatController.text = location.latitude.toStringAsFixed(6);
+      dialogLonController.text = location.longitude.toStringAsFixed(6);
+      
+      // Atualiza o estado do dialog
+      dialogSetState(() {});
+    }
+
+    // Função para carregar a localização inicial *do dialog*
+    Future<void> defLocInicialDoMapaDialog(Function dialogSetState) async {
+      Position? posRapida = await LocationService.obterPosicaoInicialRapida();
+      LatLng localInicial = (posRapida != null)
+          ? LatLng(posRapida.latitude, posRapida.longitude)
+          : _selectedLocation; // Usa a localização já salva como ponto de partida
+
+      updateDialogState(localInicial, dialogSetState);
+      dialogMapController?.animateCamera(CameraUpdate.newLatLngZoom(localInicial, 15.0));
+      dialogSetState(() { isDialogMapLoading = false; });
+    }
+
+    final bool? locationWasSaved = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, dialogSetState) {
+            return AlertDialog(
+              title: const Text("Selecionar Local Padrão"),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: 300,
+                      width: 400, 
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          GoogleMap(
+                            initialCameraPosition: CameraPosition(
+                              target: dialogSelectedLocation,
+                              zoom: 15.0
+                            ),
+                            onMapCreated: (controller) {
+                              dialogMapController = controller;
+                              defLocInicialDoMapaDialog(dialogSetState);
+                            },
+                            onTap: (pos) => updateDialogState(pos, dialogSetState),
+                            markers: dialogMarkers,
+                            myLocationButtonEnabled: false,
+                            myLocationEnabled: true,
+                            gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+                              Factory<EagerGestureRecognizer>(
+                                () => EagerGestureRecognizer()
+                              )
+                            },
+                          ),
+                          if(isDialogMapLoading)
+                            CircularProgressIndicator(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          Positioned(
+                            top: 16.0,
+                            right: 16.0,
+                            child: FloatingActionButton(
+                              mini: true,
+                              onPressed: () async {
+                                dialogSetState(() { isDialogMapLoading = true; });
+                                try {
+                                  final position = await ValidadorLocalizacao.obterPosicaoAtual();
+                                  if (position != null) {
+                                    final newPos = LatLng(position.latitude, position.longitude);
+                                    updateDialogState(newPos, dialogSetState);
+                                    dialogMapController?.animateCamera(CameraUpdate.newLatLngZoom(newPos, 17.0));
+                                  } else {
+                                    if(mounted) showErrorSnackBar('Erro ao obter localização atual', context);
+                                  }
+                                } catch (e) {
+                                  if(mounted) showErrorSnackBar('Não foi possivel obter localização precisa', context);
+                                } finally {
+                                  dialogSetState(() { isDialogMapLoading = false; });
+                                }
+                              },
+                              child: const Icon(Icons.my_location),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text('Ou digite manualmente', style: Theme.of(context).textTheme.bodyLarge),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFieldDesign(
+                            controller: dialogLatController, 
+                            hintText: 'Latitude', 
+                            context: context
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextFieldDesign(
+                            controller: dialogLonController, 
+                            hintText: 'Longitude', 
+                            context: context
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text("Cancelar"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _selectedLocation = dialogSelectedLocation;
+                    });
+                    Navigator.of(context).pop(true);
+                  }, 
+                  child: const Text("Salvar Local"),
+                ),
+              ],
+            );
+          }
+        );
+      }
     );
   }
 
   Future<bool?> _criarTurma() async {
+    // Validação
+    if (nameController.text.isEmpty) {
+      showErrorSnackBar("Por favor, insira um nome para a turma.", context);
+      return false;
+    }
+
     Map<String, dynamic> jsonCriarTurma = {
       "operacao": "CriarTurma",
       "nome": nameController.text,
       "descricao": descriptionController.text,
-      "objectId": widget.objectId
+      "objectId": widget.objectId,
+      "localizacaoPadrao": {
+        "latitude": _selectedLocation.latitude,
+        "longitude": _selectedLocation.longitude
+      }
     };
 
     try {
@@ -73,14 +228,9 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
       final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
       
       final resultado = responseJson['resultado'];
-
       print("Resposta de criação de turma: $resultado");
 
-      if (resultado == 'true' || resultado == true) { 
-        return true;
-      } else {
-        return false;
-      }
+      return (resultado == 'true' || resultado == true);
 
     } on TimeoutException {
       print("Erro: Tempo de resposta para a criação de turma.");
@@ -90,9 +240,11 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
       return null; 
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
@@ -119,7 +271,7 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      !isLargeScreen ?
+                       !isLargeScreen ?
                       Container(
                         padding: EdgeInsets.all(24),
                         decoration: BoxDecoration(
@@ -128,8 +280,8 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
                         ),
                         child: Image.asset(
                           'assets/images/logo_vocatio_pequena_transparente.png',
-                          width: 100 ,
-                          height: 100 ,
+                          width: 100,
+                          height: 100,
                           color: theme.colorScheme.onPrimary
                         ),
                       )
@@ -142,24 +294,51 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
                       TextFieldDesign(controller: nameController, hintText: 'Digite o nome da turma', context: context),
                       SizedBox(height: smallSpacing),
                 
-                      TextFieldDesign(controller: descriptionController, hintText: 'Descrição (opcional)', context: context),
+                      TextFieldDesign(controller: descriptionController, hintText: 'Descrição da turma (opcional)', context: context),
                       SizedBox(height: largeSpacing),
+
+                      Text(
+                        'Localização Padrão (Fallback)',
+                        style: textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(color: theme.colorScheme.outline),
+                        ),
+                        leading: Icon(Icons.map, color: theme.colorScheme.primary),
+                        title: Text(
+                          'Escolher localização de segurança',
+                          style: textTheme.bodyLarge,
+                        ),
+                        subtitle: Text(
+                          'Lat: ${_selectedLocation.latitude.toStringAsFixed(4)}, Lon: ${_selectedLocation.longitude.toStringAsFixed(4)}',
+                        ),
+                        trailing: Icon(Icons.edit, color: theme.colorScheme.primary),
+                        onTap: _showLocationPickerDialog, // <-- CHAMA O DIALOG
+                      ),
+                      // --- FIM DA MUDANÇA ---
                 
+                      SizedBox(height: largeSpacing),
                       primaryButtonDesign(
                         context: context,
                         label: 'Criar Turma',
                         width: 255,
                         height: 55.0,
                         onTap: () async {
+                          // --- MUDANÇA: A lógica de salvar agora é esta ---
                           final resultado = await _criarTurma();
-                          if(resultado == true){
-                            _showSuccessSnackBar("Turma Criada!");
-                            if (mounted) {
-                              Navigator.of(context).pop(true);
-                            }
-                          }
-                          else {
-                            _showErrorSnackBar("Erro ao criar turma");
+                          if (resultado == true && mounted) {
+                            showSuccessSnackBar("Turma Criada!", context);
+                            Navigator.of(context).pop(true);
+                            
+                          } else if (resultado == false && mounted) {
+                            showErrorSnackBar("Erro ao criar turma", context);
+                          } else if (mounted) {
+                            showErrorSnackBar("Erro de conexão", context);
                           }
                         },
                       ),

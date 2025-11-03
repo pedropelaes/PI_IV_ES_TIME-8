@@ -9,9 +9,12 @@
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
 
     <application
-        android:label="vocatio"
+        android:label="Vocattio"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+
+         <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyBAiUJzC8i61PLGBGmsgmkyj2CLUH2ed1s"/>
 
         <meta-data android:name="flutterEmbedding" android:value="2"/>
 

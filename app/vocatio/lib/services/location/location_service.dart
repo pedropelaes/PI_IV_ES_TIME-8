@@ -80,6 +80,37 @@ class LocationService {
     );
   }
 
+  static Future<Position?> obterPosicaoInicialRapida() async {
+    try {
+      // 1. Verifica se tem permissão (não pede, só verifica)
+      LocationPermission perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.denied || perm == LocationPermission.deniedForever) {
+        print('Permissão negada. Não é possível obter posição inicial.');
+        return null; // Retorna nulo se a permissão já foi negada
+      }
+      
+      // 2. Tenta obter a posição com baixa precisão (mais rápido)
+      // e um time limit curto.
+      Position posicao = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          // Pedimos 'low' pois 'high' pode falhar em conexões cabeadas
+          // que não reportam 'accuracy' e não queremos um erro,
+          // queremos apenas a localização de IP.
+          accuracy: LocationAccuracy.low, 
+        ),
+        timeLimit: const Duration(seconds: 5), // 5 segundos é o bastante
+      );
+      
+      return posicao;
+
+    } catch (e) {
+      // Se falhar (serviços desligados, timeout, etc),
+      // retorna nulo silenciosamente.
+      print('Erro ao obter posição inicial rápida: $e');
+      return null;
+    }
+  }
+
 }
 
 class ValidadorLocalizacao {
