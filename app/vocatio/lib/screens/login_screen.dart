@@ -11,6 +11,7 @@ import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/dialog_exc.dart';
 import 'package:vocattio/widgets/snackbars.dart';
 import 'package:vocattio/widgets/text_field.dart';
+import 'package:local_auth/local_auth.dart';
 
 class LoginScreen extends StatefulWidget{
   const LoginScreen({super.key});
@@ -255,6 +256,23 @@ class _LoginScreenState extends State<LoginScreen>{
         label: _isLoading ? 'Entrando...' : 'Entrar', 
         onTap: _isLoading ? () {} : () => _login(),
       ),
+      SizedBox(height: smallSpacing),
+        PlatformTextButton(
+          onPressed: _loginWithBiometrics,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.fingerprint, color: theme.colorScheme.primary),
+              SizedBox(width: 8),
+              Text(
+                'Entrar com biometria',
+                style: textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
+        ),
       isMobileLayout ? Spacer() : SizedBox(height: largeSpacing * 2,),
       Text(
         'Não possui conta?',
@@ -268,4 +286,40 @@ class _LoginScreenState extends State<LoginScreen>{
       ), 
     ];
   }
+
+  final LocalAuthentication auth = LocalAuthentication();
+
+  Future<void> _loginWithBiometrics() async {
+    try {
+      final bool canCheckBiometrics = await auth.canCheckBiometrics;
+      final bool isDeviceSupported = await auth.isDeviceSupported();
+
+      if (!canCheckBiometrics || !isDeviceSupported) {
+        showErrorSnackBar('Biometria não disponível neste dispositivo', context);
+        return;
+      }
+
+      final bool didAuthenticate = await auth.authenticate(
+        localizedReason: 'Use sua digital ou reconhecimento facial para entrar',
+        options: const AuthenticationOptions(
+          biometricOnly: true,
+          stickyAuth: true,
+        ),
+      );
+
+      if (didAuthenticate) {
+        // Aqui você pode logar automaticamente (ex: guardar token no localStorage)
+        // ou pedir o login do Firebase se o usuário já estiver salvo
+        showSuccessSnackBar('Autenticado com sucesso!', context);
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomeScreen(uid: '123')), // substitua por ID real
+        );
+      }
+    } catch (e) {
+      showErrorSnackBar('Erro na autenticação: $e', context);
+    }
+  }
+
 }
