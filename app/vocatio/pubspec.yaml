@@ -33,6 +33,8 @@ dependencies:
   url_launcher: ^6.2.5
   connectivity_plus: ^7.0.0
   google_maps_flutter: ^2.13.1
+  google_maps_flutter_web: ^0.5.11
+  google_maps_flutter_platform_interface: ^2.6.1
 
 dev_dependencies:
   flutter_test:
