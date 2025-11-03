@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="835ce07a-16a5-48fc-93cd-fcf22f86460b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/domain/Presenca.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/domain/Aula.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/Aula.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/protocol/requests/AbrirChamada.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/AbrirChamada.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/protocol/requests/GetAulas.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/GetAulas.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/protocol/requests/RegistrarPresenca.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/RegistrarPresenca.java" afterDir="false" />
-    </list>
+    <list default="true" id="835ce07a-16a5-48fc-93cd-fcf22f86460b" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -92,7 +85,7 @@
       <workItem from="1761773169796" duration="3430000" />
       <workItem from="1761928446039" duration="4350000" />
       <workItem from="1761943606128" duration="2267000" />
-      <workItem from="1762183832359" duration="1794000" />
+      <workItem from="1762183832359" duration="2139000" />
     </task>
     <servers />
   </component>

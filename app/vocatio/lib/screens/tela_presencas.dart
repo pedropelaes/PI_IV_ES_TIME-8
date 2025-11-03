@@ -11,11 +11,15 @@ import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 
 class PresencasScreen extends StatefulWidget {
+  final String userType;
+  final String userId;
   final String? nomeTurma;
   final String? turmaId;
 
   const PresencasScreen({
     super.key,
+    required this.userType,
+    required this.userId,
     this.nomeTurma,
     this.turmaId,
   });
@@ -164,10 +168,60 @@ class _PresencasScreenState extends State<PresencasScreen> {
     });
   }
 
+  Map<String, dynamic> _getEstatisticasAluno() {
+    // Só calcula se for um aluno e as aulas estiverem carregadas
+    if (widget.userType != 'aluno' || _aulas.isEmpty) {
+      return {"faltas": 0, "percentual": 1.0}; 
+    }
+
+    final String alunoId = widget.userId;
+    int totalAulasDaTurma = _aulas.length; // Total de aulas dadas
+    int totalPresencas = 0;
+
+    for (final aula in _aulas) {
+      bool alunoPresenteNestaAula = false;
+      try {
+        final registro = aula.presentes.firstWhere(  // tenta achar o aluno na aula
+          (p) => p.alunoId == alunoId
+        );
+
+        if (registro.presente) {
+          alunoPresenteNestaAula = true;
+        }
+
+      } catch (e) {
+        // esse erro, caso capturado, indica que o aluno nao esta na lista da aula
+        // logo, conta como falta
+      }
+
+      if (alunoPresenteNestaAula) {
+        totalPresencas++;
+      }
+    }
+
+    if (totalAulasDaTurma == 0) { // evita dividir por 0
+      return {"faltas": 0, "percentual": 1.0};
+    }
+
+    int totalFaltas = totalAulasDaTurma - totalPresencas;
+    double percentual = totalPresencas / totalAulasDaTurma; // Valor de 0.0 a 1.0
+
+    return {"faltas": totalFaltas, "percentual": percentual};
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final TextTheme textTheme = theme.textTheme;
+
+    final stats = (widget.userType == 'aluno')
+      ? _getEstatisticasAluno()
+      : {"faltas" : 0, "percentual" : 0.0};
+
+    final int faltas = stats["faltas"] as int;
+    final double percentual = stats["percentual"] as double;
+    final String percentualString = "${(percentual * 100).toStringAsFixed(0)}%";
+
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       appBar: AppHeader(
@@ -256,6 +310,33 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                   itemCount: _aulasFiltradas.length,
                                   itemBuilder: (context, index) {
                                     final aula = _aulasFiltradas[index];
+
+                                    Widget trailingIcon;
+                                    if (widget.userType == 'professor') {
+                                      trailingIcon = Icon(
+                                        Icons.arrow_forward_ios,
+                                        color: theme.colorScheme.primaryFixed,
+                                      );
+                                    } else {
+                                      bool alunoPresente = false;
+                                      try {
+                                        final registro = aula.presentes.firstWhere(
+                                          (p) => p.alunoId == widget.userId
+                                        );
+                                        if (registro.presente) {
+                                          alunoPresente = true;
+                                        }
+                                      } catch (e) {
+                                        // Aluno não encontrado na lista, 'alunoPresente' continua false (falta).
+                                      }
+
+                                      trailingIcon = Icon(
+                                        alunoPresente ? Icons.check_circle : Icons.cancel, // Ícone dinâmico
+                                        color: alunoPresente 
+                                            ? theme.colorScheme.primaryFixed
+                                            : theme.colorScheme.error,
+                                      );
+                                    }
                                     return ListTile(
                                       leading: SizedBox(
                                         width: 60,
@@ -280,12 +361,9 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                           color: theme.colorScheme.primaryFixed
                                         ),
                                       ),
-                                      trailing: Icon(
-                                        Icons.arrow_forward_ios,
-                                        color: theme.colorScheme.primaryFixed,
-                                      ),
+                                      trailing: trailingIcon,
                                       onTap: (){
-                                        Navigator.push(
+                                        if(widget.userType == 'professor'){Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) => TelaAlunosPresentes(
@@ -295,10 +373,74 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                             )
                                           )
                                         );
+                                        }
                                       },
                                     );
                                   },
                                 ),
+                );
+
+                Widget containerMediaPresenca = 
+                primaryFixedGradientContainer(
+                  theme: theme, 
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Média de presença',
+                              style: textTheme.headlineSmall?.copyWith(
+                                color: theme.colorScheme.primaryFixed
+                              ),
+                            ),
+                            SizedBox(height: smallSpacing), // Espaçamento
+                            Text(
+                              '$faltas ${faltas == 1 ? "falta" : "faltas"}',
+                              style: textTheme.bodyLarge?.copyWith(
+                                color: theme.colorScheme.primaryFixed
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(
+                          width: 80,
+                          height: 80,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              SizedBox(
+                                width: 70,
+                                height: 70,
+                                child: CircularProgressIndicator(
+                                  value: percentual, 
+                                  strokeWidth: 8.0,
+                                  backgroundColor: theme.colorScheme.primaryFixed.withValues(alpha: 0.2),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    theme.colorScheme.primaryFixed,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: smallSpacing,),
+                              Text(
+                                percentualString,
+                                style: textTheme.titleMedium?.copyWith(
+                                  color: theme.colorScheme.primaryFixed,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
                 );
 
               return Column(
@@ -331,6 +473,13 @@ class _PresencasScreenState extends State<PresencasScreen> {
                     : _listaPresencas
                   ),
                   SizedBox(height: smallSpacing),
+                  if(widget.userType == 'aluno')
+                  isLargeScreen ? SizedBox(
+                    width: 800,
+                    height: 150,
+                    child: containerMediaPresenca
+                  )
+                  : containerMediaPresenca
                 ],
               );
             },

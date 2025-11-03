@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vocattio/models/user.dart';
 import 'package:vocattio/screens/tela_presencas.dart';
 import 'package:vocattio/screens/gerar_qrcode_screen.dart';
 import 'package:vocattio/screens/validate_attendance_screen.dart';
@@ -10,23 +11,21 @@ import 'package:vocattio/utils/responsive_helper.dart';
 import 'package:vocattio/widgets/snackbars.dart';
 
 class DetalhesTurmaScreen extends StatefulWidget {
-  final String tipoUsuario;
   final String nomeTurma;
   final String descricao;
   final int numeroAlunos;
   final String codigoTurma;
   final String turmaId;
-  final String? uid;
+  final User user;
 
   const DetalhesTurmaScreen({
     super.key,
-    required this.tipoUsuario,
     required this.nomeTurma,
     required this.descricao,
     required this.numeroAlunos,
     required this.codigoTurma,
     required this.turmaId,
-    this.uid,
+    required this.user,
   });
 
   @override
@@ -106,7 +105,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                     child: ListView(
                       children: [
 
-                        widget.tipoUsuario == 'professor' ? AnimatedButton(
+                        widget.user.tipo == 'professor' ? AnimatedButton(
                           text: 'Realizar chamada',
                           onPressed: () {
                             Navigator.push(
@@ -126,7 +125,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ValidateAttendanceScreen(uid: widget.uid),
+                                builder: (context) => ValidateAttendanceScreen(uid: widget.user.uid),
                               ),
                             );
                           },
@@ -143,6 +142,8 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                                 builder: (context) => PresencasScreen(
                                   nomeTurma: widget.nomeTurma,
                                   turmaId: widget.turmaId,
+                                  userType: widget.user.tipo,
+                                  userId: widget.user.objectId!,
                                 ),
                               ),
                             );
@@ -151,7 +152,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                         
                         const SizedBox(height: 16),
                         
-                        if(widget.tipoUsuario == 'professor') AnimatedButton(
+                        if(widget.user.tipo == 'professor') AnimatedButton(
                           text: 'Exportar Lista de Presença',
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -162,9 +163,9 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                           },
                         ),
                         
-                        if(widget.tipoUsuario == 'professor') const SizedBox(height: 16),
+                        if(widget.user.tipo == 'professor') const SizedBox(height: 16),
                         
-                        if(widget.tipoUsuario == 'professor') AnimatedButton(
+                        if(widget.user.tipo == 'professor') AnimatedButton(
                           text: 'Relatório Mensal',
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -175,7 +176,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                           },
                         ),
                         
-                        if(widget.tipoUsuario == 'professor') const SizedBox(height: 16),
+                        if(widget.user.tipo == 'professor') const SizedBox(height: 16),
                         
                         AnimatedButton(
                           text: 'Alunos',
@@ -196,7 +197,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
           ),
         ),
       ),
-      floatingActionButton: widget.tipoUsuario == 'professor' ? FloatingActionButton(
+      floatingActionButton: widget.user.tipo == 'professor' ? FloatingActionButton(
         backgroundColor: const Color(0xFF9B71D9),
         child: const Icon(Icons.delete, color: Colors.white),
         onPressed: () async {
