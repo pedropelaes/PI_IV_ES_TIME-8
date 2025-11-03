@@ -5,10 +5,12 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import src.domain.Aula;
+import src.domain.Presenca;
 import src.domain.User;
 
 import java.text.ParseException;
@@ -38,13 +40,17 @@ public class GetAulas {
             MongoCollection<Document> colecao = db.getCollection("aulas");
 
 
-            for (Document doc : colecao.find(Filters.eq("turmaId", new ObjectId(this.turmaId)))){
-                List<String> presentesIds = new ArrayList<>();
-                List<ObjectId> objectIdList = doc.getList("presentes", ObjectId.class);
-                if (objectIdList != null) {
-                    presentesIds = objectIdList.stream()
-                            .map(ObjectId::toString)
-                            .collect(Collectors.toList());
+            for (Document doc : colecao.find(Filters.eq("turmaId", new ObjectId(this.turmaId)))
+                    .sort(Sorts.descending("dataAbertura"))){
+                List<Presenca> listaDePresenca = new ArrayList<>();
+                List<Document> presentesDocs = doc.getList("presentes", Document.class);
+
+                if (presentesDocs != null) {
+                    for (Document presencaDoc : presentesDocs) {
+                        String alunoId = presencaDoc.getObjectId("alunoId").toHexString();
+                        boolean presente = presencaDoc.getBoolean("presente", false);
+                        listaDePresenca.add(new Presenca(alunoId, presente));
+                    }
                 }
 
                 Date dataAbertura = null;
@@ -81,7 +87,7 @@ public class GetAulas {
                         doc.getDouble("latitude"),
                         doc.getDouble("longitude"),
                         dataAbertura,
-                        presentesIds,
+                        listaDePresenca,
                         dataFechamento
                 );
                 aulas.add(aula);

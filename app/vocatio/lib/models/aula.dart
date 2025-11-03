@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:vocattio/models/presenca.dart';
 
 class Aula {
   final String objectId;
@@ -8,7 +9,7 @@ class Aula {
   final double latitude;
   final double longitude;
   final DateTime dataAbertura;
-  final List<String> presentes;
+  final List<Presenca> presentes;
   final DateTime? dataFechamento;
 
   const Aula({
@@ -49,7 +50,9 @@ class Aula {
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
       dataAbertura: parseCustomDate(json['dataAbertura']),
-      presentes: List<String>.from(json['presentes'] as List),
+      presentes: (json['presentes'] as List)
+        .map((item) => Presenca.fromJson(item as Map<String, dynamic>))
+        .toList(),
       dataFechamento: json['dataFechamento'] == null
           ? null
           : parseCustomDate(json['dataFechamento']),

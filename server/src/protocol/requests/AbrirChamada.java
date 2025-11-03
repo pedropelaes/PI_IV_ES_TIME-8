@@ -48,6 +48,18 @@ public class AbrirChamada {
                 return null;
             }
 
+            ArrayList<ObjectId> alunosIds = turma.get("alunos", ArrayList.class);
+
+            // 3. [NOVO] Cria a lista de presença (o "snapshot")
+            ArrayList<Document> listaPresenca = new ArrayList<>();
+            if (alunosIds != null) {
+                for (ObjectId alunoId : alunosIds) {
+                    listaPresenca.add(new Document("alunoId", alunoId)
+                            .append("presente", false)
+                    );
+                }
+            }
+
             // Gera um código único para a chamada
             String codigoChamada = "CHAMADA-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
 
@@ -59,7 +71,7 @@ public class AbrirChamada {
                     .append("latitude", latitude)
                     .append("longitude", longitude)
                     .append("dataAbertura", new Date())
-                    .append("presentes", new ArrayList<>());
+                    .append("presentes", listaPresenca);
 
             aulas.insertOne(aula);
 

@@ -12,12 +12,12 @@ public class Aula {
     private Double latitude;
     private Double longitude;
     private Date dataAbertura;
-    private List<String> presentes;
+    private List<Presenca> presentes;
     private Date dataFechamento;
 
     public Aula(){}
     public Aula(String _id, String turmaId, String codigo, boolean aberta, Double latitude,
-                Double longitude, Date dataAbertura, List<String> presentes, Date dataFechamento) {
+                Double longitude, Date dataAbertura, List<Presenca> presentes, Date dataFechamento) {
         this._id = _id;
         this.turmaId = turmaId;
         this.codigo = codigo;

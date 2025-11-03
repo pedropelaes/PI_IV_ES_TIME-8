@@ -6,6 +6,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -64,14 +65,50 @@ public class RegistrarPresenca {
                 return false;
             }
 
-            // Adiciona o ID do aluno no array "presentes" (sem duplicar)
             ObjectId aulaObjectId = aula.getObjectId("_id");
-            aulas.updateOne(
-                    Filters.eq("_id", aulaObjectId),
-                    Updates.addToSet("presentes", new ObjectId(alunoId))
+            ObjectId alunoObjectId;
+            try {
+                alunoObjectId = new ObjectId(this.alunoId);
+            } catch (IllegalArgumentException e) {
+                this.mensagem = "ID de aluno inválido";
+                System.out.println(this.mensagem);
+                return false;
+            };
+
+            UpdateResult updateResult = aulas.updateOne(
+                    Filters.and(
+                            Filters.eq("_id", aulaObjectId), // Filtra a aula correta
+                            Filters.eq("presentes.alunoId", alunoObjectId), // Encontra o aluno no array
+                            Filters.eq("presentes.presente", false) // SÓ atualiza se ele ainda não marcou
+                    ),
+                    Updates.combine(
+                            Updates.set("presentes.$.presente", true)
+                    )
             );
 
-            return true;
+            if (updateResult.getModifiedCount() > 0) {
+                this.mensagem = "Presença registrada com sucesso!";
+                System.out.println(this.mensagem);
+                return true;
+            } else {
+                Document alunoPresenteCheck = aulas.find(
+                        Filters.and(
+                                Filters.eq("_id", aulaObjectId),
+                                Filters.eq("presentes.alunoId", alunoObjectId),
+                                Filters.eq("presentes.presente", true)
+                        )
+                ).projection(new Document("_id", 1)).first();
+
+                if (alunoPresenteCheck != null) {
+                    this.mensagem = "Aluno já estava com presença registrada.";
+                    System.out.println(this.mensagem);
+                    return true;
+                } else {
+                    this.mensagem = "Aluno não encontrado na lista de chamada desta aula.";
+                    System.out.println(this.mensagem);
+                    return false;
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
