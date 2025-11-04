@@ -12,11 +12,12 @@ public class Turma {
     private List<String> alunos;
     private Date criadoEm;
     private Date atualizadaEm;
+    private LocPadrao localizacaoPadrao;
 
     public Turma() {}
     public Turma(String _id, String nome, String descricao, String codigo,
                  String professor, List<String> alunos, Date criadoEm,
-                 Date atualizadaEm) {
+                 Date atualizadaEm, LocPadrao localizacaoPadrao) {
         this._id = _id;
         this.nome = nome;
         this.descricao = descricao;
@@ -25,6 +26,7 @@ public class Turma {
         this.alunos = alunos;
         this.criadoEm = criadoEm;
         this.atualizadaEm = atualizadaEm;
+        this.localizacaoPadrao = localizacaoPadrao;
     }
 
 

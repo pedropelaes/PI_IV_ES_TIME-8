@@ -9,6 +9,7 @@ import com.mongodb.client.model.Updates;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import src.domain.LocPadrao;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class CriarTurma {
     private String descricao;
     private String operacao;
     private String objectId;
+    private LocPadrao localizacaoPadrao;
 
 
     public CriarTurma(){}
@@ -29,9 +31,14 @@ public class CriarTurma {
             throw new IllegalArgumentException("O nome da turma não pode ser vazio.");
         }
 
-        String prefixo = nomeDaTurma.trim()
-                .replaceAll("[^a-zA-Z]", "")
-                .substring(0, Math.min(nomeDaTurma.length(), 4))
+        String nomeLimpo = nomeDaTurma.trim()
+                .replaceAll("[^a-zA-Z]", "");
+
+        if (nomeLimpo.isEmpty()) {
+            throw new IllegalArgumentException("O nome da turma deve conter pelo menos uma letra.");
+        }
+
+        String prefixo = nomeLimpo.substring(0, Math.min(nomeLimpo.length(), 4))
                 .toUpperCase();
 
         LocalDate hoje = LocalDate.now();
@@ -47,6 +54,9 @@ public class CriarTurma {
     }
 
     public boolean criarTurma(){
+        if(this.nome == null || this.descricao == null || this.operacao == null || this.localizacaoPadrao == null){
+            return false;
+        }
         Dotenv dotenv = Dotenv.load();
         String uri = dotenv.get("MONGO_URI");
 
@@ -65,6 +75,8 @@ public class CriarTurma {
                     .append("codigo", gerarCodigo(this.nome))
                     .append("alunos", new ArrayList<ObjectId>())
                     .append("aulas", new ArrayList<ObjectId>())
+                    .append("localizacaoPadrao", new Document("latitude", localizacaoPadrao.getLatitude())
+                            .append("longitude", localizacaoPadrao.getLongitude()))
                     .append("criadoEm", new Date())
                     .append("atualizadoEm", new Date());
 

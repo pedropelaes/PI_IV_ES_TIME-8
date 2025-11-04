@@ -8,6 +8,7 @@ import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import src.domain.LocPadrao;
 import src.domain.Turma;
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -49,6 +50,15 @@ public class GetTurmas {
                 List<ObjectId> alunosIds = doc.getList("alunos", ObjectId.class, new ArrayList<>());
                 List<String> alunos = alunosIds.stream().map(ObjectId::toHexString).collect(Collectors.toList());
 
+                Document locDoc = doc.get("localizacaoPadrao", Document.class);
+                LocPadrao locPadrao = null;
+                if(locDoc != null){
+                    locPadrao = new LocPadrao(
+                            locDoc.getDouble("latitude"),
+                            locDoc.getDouble("longitude")
+                    );
+                }
+
                 Date criadoEm = null;
                 Object criadoObj = doc.get("criadoEm");
 
@@ -84,7 +94,8 @@ public class GetTurmas {
                         doc.getObjectId("professorId").toHexString(),
                         alunos,
                         criadoEm,
-                        atualizadoEm
+                        atualizadoEm,
+                        locPadrao
                 );
                 turmas.add(turma);
             }
