@@ -6,7 +6,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-// Certifique-se que ValidadorLocalizacao está em location_service.dart
 import 'package:vocattio/services/location/location_service.dart'; 
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
@@ -28,6 +27,7 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final SocketService _socketService = getIt<SocketService>();
+  final LocationService _locationService = LocationService();
   
   LatLng _selectedLocation = const LatLng(-22.9068, -47.0616); // campinas padrao
 
@@ -36,6 +36,12 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
     nameController.dispose();
     descriptionController.dispose();
     super.dispose();
+  }
+  
+  @override
+  void initState(){
+    super.initState();
+    _locationService.checkLocationPermission();
   }
 
   Future<void> _showLocationPickerDialog() async {
@@ -362,12 +368,30 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
                       TextFieldDesign(controller: descriptionController, hintText: 'Descrição da turma (opcional)', context: context),
                       SizedBox(height: largeSpacing),
 
-                      Text(
-                        'Localização Padrão (Fallback)',
-                        style: textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.onSurface,
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxHeight: 200, maxWidth: 400),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Localização Padrão (Fallback)',
+                              style: textTheme.bodyLarge?.copyWith(
+                                color: theme.colorScheme.onSurface,
+                              ),
+                            ),
+                            Tooltip(
+                              message: 'Localização usada para validação caso não seja possivel coletar a sua localização na hora da aula.',
+                              child: Icon(
+                                Icons.help_outline,
+                                size: 20,
+                                color: Colors.grey,
+                              ),
+                            )
+                          ],
                         ),
                       ),
+                      
                       SizedBox(height: 8),
                       ConstrainedBox(
                         constraints: BoxConstraints(maxHeight: 200, maxWidth: 400),
