@@ -48,8 +48,9 @@ public class GetAulas {
                 if (presentesDocs != null) {
                     for (Document presencaDoc : presentesDocs) {
                         String alunoId = presencaDoc.getObjectId("alunoId").toHexString();
+                        String nome = presencaDoc.getString("nome");
                         boolean presente = presencaDoc.getBoolean("presente", false);
-                        listaDePresenca.add(new Presenca(alunoId, presente));
+                        listaDePresenca.add(new Presenca(alunoId, nome, presente));
                     }
                 }
 

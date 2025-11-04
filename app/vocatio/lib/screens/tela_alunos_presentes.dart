@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:vocattio/models/user.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:vocattio/models/presenca.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
@@ -10,7 +11,8 @@ class TelaAlunosPresentes extends StatefulWidget{
   final String idChamada;
   final String nomeTurma;
   final String data;
-  const TelaAlunosPresentes({super.key, required this.idChamada, required this.nomeTurma ,required this.data});
+  final List<Presenca> alunosPresentes;
+  const TelaAlunosPresentes({super.key, required this.idChamada, required this.nomeTurma ,required this.data, required this.alunosPresentes});
 
   @override
   State<TelaAlunosPresentes> createState() => _TelaAlunosPresentesState();
@@ -18,16 +20,22 @@ class TelaAlunosPresentes extends StatefulWidget{
 
 class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
   final SocketService _socketService = getIt<SocketService>();
-  List<AlunoResumo> _alunosPresentes = [];
+  final List<Presenca> _alunosPresentes = [];
   bool _carregando = false;
   bool _editando = false;
   String? _erro;
+
+
   
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
+
+    if(widget.alunosPresentes.isNotEmpty && _alunosPresentes.isEmpty){
+      _alunosPresentes.addAll(widget.alunosPresentes);
+    }
 
     return Scaffold(
       appBar: AppHeader(
@@ -49,7 +57,7 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
               double screenHeight = constraints.maxHeight;
               double scale = (screenHeight / 700).clamp(1.0, 1.5);
               double smallSpacing = (screenHeight * 0.015 * scale).clamp(6, 28);
-              double largeSpacing = (screenHeight * 0.03 * scale).clamp(12, 72);
+              double largeSpacing = (screenHeight * 0.03 * scale).clamp(12, 72);        
 
               Widget _listaPresentes = 
                 primaryFixedGradientContainer(
@@ -103,17 +111,46 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                       ) :
                       ListView.builder(
                         itemCount: _alunosPresentes.length,
+                        cacheExtent: 1,
+                        physics: const BouncingScrollPhysics(),
                         itemBuilder: (context, index) {
-                          return ListTile(
-                            leading: Icon(
-                              Icons.account_circle,
-                              color: theme.colorScheme.primary,
-                            ),
-                            title: Text(
-                              _alunosPresentes[index].nome,
-                              style: textTheme.bodyLarge?.copyWith(
-                                color: theme.colorScheme.primary
-                              ),
+                          final aluno = _alunosPresentes[index];
+                          Widget trailingIcon; 
+                          if(aluno.presente ){
+                            trailingIcon = Icon(
+                              Icons.check_circle,
+                              color: theme.colorScheme.primaryFixed,
+                            );
+                          }else{
+                            trailingIcon = Icon(
+                              Icons.cancel,
+                              color: theme.colorScheme.error,
+                            );
+                          }
+                          
+                
+                          return Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  leading: Icon(
+                                    Icons.account_circle,
+                                    color: theme.colorScheme.primaryFixed,
+                                  ),
+                                  title: Text(
+                                    _alunosPresentes[index].nome,
+                                    style: textTheme.bodyLarge?.copyWith(
+                                      color: theme.colorScheme.primaryFixed
+                                    ),
+                                  ),
+                                  trailing: trailingIcon,
+                                ).animate().flipH(perspective: -0.5, begin: 0.3).fadeIn(),
+                                Divider(
+                                  color: theme.colorScheme.primaryFixed,
+                                  thickness: 2,
+                                )
+                              ],
                             ),
                           );
                         },

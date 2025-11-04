@@ -34,6 +34,7 @@ public class AbrirChamada {
             MongoDatabase db = client.getDatabase("vocattio_db");
             MongoCollection<Document> turmas = db.getCollection("turmas");
             MongoCollection<Document> aulas = db.getCollection("aulas");
+            MongoCollection<Document> users = db.getCollection("users");
 
             // Procura a turma pelo _id
             if (codigoTurma == null || codigoTurma.isEmpty()) {
@@ -54,7 +55,13 @@ public class AbrirChamada {
             ArrayList<Document> listaPresenca = new ArrayList<>();
             if (alunosIds != null) {
                 for (ObjectId alunoId : alunosIds) {
+                    Document aluno = users.find(Filters.eq("_id", alunoId))
+                                        .projection(new Document("nome", 1))
+                                        .first();
+                    String nomeAluno = (aluno != null) ? aluno.getString("nome") : "";
+
                     listaPresenca.add(new Document("alunoId", alunoId)
+                                    .append("nome", nomeAluno)
                             .append("presente", false)
                     );
                 }

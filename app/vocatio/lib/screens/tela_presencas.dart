@@ -369,7 +369,8 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                             builder: (context) => TelaAlunosPresentes(
                                               idChamada: aula.objectId, 
                                               nomeTurma: widget.nomeTurma!,
-                                              data: formatarDataAula(aula.dataAbertura)
+                                              data: formatarDataAula(aula.dataAbertura),
+                                              alunosPresentes: aula.presentes,
                                             )
                                           )
                                         );
