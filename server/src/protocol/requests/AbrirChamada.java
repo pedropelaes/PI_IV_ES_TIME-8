@@ -49,6 +49,15 @@ public class AbrirChamada {
                 return null;
             }
 
+            // caso os valores de longitude e latitude cheguem zerados, faz fallback com a localizacao da turma
+            if(this.latitude == 0 && this.longitude == 0){
+                Document cordturma = turma.get("localizacaoPadrao", Document.class);
+                if(cordturma != null){
+                    setLatitude(cordturma.getDouble("latitude"));
+                    setLongitude(cordturma.getDouble("longitude"));
+                }
+            }
+
             ArrayList<ObjectId> alunosIds = turma.get("alunos", ArrayList.class);
 
             // 3. [NOVO] Cria a lista de presença (o "snapshot")
@@ -97,6 +106,13 @@ public class AbrirChamada {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void setLatitude(double lat){
+        this.latitude = lat;
+    }
+    public void setLongitude(double lon){
+        this.longitude = lon;
     }
 
     @Override

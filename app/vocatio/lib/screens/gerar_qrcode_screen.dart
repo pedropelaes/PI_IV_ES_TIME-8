@@ -9,6 +9,7 @@ import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/animated_button.dart';
 import 'package:vocattio/utils/responsive_helper.dart';
+import 'package:vocattio/widgets/snackbars.dart';
 
 class GerarQRCodeScreen extends StatefulWidget {
   final String codigoTurma;
@@ -300,17 +301,15 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
     _profLocation = position;
   } catch (e) {
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Não foi possível obter a localização: $e')),
-      );
+      showErrorSnackBar('Não foi possível obter a sua localização atual. A localização da turma será usada no lugar.', context);
     }
   }
 
   final jsonGerarChamada = {
     "operacao": "AbrirChamada",
     "codigoTurma": widget.codigoTurma,
-    if (_profLocation != null) "latitude": _profLocation!.latitude,
-    if (_profLocation != null) "longitude": _profLocation!.longitude,
+    "latitude": _profLocation?.latitude ?? 0,
+    "longitude": _profLocation?.longitude ?? 0,
   };
 
   try {
