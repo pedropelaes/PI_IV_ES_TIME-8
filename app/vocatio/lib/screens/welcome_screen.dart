@@ -6,7 +6,6 @@ import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:vocattio/widgets/dialog_exc.dart';
 
 class WelcomeScreen extends StatefulWidget{
@@ -18,7 +17,6 @@ class WelcomeScreen extends StatefulWidget{
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
   final SocketService _socketService = getIt<SocketService>();
-  final AudioPlayer _audioPlayer = AudioPlayer();
   bool _isConnecting = true;
   bool _connectionError = false;
 
@@ -67,19 +65,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   }
 
-  Future<void> _audioAbertura() async {
-    try {
-      await _audioPlayer.play(AssetSource('audios/VocattioAudio.mp3'));
-    } catch (e) {
-      debugPrint('Erro ao tocar áudio: $e');
-    }
-  }
-
   @override
   void initState(){
     super.initState();
     _initConnection();
-    if(!kIsWeb)_audioAbertura();
   }
 
   @override

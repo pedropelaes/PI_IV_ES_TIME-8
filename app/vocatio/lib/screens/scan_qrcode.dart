@@ -10,6 +10,7 @@ import 'package:vocattio/services/auth_service.dart';
 import 'package:vocattio/services/location/location_service.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
+import 'package:vocattio/widgets/app_drawer.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/snackbars.dart';
@@ -28,6 +29,7 @@ class ScanQrcode extends StatefulWidget {
 class _ScanQrcodeState extends State<ScanQrcode> {
   final TextEditingController _codeController = TextEditingController();
   final MobileScannerController _scannerController = MobileScannerController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _locationService = LocationService();
   final AuthService _authService = AuthService();
   bool _scanned = false;
@@ -73,7 +75,6 @@ class _ScanQrcodeState extends State<ScanQrcode> {
     });
 
     try {
-      // PASSO 1: Verificar permissões primeiro
       print('PASSO 1: Verificando permissões...');
       bool hasPermission = await _locationService.checkLocationPermission();
       if (!hasPermission) {
@@ -84,7 +85,6 @@ class _ScanQrcodeState extends State<ScanQrcode> {
         return;
       }
 
-      // PASSO 2: Verificar serviços de localização
       print('PASSO 2: Verificando serviços de localização...');
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
@@ -106,7 +106,6 @@ class _ScanQrcodeState extends State<ScanQrcode> {
         return;
       }
 
-      // PASSO 3: Obter localização
       print('PASSO 3: Obtendo posição atual...');
       LocationSettings locationSettings = LocationSettings(
         accuracy: LocationAccuracy.high,
@@ -250,15 +249,18 @@ class _ScanQrcodeState extends State<ScanQrcode> {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface, 
+      key: _scaffoldKey,
       appBar: AppHeader(
         title: 'Registrar',
         onMenuPressed: () {
+          _scaffoldKey.currentState?.openDrawer();
         },
         hasGoBack: true,
         onGoBack: () {
           Navigator.pop(context);
         },
       ),
+      drawer: AppDrawer(),
       body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
               child: SingleChildScrollView(

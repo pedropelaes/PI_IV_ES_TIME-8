@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart'; // <--- IMPORT OBRIGATÓRIO PARA listEquals
 import 'package:vocattio/extensions/string_extensions.dart';
 import 'package:vocattio/models/turma.dart';
 import 'package:vocattio/services/auth_service.dart';
@@ -30,13 +31,16 @@ class _HomeScreenState extends State<HomeScreen> {
   final AuthService _authService = AuthService();
   late Future<User?> _user;
   Future<List<Turma>?>? _turmas;
+  
+  // Variável de estado para armazenar os nomes das turmas a serem passadas para o Drawer
+  List<String> _turmaNames = []; 
 
   Future<List<Turma>?> _getTurmas(final List<String>? turmasIds) async{
     if(turmasIds == null || turmasIds.isEmpty){
       print("Ta caindo aqui");
       return [];
     }
-
+    // ... (restante da lógica _getTurmas)
     Map<String, dynamic> jsonGetTurmas = {
       "operacao" : "GetTurmas",
       "turmasId" : turmasIds
@@ -80,9 +84,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   
 
-  // Dados das turmas baseados na imagem
-  //final List<Map<String, dynamic>> turmas = [];
-
   @override
   void initState(){
     super.initState();
@@ -113,7 +114,8 @@ class _HomeScreenState extends State<HomeScreen> {
           _scaffoldKey.currentState?.openDrawer();
         },
       ),
-      drawer: AppDrawer(),
+      //Passa o estado atual da lista de nomes para o AppDrawer
+      drawer: AppDrawer(turmas: _turmaNames), 
       body: SafeArea(
         child: Center(
           child: Container(
@@ -125,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: FutureBuilder<User?>(
                 future: _user,
                 builder: (context, asyncSnapshot) {
-
+                  // ... (handle loading/error state for user)
                   if(asyncSnapshot.connectionState == ConnectionState.waiting){
                     return Center(child: CircularProgressIndicator(color: theme.colorScheme.onSurface),);
                   }
@@ -143,12 +145,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           setState(() {
                             _user = _authService.getUser(widget.uid);
                           });
-                       
+                        
                         }, width: 255, height: 55)
                       ],
                     ),
                   );
-                }
+                  }
 
                   final user = asyncSnapshot.data;
 
@@ -170,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       
                       // Grid de turmas
                       Expanded(
-                        child: FutureBuilder(
+                        child: FutureBuilder<List<Turma>?>(
                           future: _turmas,
                           builder: (context, turmasSnapshot) {
                             if (turmasSnapshot.connectionState == ConnectionState.waiting) {
@@ -182,6 +184,22 @@ class _HomeScreenState extends State<HomeScreen> {
                             }
                             
                             final turmas = turmasSnapshot.data!;
+                            
+                            // AQUI ESTÁ A CHAVE: Mapear e atualizar o estado do Drawer
+                            final List<String> novaListaDeTurmas = turmas.map((t) => t.nome).toList();
+                            
+                            // Usamos listEquals para evitar rebuilds desnecessários
+                            if (!listEquals(novaListaDeTurmas, _turmaNames)) {
+                               // Agendamos o setState para após o frame atual
+                               WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  if(mounted) {
+                                     setState(() {
+                                        _turmaNames = novaListaDeTurmas;
+                                     });
+                                  }
+                                });
+                            }
+                            
                             print("Turmas: $turmas");
 
                             if(turmas.isEmpty){
@@ -196,6 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             }
                             
+                            // ... (restante do GridView.builder)
                             return GridView.builder(
                               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: ResponsiveHelper.getGridCrossAxisCount(context),
@@ -216,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           descricao: turma.descricao,
                                           numeroAlunos: turma.alunos.length,
                                           codigoTurma: turma.codigo, // código humano da turma
-                                          turmaId: turma.objectId,   // ObjectId para backend
+                                          turmaId: turma.objectId, // ObjectId para backend
                                           user: user!
                                         ),
                                       ),
@@ -263,9 +282,8 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             },
             );
-  },
-),
-
+      },
+    ),
     );
   }
 }

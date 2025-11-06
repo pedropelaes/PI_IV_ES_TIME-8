@@ -7,6 +7,9 @@ import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/text_field.dart';
+// 1. Importar o AppDrawer
+import 'package:vocattio/widgets/app_drawer.dart'; 
+
 
 class EntrarEmTurmaScreen extends StatefulWidget {
   final String objectId;
@@ -17,9 +20,12 @@ class EntrarEmTurmaScreen extends StatefulWidget {
 }
 
 class _EntrarEmTurmaScreenState extends State<EntrarEmTurmaScreen> {
+  
+  // 2. Adicionar o GlobalKey para controlar o Scaffold
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-    final TextEditingController codeController = TextEditingController();
-    final SocketService _socketService = getIt<SocketService>();
+  final TextEditingController codeController = TextEditingController();
+  final SocketService _socketService = getIt<SocketService>();
 
 
   @override
@@ -48,6 +54,7 @@ class _EntrarEmTurmaScreenState extends State<EntrarEmTurmaScreen> {
   }
 
   Future<bool?> _entrarEmTurma() async {
+    // ... (restante da sua função _entrarEmTurma permanece inalterada)
     Map<String, dynamic> jsonEntrarEmTurma = {
       "operacao": "EntrarEmTurma",
       "objectId": widget.objectId,
@@ -88,18 +95,25 @@ class _EntrarEmTurmaScreenState extends State<EntrarEmTurmaScreen> {
       return null; 
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Scaffold(
+      // 3. Adicionar o key ao Scaffold
+      key: _scaffoldKey, 
       backgroundColor: theme.colorScheme.surface,
       appBar: AppHeader(
         title: 'Entrar Em Turma',
         hasGoBack: true,
         onGoBack: () => Navigator.pop(context),
-        onMenuPressed: () {},
+        // 4. Implementar a chamada para abrir o Drawer
+        onMenuPressed: () { 
+          _scaffoldKey.currentState?.openDrawer();
+        },
       ),
+      drawer: const AppDrawer(),  
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(24),

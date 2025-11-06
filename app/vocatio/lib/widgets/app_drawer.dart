@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:vocattio/utils/responsive_helper.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -6,7 +7,7 @@ class AppDrawer extends StatelessWidget {
 
   const AppDrawer({
     super.key,
-    this.turmas = const ['Turma 1', 'Turma 2', 'Turma 3', 'Turma 4', 'Turma 5', 'Turma 6'],
+    this.turmas = const [],
   });
 
   @override
@@ -56,6 +57,24 @@ class AppDrawer extends StatelessWidget {
             },
           ),
           
+          ListTile(
+            leading: Icon(
+              Icons.settings, 
+              color: theme.colorScheme.secondary,
+            ),
+            title: Text(
+              'Configurações',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              // Lógica de navegação para a tela de configurações
+              print('Navegar para Configurações');
+            },
+          ),
+
           const Divider(),
           
           // Seção Turmas
@@ -73,7 +92,7 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
           
-          // Lista de turmas
+          // Lista de turmas (usa a lista passada)
           Expanded(
             child: ListView.builder(
               itemCount: turmas.length,
@@ -84,19 +103,42 @@ class AppDrawer extends StatelessWidget {
                     color: theme.colorScheme.primary,
                   ),
                   title: Text(
-                    turmas[index],
+                    turmas[index], // Usa o nome da turma
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurface,
                     ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
-                    // Navegar para a turma específica
+                    // Lógica para navegar para a turma específica (você pode precisar do ID aqui)
                   },
                 );
               },
             ),
           ),
+
+          const Divider(), 
+          
+          ListTile(
+            leading: Icon(
+              Icons.logout,
+              color: theme.colorScheme.error,
+            ),
+            title: Text(
+              'Sair',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.error,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              Phoenix.rebirth(context);
+              print('Usuário deslogado!'); 
+            },
+          ),
+          
+          SizedBox(height: 16),
         ],
       ),
     );

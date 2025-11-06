@@ -10,6 +10,7 @@ import 'package:vocattio/widgets/dialog_exc.dart';
 import 'package:vocattio/widgets/animated_button.dart';
 import 'package:vocattio/utils/responsive_helper.dart';
 import 'package:vocattio/widgets/snackbars.dart';
+import 'package:vocattio/widgets/app_drawer.dart'; 
 
 class DetalhesTurmaScreen extends StatefulWidget {
   final String nomeTurma;
@@ -34,24 +35,33 @@ class DetalhesTurmaScreen extends StatefulWidget {
 }
 
 class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final TextTheme textTheme = theme.textTheme;
 
     return Scaffold(
+      key: _scaffoldKey, 
       backgroundColor: theme.colorScheme.surface,
       appBar: AppHeader(
         title: 'Registrar',
         onMenuPressed: () {
+          _scaffoldKey.currentState?.openDrawer(); 
         },
         hasGoBack: true,
         onGoBack: () {
           Navigator.pop(context);
         },
       ),
+      // 5. Adicionar o AppDrawer ao Scaffold
+      drawer: const AppDrawer(), 
       body: SafeArea(
         child: Center(
+// ... (O restante do código do Body e FAB continua inalterado)
+// ...
           child: Container(
             constraints: BoxConstraints(
               maxWidth: ResponsiveHelper.isDesktop(context) ? 600 : double.infinity,
@@ -202,28 +212,52 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
           ),
         ),
       ),
-      floatingActionButton: widget.user.tipo == 'professor' ? FloatingActionButton(
-        backgroundColor: const Color(0xFF9B71D9),
-        child: const Icon(Icons.delete, color: Colors.white),
-        onPressed: () async {
-          final confirm = await showCustomDialog(
-            context, 
-            Icons.delete_forever,
-            'Deseja apagar essa turma?',
-            'Não será possível restaurar essa turma, deve ter certeza que deseja excluir permanentemente.',
-            (){
-              // logica de apagar
-            },
-            'Apagar',
-            isCritical: true,
-          );
+      floatingActionButton: widget.user.tipo == 'professor'
+          ? FloatingActionButton(
+              backgroundColor: theme.colorScheme.error,
+              child: const Icon(Icons.delete, color: Colors.white),
+              onPressed: () async {
+                final confirm = await showCustomDialog(
+                  context,
+                  Icons.delete_forever,
+                  'Deseja apagar essa turma?',
+                  'Não será possível restaurar essa turma, deve ter certeza que deseja excluir permanentemente.',
+                  () {
+                    // logica de apagar turma (a ser implementada)
+                  },
+                  'Apagar',
+                  isCritical: true,
+                );
 
-          if (confirm == true) {
-            showSuccessSnackBar('Turma excluída com sucesso!', context);
-            Navigator.pop(context);
-          }
-        },
-      )  : null
+                if (confirm == true) {
+                  showSuccessSnackBar('Turma excluída com sucesso!', context);
+                  Navigator.pop(context); 
+                }
+              },
+            )
+          : FloatingActionButton(
+              // Botão para o ALUNO: Sair da Turma
+              backgroundColor: theme.colorScheme.tertiary,
+              child: const Icon(Icons.exit_to_app, color: Colors.white), 
+              onPressed: () async {
+                final confirm = await showCustomDialog(
+                  context,
+                  Icons.exit_to_app,
+                  'Deseja sair da turma?',
+                  'Você precisará do código para entrar novamente. Confirma a saída?',
+                  () {
+                    // logica de sair da turma (a ser implementada)
+                  },
+                  'Sair',
+                  isCritical: true,
+                );
+
+                if (confirm == true) {
+                  showSuccessSnackBar('Você saiu da turma ${widget.nomeTurma}', context);
+                  Navigator.pop(context); 
+                }
+              },
+            ),
     );
   }
 }

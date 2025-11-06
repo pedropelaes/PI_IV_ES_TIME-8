@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:vocattio/services/location/location_service.dart';
+import 'package:vocattio/widgets/app_drawer.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/snackbars.dart';
@@ -24,6 +25,7 @@ class ViaCode extends StatefulWidget {
 class _ViaCodeState extends State<ViaCode> {
   final TextEditingController _codeController = TextEditingController();
   final TextEditingController _tempCodeController = TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _locationService = LocationService();
   final AuthService _authService = AuthService();
   Position? _currentLocation;
@@ -232,15 +234,18 @@ class _ViaCodeState extends State<ViaCode> {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface, 
+      key: _scaffoldKey,
       appBar: AppHeader(
         title: 'Registrar',
         onMenuPressed: () {
+          _scaffoldKey.currentState?.openDrawer();
         },
         hasGoBack: true,
         onGoBack: () {
           Navigator.pop(context);
         },
       ),
+      drawer: AppDrawer(),
       body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
               child: LayoutBuilder(

@@ -9,11 +9,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vocattio/services/location/location_service.dart'; 
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
+import 'package:vocattio/widgets/app_drawer.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/text_field.dart';
 import 'package:vocattio/widgets/snackbars.dart';
+
 
 class CriarTurmaScreen extends StatefulWidget {
   final String objectId;
@@ -28,6 +30,7 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
   final TextEditingController descriptionController = TextEditingController();
   final SocketService _socketService = getIt<SocketService>();
   final LocationService _locationService = LocationService();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   
   LatLng _selectedLocation = const LatLng(-22.9068, -47.0616); // campinas padrao
 
@@ -319,12 +322,16 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
+      key: _scaffoldKey, 
       appBar: AppHeader(
         title: 'Nova Turma',
         hasGoBack: true,
         onGoBack: () => Navigator.pop(context),
-        onMenuPressed: () {},
+        onMenuPressed: () {
+          _scaffoldKey.currentState?.openDrawer();
+        },
       ),
+      drawer: AppDrawer(),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(24),

@@ -3,12 +3,19 @@ import 'package:vocattio/screens/scan_qrcode.dart';
 import 'package:vocattio/screens/via_code.dart';
 import 'package:vocattio/utils/responsive_helper.dart';
 import 'package:vocattio/widgets/animated_button.dart';
+import 'package:vocattio/widgets/app_drawer.dart';
 import 'package:vocattio/widgets/app_header.dart';
 
-class ValidateAttendanceScreen extends StatelessWidget {
+class ValidateAttendanceScreen extends StatefulWidget {
   final String? uid;
-  
   const ValidateAttendanceScreen({super.key, this.uid});
+
+  @override
+  State<ValidateAttendanceScreen> createState() => _ValidateAttendanceScreenState();
+}
+
+class _ValidateAttendanceScreenState extends State<ValidateAttendanceScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -16,15 +23,18 @@ class ValidateAttendanceScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
+      key: _scaffoldKey, 
       appBar: AppHeader(
         title: 'Registrar',
-        onMenuPressed: () {
-        },
         hasGoBack: true,
         onGoBack: () {
           Navigator.pop(context);
         },
+        onMenuPressed: () {
+          _scaffoldKey.currentState?.openDrawer();
+        },
       ),
+      drawer: AppDrawer(),
       body: SafeArea(
         child: Center(
           child: Container(
@@ -53,7 +63,6 @@ class ValidateAttendanceScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                 
-                    // Título
                     Text(
                       'Registrar Presença',
                       style: theme.textTheme.titleMedium?.copyWith(
@@ -64,7 +73,6 @@ class ValidateAttendanceScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                 
-                    // Texto descritivo
                     Text(
                       'Escaneie ou digite o código para validar sua presença',
                       textAlign: TextAlign.center,
@@ -79,7 +87,8 @@ class ValidateAttendanceScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ScanQrcode(uid: uid),
+                            // Usar widget.uid pois estamos no State
+                            builder: (context) => ScanQrcode(uid: widget.uid),
                           ),
                         );
                       },
@@ -88,10 +97,11 @@ class ValidateAttendanceScreen extends StatelessWidget {
                     AnimatedButton(
                       text: 'Via Código',
                       onPressed: () {
-                       Navigator.push(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ViaCode(uid: uid),
+                            // Usar widget.uid pois estamos no State
+                            builder: (context) => ViaCode(uid: widget.uid),
                           ),
                         );
                       },
