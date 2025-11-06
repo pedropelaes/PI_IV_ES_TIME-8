@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:vocattio/models/loc_padrao.dart';
 import 'package:vocattio/models/user.dart';
 import 'package:vocattio/screens/alunos_turma_screen.dart';
 import 'package:vocattio/screens/tela_presencas.dart';
@@ -14,7 +16,10 @@ import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/dialog_exc.dart';
 import 'package:vocattio/widgets/animated_button.dart';
 import 'package:vocattio/utils/responsive_helper.dart';
+import 'package:vocattio/widgets/location_picker.dart';
+import 'package:vocattio/widgets/slide_up_card.dart';
 import 'package:vocattio/widgets/snackbars.dart';
+import 'package:vocattio/widgets/text_field.dart';
 
 class DetalhesTurmaScreen extends StatefulWidget {
   final String nomeTurma;
@@ -22,6 +27,7 @@ class DetalhesTurmaScreen extends StatefulWidget {
   final int numeroAlunos;
   final String codigoTurma;
   final String turmaId;
+  final LocPadrao locPadrao;
   final User user;
 
   const DetalhesTurmaScreen({
@@ -31,6 +37,7 @@ class DetalhesTurmaScreen extends StatefulWidget {
     required this.numeroAlunos,
     required this.codigoTurma,
     required this.turmaId,
+    required this.locPadrao,
     required this.user,
   });
 
@@ -40,17 +47,75 @@ class DetalhesTurmaScreen extends StatefulWidget {
 
 class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
   final SocketService _socketService = getIt<SocketService>();
-  late bool? _apagarTurmaResult;
+
+  late LocPadrao _editedLocPadrao;
+  bool _isLoadingEdit = false;
+
+  final TextEditingController editNameController = TextEditingController();
+  final TextEditingController editDescController = TextEditingController();
+
+  @override void initState() {
+    super.initState();
+    editNameController.text = widget.nomeTurma;
+    editDescController.text = widget.descricao;
+    _editedLocPadrao = widget.locPadrao;
+  }
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final TextTheme textTheme = theme.textTheme;
 
+    Future<bool?> _editarTurma() async {
+    setState(() {
+      _isLoadingEdit = true;
+    });
+
+    Map<String, dynamic> jsonEditarTurma = {
+      "operacao": "EditarTurma",
+      "turmaId": widget.turmaId,
+      "nome": editNameController.text, // Usa o controller
+      "descricao": editDescController.text, // Usa o controller
+      "locPadrao": _editedLocPadrao.toJson() // Usa o estado _editedLocPadrao
+    };
+
+    try {
+      _socketService.send(jsonEditarTurma);
+
+      final responseData = await _socketService.messages.firstWhere(
+        (data) {
+          try {
+            final message = jsonDecode(data is String ? data : utf8.decode(data));
+            // Assumindo que a resposta será 'ResultadoEditarTurma'
+            return message['operacao'] == 'ResultadoEditarTurma';
+          } catch (e) {
+            return false;
+          }
+        },
+      ).timeout(const Duration(seconds: 10));
+
+      final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
+      final resultado = responseJson['resultado'];
+
+      return (resultado == 'true' || resultado == true);
+
+    } on TimeoutException {
+      print("Erro: Tempo de resposta para editar turma");
+      return null;
+    } catch (e) {
+      print("Erro ao editar turma: $e");
+      return null;
+    } finally {
+      setState(() {
+        _isLoadingEdit = false;
+      });
+    }
+  }
+
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       appBar: AppHeader(
-        title: 'Registrar',
+        title: widget.nomeTurma,
         onMenuPressed: () {
         },
         hasGoBack: true,
@@ -77,13 +142,152 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Código da Turma',
-                          style: textTheme.titleMedium?.copyWith(
-                            color: theme.colorScheme.primaryFixed,
-                            fontWeight: FontWeight.bold,
-                            fontSize: ResponsiveHelper.getResponsiveFontSize(context, 18),
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              'Código da Turma',
+                              style: textTheme.titleMedium?.copyWith(
+                                color: theme.colorScheme.primaryFixed,
+                                fontWeight: FontWeight.bold,
+                                fontSize: ResponsiveHelper.getResponsiveFontSize(context, 18),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: (){
+                                editNameController.text = widget.nomeTurma;
+                                editDescController.text = widget.descricao;
+                                setState(() {
+                                  _editedLocPadrao = widget.locPadrao;
+                                });
+
+                                showModalBottomSheet(
+                                  context: context, 
+                                  isScrollControlled: true,
+                                  isDismissible: false,
+                                  enableDrag: false,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft:Radius.circular(20), topRight: Radius.circular(20))),
+                                  builder: (BuildContext context){
+                                    return WillPopScope(
+                                      onWillPop: () async {
+                                        if (mounted) {
+                                          Navigator.of(context).pop(false);
+                                        }
+                                        return false;
+                                      },
+                                      child: StatefulBuilder(
+                                        builder: (BuildContext context, StateSetter dialogSetState){
+                                          return SlideUpContainer(
+                                            content: [
+                                              SingleChildScrollView(
+                                                child: ConstrainedBox(
+                                                  constraints: BoxConstraints(maxWidth: 400),
+                                                  child: primaryFixedGradientContainer(
+                                                    theme: theme,
+                                                    padding: EdgeInsets.all(24.0),
+                                                    child: Column(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        Text(
+                                                          "Editar Turma",
+                                                          style: textTheme.titleLarge?.copyWith(
+                                                            color: theme.colorScheme.primaryFixed,
+                                                          ),
+                                                        ),
+                                                        SizedBox(height: 24),
+                                                        TextFieldDesign(
+                                                          controller: editNameController,
+                                                          hintText: 'Nome da Turma',
+                                                          context: context,
+                                                        ),
+                                                        SizedBox(height: 16),
+                                                        TextFieldDesign(
+                                                          controller: editDescController,
+                                                          hintText: 'Descrição',
+                                                          context: context,
+                                                        ),
+                                                        SizedBox(height: 16,),
+                                                        Text(
+                                                          "Editar local padrão",
+                                                          style: textTheme.titleLarge?.copyWith(
+                                                            color: theme.colorScheme.primaryFixed,
+                                                          ),
+                                                        ),
+                                                        SizedBox(height: 8),
+                                                        LocationPickerWidget(
+                                                          initialLocation: LatLng(
+                                                            _editedLocPadrao.latitude,
+                                                            _editedLocPadrao.longitude),
+                                                            onLocationChanged: (newLocation) {
+                                                            dialogSetState(() { 
+                                                              _editedLocPadrao = LocPadrao(
+                                                                latitude: newLocation.latitude,
+                                                                longitude: newLocation.longitude,
+                                                              );
+                                                            });
+                                                          },
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                if (mounted) {
+                                                                  Navigator.of(context).pop();
+                                                                }
+                                                              },
+                                                              child: Text(
+                                                                "Cancelar",
+                                                                style: theme.textTheme.bodyLarge?.copyWith(
+                                                                  color: theme.colorScheme.secondaryFixed
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            SizedBox(height: 18,),
+                                                            TextButton(
+                                                              onPressed: () async {
+                                                                if (_isLoadingEdit) return;
+                                                                                                        
+                                                                final resultado = await _editarTurma();
+                                                                
+                                                                if (mounted) {
+                                                                  Navigator.pop(context); // Fecha o modal
+                                                                }
+                                                                
+                                                                if (resultado == true && mounted) {
+                                                                  showSuccessSnackBar("Turma editada! Recarregando...", context);
+                                                                  Navigator.of(context).pop();
+                                                                } else if (mounted) {
+                                                                  showErrorSnackBar("Erro ao editar turma.", context);
+                                                                }
+                                                              },
+                                                              child: Text(
+                                                                "Confirmar",
+                                                                style: theme.textTheme.bodyLarge?.copyWith(
+                                                                  color: theme.colorScheme.primaryFixed,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ]
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                            theme: theme
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  }
+                                );
+                              }, 
+                              icon: Icon(
+                                Icons.edit,
+                                color: theme.colorScheme.primaryFixed,
+                              )
+                            )
+                          ],
                         ),
                         const SizedBox(height: 12),
                         Text(
@@ -284,4 +488,5 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
     return null;
   }
 }
+
 }

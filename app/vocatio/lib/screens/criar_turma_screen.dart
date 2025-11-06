@@ -12,6 +12,7 @@ import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
+import 'package:vocattio/widgets/location_picker.dart';
 import 'package:vocattio/widgets/slide_up_card.dart';
 import 'package:vocattio/widgets/text_field.dart';
 import 'package:vocattio/widgets/snackbars.dart';
@@ -99,7 +100,6 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
       final bool? locationWasSaved = await showModalBottomSheet<bool>(
         isDismissible: false,
         enableDrag: false,
-        useRootNavigator: true,
         shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
         isScrollControlled: true,
         context: context,
@@ -124,114 +124,12 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(26),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: theme.colorScheme.primary,
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 4),
-                                      ),
-                                    ],
-                                    border: Border.all(color: theme.colorScheme.outline),
-                                  ),
-                                  height: 300,
-                                  width: 400, 
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      GoogleMap(
-                                        initialCameraPosition: CameraPosition(
-                                          target: dialogSelectedLocation,
-                                          zoom: 15.0
-                                        ),
-                                        onMapCreated: (controller) {
-                                          dialogMapController = controller;
-                                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                                            defLocInicialDoMapaDialog(dialogSetState);
-                                          });
-                                        },
-                                        onTap: (pos) => updateDialogState(pos, dialogSetState),
-                                        markers: dialogMarkers,
-                                        myLocationButtonEnabled: false,
-                                        myLocationEnabled: true,
-                                        gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
-                                          Factory<EagerGestureRecognizer>(
-                                            () => EagerGestureRecognizer()
-                                          )
-                                        },
-                                      ),
-                                      if(isDialogMapLoading)
-                                        CircularProgressIndicator(
-                                          color: Theme.of(context).colorScheme.primary,
-                                        ),
-                                      Positioned(
-                                        top: 16.0,
-                                        right: 16.0,
-                                        child: FloatingActionButton(
-                                          mini: true,
-                                          onPressed: () async {
-                                            dialogSetState(() { isDialogMapLoading = true; });
-                                            try {
-                                              final position = await ValidadorLocalizacao.obterPosicaoAtual();
-                                              if (position != null) {
-                                                final newPos = LatLng(position.latitude, position.longitude);
-                                                updateDialogState(newPos, dialogSetState);
-                                                dialogMapController?.animateCamera(CameraUpdate.newLatLngZoom(newPos, 17.0));
-                                                if(position.accuracy > 100){
-                                                  if(mounted) showTopSnackBar('Localização obtida é muito imprecisa. Use o mapa para selecionar o local manualmente.', context, isError: true);
-                                                  return;
-                                                }
-                                              } else {
-                                                if(mounted) showTopSnackBar('Erro ao obter localização atual', context, isError: true);
-                                              }
-                                            } catch (e) {
-                                              if(mounted) showTopSnackBar('Não foi possivel obter localização precisa', context, isError: true);
-                                            } finally {
-                                              dialogSetState(() { isDialogMapLoading = false; });
-                                            }
-                                          },
-                                          child: const Icon(Icons.my_location),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  'Ou digite manualmente', 
-                                  style: theme.textTheme.bodyLarge?.copyWith(
-                                    color: theme.colorScheme.primaryFixed
-                                  )
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextFieldDesign(
-                                        controller: dialogLatController, 
-                                        hintText: 'Latitude', 
-                                        context: context
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: TextFieldDesign(
-                                        controller: dialogLonController, 
-                                        hintText: 'Longitude', 
-                                        context: context
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
+                          child: LocationPickerWidget(
+                            initialLocation: _selectedLocation, 
+                            onLocationChanged: (newLocation){
+                              dialogSelectedLocation = newLocation;
+                            }
+                          )
                         ),
                   
                         Padding(
@@ -240,7 +138,11 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               TextButton(
-                                onPressed: () => Navigator.of(context).pop(false),
+                               onPressed: () {
+                                if (mounted) {
+                                  Navigator.of(context).pop(false);
+                                }
+                              },
                                 child: Text(
                                   "Cancelar",
                                   style: theme.textTheme.bodyLarge?.copyWith(

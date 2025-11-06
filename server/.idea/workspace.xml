@@ -5,7 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="835ce07a-16a5-48fc-93cd-fcf22f86460b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/screens/criar_turma_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/screens/criar_turma_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/screens/detalhes_turma.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/screens/detalhes_turma.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/screens/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/screens/home_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/domain/LocPadrao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/LocPadrao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/processing/ProcessadorDeOperacao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/processing/ProcessadorDeOperacao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/protocol/requests/EditarTurma.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/EditarTurma.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,7 +95,7 @@
       <workItem from="1761943606128" duration="2267000" />
       <workItem from="1762183832359" duration="8068000" />
       <workItem from="1762276300918" duration="3139000" />
-      <workItem from="1762453803875" duration="3874000" />
+      <workItem from="1762453803875" duration="6249000" />
     </task>
     <servers />
   </component>

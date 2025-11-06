@@ -11,7 +11,6 @@ class TextFieldDesign extends StatefulWidget {
     required this.hintText,
     required this.context,
     this.isPassword = false,
-    super.key,
   });
 
   @override

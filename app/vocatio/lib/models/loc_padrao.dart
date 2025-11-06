@@ -13,4 +13,11 @@ class LocPadrao {
       longitude: (json['longitude'] as num).toDouble()
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'latitude': latitude,
+      'longitude': longitude,
+    };
+  }
 }

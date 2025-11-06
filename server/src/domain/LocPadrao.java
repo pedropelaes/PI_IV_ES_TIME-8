@@ -14,4 +14,9 @@ public class LocPadrao {
     public double getLongitude() {
         return longitude;
     }
+
+    public LocPadrao(LocPadrao l){
+        this.latitude = l.getLatitude();
+        this.longitude = l.getLongitude();
+    }
 }

@@ -102,6 +102,10 @@ public class ProcessadorDeOperacao {
                     ApagarTurma apagarTurma = gson.fromJson(json, ApagarTurma.class);
                     resultado = apagarTurma.apagarTurma();
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoApagarTurma"));
+                case "EditarTurma":
+                    EditarTurma editarTurma = gson.fromJson(json, EditarTurma.class);
+                    resultado = editarTurma.editarTurma();
+                    remetente.receba(new ResultadoOperacao(resultado, "ResultadoEditarTurma"));
                 default:
                     System.err.println("Comunicado desconhecido: '" + tipo + "'");
                     System.err.println("JSON completo recebido: " + json);

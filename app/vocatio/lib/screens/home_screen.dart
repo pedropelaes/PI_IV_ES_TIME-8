@@ -221,6 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           numeroAlunos: turma.alunos.length,
                                           codigoTurma: turma.codigo, // código humano da turma
                                           turmaId: turma.objectId,   // ObjectId para backend
+                                          locPadrao: turma.localizacaoPadrao,
                                           user: user!
                                         ),
                                       ),
