@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _scaffoldKey.currentState?.openDrawer();
         },
       ),
-      drawer: AppDrawer(), 
+      drawer: AppDrawer(uid: widget.uid), 
       body: SafeArea(
         child: Center(
           child: Container(
@@ -184,9 +184,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             
                             final turmas = turmasSnapshot.data!;
                             
-                            if(!getIt.isRegistered<List<Turma>>()){
-                              getIt.registerSingleton<List<Turma>>(turmas);
+                            // Atualiza ou registra as turmas no getIt
+                            if(getIt.isRegistered<List<Turma>>()){
+                              getIt.unregister<List<Turma>>();
                             }
+                            getIt.registerSingleton<List<Turma>>(turmas);
 
                             // AQUI ESTÁ A CHAVE: Mapear e atualizar o estado do Drawer
                             final List<String> novaListaDeTurmas = turmas.map((t) => t.nome).toList();

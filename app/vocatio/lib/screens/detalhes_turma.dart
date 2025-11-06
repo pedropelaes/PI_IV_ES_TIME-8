@@ -56,7 +56,10 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
           Navigator.pop(context);
         },
       ),
-      drawer: const AppDrawer(), 
+      drawer: AppDrawer(
+        user: widget.user,
+        currentTurmaId: widget.turmaId,
+      ), 
       body: SafeArea(
         child: Center(
           child: Container(
