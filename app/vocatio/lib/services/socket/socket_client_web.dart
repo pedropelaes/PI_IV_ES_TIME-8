@@ -39,7 +39,9 @@ class SocketClientWeb implements SocketClient {
       if (!completer.isCompleted) {
         completer.completeError(error);
       }
-      _controller.addError(error);
+      if (!_controller.isClosed) {
+        _controller.addError(error);
+      }
     }.toJS);
 
     return completer.future;
