@@ -223,7 +223,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
               bool? apagarTurmaResult = await _apagarTurma();
               if(apagarTurmaResult == true){
                 if(mounted) showSuccessSnackBar('Turma apagada.', context);
-                Navigator.pop(context);
+                Navigator.of(context).pop(true);
               }else if (apagarTurmaResult == null){
                 if(mounted) showErrorSnackBar("Erro ao apagar turma.", context);
               }else{
@@ -236,7 +236,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
 
           if (confirm == true) {
             showSuccessSnackBar('Turma excluída com sucesso!', context);
-            Navigator.pop(context);
+            Navigator.of(context).pop(true);
           }
         },
       )  : null
