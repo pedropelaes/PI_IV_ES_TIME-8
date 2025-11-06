@@ -98,6 +98,10 @@ public class ProcessadorDeOperacao {
                     boolean alunosNaoVazio = alunosSimples != null && !alunosSimples.isEmpty();
                     remetente.receba(new ResultadoGetAlunosSimples(alunosNaoVazio, "ResultadoGetAlunosSimples", alunosSimples));
                     break;
+                case "ApagarTurma":
+                    ApagarTurma apagarTurma = gson.fromJson(json, ApagarTurma.class);
+                    resultado = apagarTurma.apagarTurma();
+                    remetente.receba(new ResultadoOperacao(resultado, "ResultadoApagarTurma"));
                 default:
                     System.err.println("Comunicado desconhecido: '" + tipo + "'");
                     System.err.println("JSON completo recebido: " + json);

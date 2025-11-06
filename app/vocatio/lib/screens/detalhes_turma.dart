@@ -1,9 +1,14 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:vocattio/models/user.dart';
 import 'package:vocattio/screens/alunos_turma_screen.dart';
 import 'package:vocattio/screens/tela_presencas.dart';
 import 'package:vocattio/screens/gerar_qrcode_screen.dart';
 import 'package:vocattio/screens/validate_attendance_screen.dart';
+import 'package:vocattio/services/locator.dart';
+import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/dialog_exc.dart';
@@ -34,6 +39,9 @@ class DetalhesTurmaScreen extends StatefulWidget {
 }
 
 class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
+  final SocketService _socketService = getIt<SocketService>();
+  late bool? _apagarTurmaResult;
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -211,8 +219,16 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
             Icons.delete_forever,
             'Deseja apagar essa turma?',
             'Não será possível restaurar essa turma, deve ter certeza que deseja excluir permanentemente.',
-            (){
-              // logica de apagar
+            () async {
+              bool? apagarTurmaResult = await _apagarTurma();
+              if(apagarTurmaResult == true){
+                if(mounted) showSuccessSnackBar('Turma apagada.', context);
+                Navigator.pop(context);
+              }else if (apagarTurmaResult == null){
+                if(mounted) showErrorSnackBar("Erro ao apagar turma.", context);
+              }else{
+                if(mounted) showErrorSnackBar("Permissão negada.", context);
+              }
             },
             'Apagar',
             isCritical: true,
@@ -226,4 +242,46 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
       )  : null
     );
   }
+
+
+  Future<bool?> _apagarTurma() async {
+  Map<String, dynamic> jsonApagarTurma = {
+    "operacao" : "ApagarTurma",
+    "turmaId" : widget.turmaId,
+    "professorId" : widget.user.objectId
+  };
+
+  try{
+    _socketService.send(jsonApagarTurma);
+
+    final responseData = await _socketService.messages.firstWhere(
+      (data){
+        try{
+          final message = jsonDecode(data is String ? data : utf8.decode(data));
+          return message['operacao'] == 'ResultadoApagarTurma';
+        }catch(e){
+          return false;
+        }
+      }
+    ).timeout(const Duration(seconds: 10));
+
+    final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
+    final resultado = responseJson['resultado'];
+
+    print("Resposta de apagar turma: $resultado");
+
+    if(resultado == 'true' || resultado == true){
+      return true;
+    }else{
+      return false;
+    }
+
+  }on TimeoutException{
+    print("Erro: Tempo de resposta para apagar turma");
+    return null;
+  }catch(e){
+    print("Erro ao apagar turma: $e");
+    return null;
+  }
+}
 }

@@ -67,11 +67,10 @@ public class CriarTurma {
 
 
             ObjectId professorObjectId = new ObjectId(objectId);
-            Document professor = usersCol.find(Filters.eq("_id", professorObjectId)).first();
 
             Document turma = new Document("nome", this.nome)
                     .append("descricao", this.descricao)
-                    .append("professorId", new ObjectId())
+                    .append("professorId", professorObjectId)
                     .append("codigo", gerarCodigo(this.nome))
                     .append("alunos", new ArrayList<ObjectId>())
                     .append("aulas", new ArrayList<ObjectId>())
