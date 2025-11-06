@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:vocattio/utils/responsive_helper.dart';
+import 'package:vocattio/screens/settings_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   final List<String> turmas;
@@ -14,10 +15,10 @@ class AppDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final screenWidth = MediaQuery.of(context).size.width;
-    final drawerWidth = ResponsiveHelper.isDesktop(context) 
-        ? screenWidth * 0.3 
-        : ResponsiveHelper.isTablet(context) 
-            ? screenWidth * 0.4 
+    final drawerWidth = ResponsiveHelper.isDesktop(context)
+        ? screenWidth * 0.3
+        : ResponsiveHelper.isTablet(context)
+            ? screenWidth * 0.4
             : screenWidth * 0.5;
 
     return Drawer(
@@ -25,7 +26,6 @@ class AppDrawer extends StatelessWidget {
       backgroundColor: theme.colorScheme.surface,
       child: Column(
         children: [
-          // Logo no topo
           Container(
             height: 120,
             width: double.infinity,
@@ -38,8 +38,6 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
           ),
-          
-          // Item Início
           ListTile(
             leading: Icon(
               Icons.home,
@@ -53,13 +51,11 @@ class AppDrawer extends StatelessWidget {
             ),
             onTap: () {
               Navigator.pop(context);
-              // Navegar para a tela principal
             },
           ),
-          
           ListTile(
             leading: Icon(
-              Icons.settings, 
+              Icons.settings,
               color: theme.colorScheme.secondary,
             ),
             title: Text(
@@ -69,15 +65,26 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
             onTap: () {
-              Navigator.pop(context);
-              // Lógica de navegação para a tela de configurações
-              print('Navegar para Configurações');
+              Navigator.pop(context); 
+
+              final bool isSettingsScreen =
+                  context.findAncestorWidgetOfExactType<SettingsScreen>() != null;
+
+              if (isSettingsScreen) {
+                return; 
+              }
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingsScreen(),
+                ),
+              );
             },
           ),
 
+
           const Divider(),
-          
-          // Seção Turmas
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Align(
@@ -91,8 +98,6 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
           ),
-          
-          // Lista de turmas (usa a lista passada)
           Expanded(
             child: ListView.builder(
               itemCount: turmas.length,
@@ -103,22 +108,19 @@ class AppDrawer extends StatelessWidget {
                     color: theme.colorScheme.primary,
                   ),
                   title: Text(
-                    turmas[index], // Usa o nome da turma
+                    turmas[index],
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurface,
                     ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
-                    // Lógica para navegar para a turma específica (você pode precisar do ID aqui)
                   },
                 );
               },
             ),
           ),
-
-          const Divider(), 
-          
+          const Divider(),
           ListTile(
             leading: Icon(
               Icons.logout,
@@ -134,11 +136,10 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               Phoenix.rebirth(context);
-              print('Usuário deslogado!'); 
+              print('Usuário deslogado!');
             },
           ),
-          
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
         ],
       ),
     );
