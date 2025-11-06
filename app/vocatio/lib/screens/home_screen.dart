@@ -114,8 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _scaffoldKey.currentState?.openDrawer();
         },
       ),
-      //Passa o estado atual da lista de nomes para o AppDrawer
-      drawer: AppDrawer(turmas: _turmaNames), 
+      drawer: AppDrawer(), 
       body: SafeArea(
         child: Center(
           child: Container(
@@ -185,6 +184,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             
                             final turmas = turmasSnapshot.data!;
                             
+                            if(!getIt.isRegistered<List<Turma>>()){
+                              getIt.registerSingleton<List<Turma>>(turmas);
+                            }
+
                             // AQUI ESTÁ A CHAVE: Mapear e atualizar o estado do Drawer
                             final List<String> novaListaDeTurmas = turmas.map((t) => t.nome).toList();
                             

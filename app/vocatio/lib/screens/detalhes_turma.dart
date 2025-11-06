@@ -56,12 +56,9 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
           Navigator.pop(context);
         },
       ),
-      // 5. Adicionar o AppDrawer ao Scaffold
       drawer: const AppDrawer(), 
       body: SafeArea(
         child: Center(
-// ... (O restante do código do Body e FAB continua inalterado)
-// ...
           child: Container(
             constraints: BoxConstraints(
               maxWidth: ResponsiveHelper.isDesktop(context) ? 600 : double.infinity,

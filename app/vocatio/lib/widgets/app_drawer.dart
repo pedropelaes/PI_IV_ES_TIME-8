@@ -1,15 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:vocattio/models/turma.dart';
+import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/utils/responsive_helper.dart';
 import 'package:vocattio/screens/settings_screen.dart';
+import 'package:vocattio/screens/detalhes_turma.dart';
 
-class AppDrawer extends StatelessWidget {
-  final List<String> turmas;
+class AppDrawer extends StatefulWidget {
 
   const AppDrawer({
     super.key,
-    this.turmas = const [],
   });
+
+  @override
+  State<AppDrawer> createState() => _AppDrawerState();
+}
+
+class _AppDrawerState extends State<AppDrawer> {
+   List<Turma> turmas = [];
+
+  @override
+  void initState(){
+    super.initState();
+    if(getIt.isRegistered<List<Turma>>()){
+      turmas = getIt<List<Turma>>();
+      print(turmas);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +69,7 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
             },
+            
           ),
           ListTile(
             leading: Icon(
@@ -108,13 +126,14 @@ class AppDrawer extends StatelessWidget {
                     color: theme.colorScheme.primary,
                   ),
                   title: Text(
-                    turmas[index],
+                    turmas[index].nome,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurface,
                     ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
+
                   },
                 );
               },
@@ -145,3 +164,7 @@ class AppDrawer extends StatelessWidget {
     );
   }
 }
+
+
+
+
