@@ -33,7 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<List<Turma>?> _getTurmas(final List<String>? turmasIds) async{
     if(turmasIds == null || turmasIds.isEmpty){
-      print("Ta caindo aqui");
       return [];
     }
 
@@ -78,10 +77,6 @@ class _HomeScreenState extends State<HomeScreen> {
       return null;
     }
   }
-  
-
-  // Dados das turmas baseados na imagem
-  //final List<Map<String, dynamic>> turmas = [];
 
   @override
   void initState(){
@@ -97,6 +92,11 @@ class _HomeScreenState extends State<HomeScreen> {
     void _refreshData() async {
       final updatedUser = await _authService.getUser(widget.uid);
       if (updatedUser != null) {
+        if(getIt.isRegistered<User>()){
+          getIt.unregister<User>();
+        }
+        getIt.registerSingleton<User>(updatedUser);
+
         setState(() {
           _user = Future.value(updatedUser);
           _turmas = _getTurmas(updatedUser.turmas);
@@ -151,6 +151,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
 
                   final user = asyncSnapshot.data;
+
+                  if(!getIt.isRegistered<User>()){
+                    getIt.registerSingleton<User>(user!);
+                  }
 
                   _turmas ??= _getTurmas(user!.turmas);
 

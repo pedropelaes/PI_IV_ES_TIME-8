@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:vocattio/services/location/location_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
@@ -7,7 +8,6 @@ import 'package:vocattio/widgets/snackbars.dart';
 import 'package:vocattio/widgets/text_field.dart';
 import 'dart:async';
 import 'dart:convert';
-import 'package:vocattio/services/auth_service.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/models/user.dart';
@@ -25,7 +25,6 @@ class _ViaCodeState extends State<ViaCode> {
   final TextEditingController _codeController = TextEditingController();
   final TextEditingController _tempCodeController = TextEditingController();
   final _locationService = LocationService();
-  final AuthService _authService = AuthService();
   Position? _currentLocation;
   bool _isGettingLocation = false;
   final SocketService _socketService = getIt<SocketService>();
@@ -35,23 +34,16 @@ class _ViaCodeState extends State<ViaCode> {
   void initState(){
     super.initState();
     _locationService.checkLocationPermission();
-    if (widget.uid != null) {
-      _carregarUsuario();
+    if(getIt.isRegistered<User>()){
+      _currentUser = getIt<User>();
+    }else{
+      if(mounted) showErrorSnackBar("Erro de sessão, reiniciando app.", context);
+      Future.delayed(Duration(seconds: 3), (){
+        Phoenix.rebirth(context);
+      });
     }
   }
 
-  Future<void> _carregarUsuario() async {
-    try {
-      final user = await _authService.getUser(widget.uid!);
-      if (mounted) {
-        setState(() {
-          _currentUser = user;
-        });
-      }
-    } catch (e) {
-      print('Erro ao carregar usuário: $e');
-    }
-  }
 
   @override
   void dispose() {
@@ -110,6 +102,13 @@ class _ViaCodeState extends State<ViaCode> {
       Position position = await Geolocator.getCurrentPosition(
         locationSettings: locationSettings,
       );
+
+      print(position.accuracy);
+
+      if(position.accuracy > 100){
+        if(mounted) showErrorSnackBar('Não foi possivel obter sua localização com precisão. Provavelmente você está conectado a internet via cabo, caso contrário, fale com seu professor', context);
+        throw Exception('Precisão baixa');
+      }
 
       print('SUCESSO: Localização obtida - Lat: ${position.latitude}, Lng: ${position.longitude}');
       setState(() {
@@ -256,14 +255,6 @@ class _ViaCodeState extends State<ViaCode> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Título principal
-                        Text(
-                          'Digite o código e o código temporário',
-                          textAlign: TextAlign.center,
-                          style: textTheme.titleLarge?.copyWith(
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
                         SizedBox(height: largeSpacing),
                         Container(
                         padding: const EdgeInsets.all(24),

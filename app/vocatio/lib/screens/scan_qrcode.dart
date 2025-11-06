@@ -4,9 +4,9 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:vocattio/services/auth_service.dart';
 import 'package:vocattio/services/location/location_service.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
@@ -29,7 +29,6 @@ class _ScanQrcodeState extends State<ScanQrcode> {
   final TextEditingController _codeController = TextEditingController();
   final MobileScannerController _scannerController = MobileScannerController();
   final _locationService = LocationService();
-  final AuthService _authService = AuthService();
   bool _scanned = false;
   Position? _currentLocation;
   bool _isGettingLocation = false;
@@ -45,25 +44,20 @@ class _ScanQrcodeState extends State<ScanQrcode> {
   @override
   void initState(){
     super.initState();
-    _locationService.checkLocationPermission();
-    if (widget.uid != null) {
-      _carregarUsuario();
+    //_locationService.checkLocationPermission();
+
+    if(getIt.isRegistered<User>()){
+      _currentUser = getIt<User>();
+      print(_currentUser);
+    }else{
+      if(mounted) showErrorSnackBar("Erro de sessão, reiniciando app.", context);
+      Future.delayed(Duration(seconds: 3), (){
+        Phoenix.rebirth(context);
+      });
     }
   }
 
-  Future<void> _carregarUsuario() async {
-    try {
-      final user = await _authService.getUser(widget.uid!);
-      if (mounted) {
-        setState(() {
-          _currentUser = user;
-        });
-      }
-    } catch (e) {
-      print('Erro ao carregar usuário: $e');
-    }
-  }
-
+  
   Future<void> _getCurrentLocation() async {
     if (_isGettingLocation) return;
 
@@ -118,6 +112,10 @@ class _ScanQrcodeState extends State<ScanQrcode> {
         locationSettings: locationSettings,
       );
 
+      if(position.accuracy > 100){
+        if(mounted) showErrorSnackBar('Não foi possivel obter sua localização com precisão. Provavelmente você está conectado a internet via cabo, caso contrário, fale com seu professor', context);
+        throw Exception('Precisão baixa');
+      }
       print('SUCESSO: Localização obtida - Lat: ${position.latitude}, Lng: ${position.longitude}');
       setState(() {
         _currentLocation = position;

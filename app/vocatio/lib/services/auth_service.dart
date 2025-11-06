@@ -114,10 +114,10 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
-      print('✅ Usuário deletado do Firebase.');
+      print('Usuário deletado do Firebase.');
       return true;
     } else {
-      print('⚠️ Erro ao deletar usuário: ${response.body}');
+      print('Erro ao deletar usuário: ${response.body}');
       return false;
     }
   }
