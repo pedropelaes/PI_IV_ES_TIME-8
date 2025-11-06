@@ -298,7 +298,12 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
     final position = await Geolocator.getCurrentPosition(
       locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
     );
-    _profLocation = position;
+    if(position.accuracy > 100){ 
+      _profLocation = null;
+      if(mounted) showErrorSnackBar('Não foi possível obter a sua localização atual. A localização da turma será usada no lugar.', context);
+    }else{
+      _profLocation = position;
+    }
   } catch (e) {
     if (mounted) {
       showErrorSnackBar('Não foi possível obter a sua localização atual. A localização da turma será usada no lugar.', context);
