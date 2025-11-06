@@ -29,7 +29,7 @@ void main() async {
           ChangeNotifierProvider<ThemeNotifier>.value(value: themeNotifier,)
         ],
         child: DevicePreview(
-          enabled: kIsWeb || !(Platform.isAndroid || Platform.isIOS),
+          enabled: false, //kIsWeb || !(Platform.isAndroid || Platform.isIOS),
           builder: (context) => const MainApp()
         ),
       ),
