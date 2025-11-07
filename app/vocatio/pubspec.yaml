@@ -1,7 +1,7 @@
 name: vocattio
 description: "Vocattio is a multiplatform app for university attendance tracking. It replaces oral attendance with dynamic QR codes, geolocation, and biometric authentication, reducing class time, preventing unfair absences, and generating automatic reports for students and faculty."
 publish_to: 'none'
-version: 1.1.0-beta.1+6
+version: 1.5.0-beta.1+6
 
 environment:
   sdk: ^3.8.1
