@@ -67,6 +67,26 @@ Widget transparentContainer({
   );
 }
 
+Widget redTransparentContainer({
+  required ThemeData theme,
+  required Widget child,
+  required double width,
+  required double height,
+}){
+  return Container(
+    width: width,
+    height: height,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(20.0),
+      border: Border.all(
+        width: 2.0,
+        color: theme.colorScheme.error
+      )
+    ),
+    child: child,
+  );
+}
+
 Widget primaryGradientContainer({
   required ThemeData theme,
   required Widget child,

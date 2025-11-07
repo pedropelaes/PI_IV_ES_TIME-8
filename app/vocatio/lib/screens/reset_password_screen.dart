@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vocattio/services/auth_service.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
+import 'package:vocattio/widgets/snackbars.dart';
 import 'package:vocattio/widgets/text_field.dart';
 
 class ResetPassowordScreen extends StatefulWidget{
@@ -25,32 +26,13 @@ class _ResetPasswordScreenState extends State<ResetPassowordScreen>{
   // Método para validar o campo de e-mail
   bool _validateForm() {
     if (emailController.text.trim().isEmpty) {
-      _showErrorSnackBar('Por favor, digite seu e-mail');
+      showErrorSnackBar('Por favor, digite seu e-mail', context);
       return false;
     }
     
     return true;
   }
 
-  // Método para mostrar mensagens de erro
-  void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
-
-  // Método para mostrar mensagens de sucesso
-  void _showSuccessSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
 
    Future<void> _resetPassword(String email) async {
     if(!_validateForm()) return ;
@@ -65,12 +47,12 @@ class _ResetPasswordScreenState extends State<ResetPassowordScreen>{
         );
       
       if(result.containsKey('error')){
-        _showErrorSnackBar(result['error']['message']);
+        if(mounted) showErrorSnackBar(result['error']['message'], context);
       }else{
-        _showSuccessSnackBar('E-mail de recuperação enviado para ${emailController.text.trim()}');
+        if(mounted) showSuccessSnackBar('E-mail de recuperação enviado para ${emailController.text.trim()}', context);
       }
     } on Exception catch (e) {
-      _showErrorSnackBar('Erro inesperado: $e');
+      if(mounted) showErrorSnackBar('Erro inesperado: $e', context);
     } finally {
       setState(() {
         _isLoading = false;

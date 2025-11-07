@@ -1,7 +1,7 @@
 name: vocattio
 description: "Vocattio is a multiplatform app for university attendance tracking. It replaces oral attendance with dynamic QR codes, geolocation, and biometric authentication, reducing class time, preventing unfair absences, and generating automatic reports for students and faculty."
 publish_to: 'none'
-version: 1.2.0-alpha.1+8
+version: 1.5.0-beta.1+8
 
 environment:
   sdk: ^3.8.1
@@ -26,6 +26,15 @@ dependencies:
   get_it: ^8.2.0
   web: ^1.1.1
   bson: ^5.0.7
+  qr_flutter: ^4.1.0
+  flutter_phoenix: ^1.1.1
+  intl: ^0.20.2
+  url_launcher: ^6.2.5
+  connectivity_plus: ^7.0.0
+  google_maps_flutter: ^2.13.1
+  google_maps_flutter_web: ^0.5.11
+  google_maps_flutter_platform_interface: ^2.6.1
+  flutter_animate: ^4.5.2
 
 dev_dependencies:
   flutter_test:
@@ -37,6 +46,7 @@ flutter:
   assets: 
    - assets/images/
    - .env
+
 
 flutter_launcher_icons:
   android: "launcher_icon"

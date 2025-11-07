@@ -11,6 +11,8 @@ class AuthService {
   final String apiKey = dotenv.env['FIREBASE_API_WEB_KEY'] ?? '';
   final SocketService _socketService = getIt<SocketService>();
 
+  static get currentUser => null;
+
   Future<Map<String, dynamic>> signup(String email, String password) async {
     final url = Uri.parse(
       'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$apiKey',
@@ -112,10 +114,10 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
-      print('✅ Usuário deletado do Firebase.');
+      print('Usuário deletado do Firebase.');
       return true;
     } else {
-      print('⚠️ Erro ao deletar usuário: ${response.body}');
+      print('Erro ao deletar usuário: ${response.body}');
       return false;
     }
   }

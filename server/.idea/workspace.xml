@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="835ce07a-16a5-48fc-93cd-fcf22f86460b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/screens/entrar_em_turma_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/screens/entrar_em_turma_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EntrarEmTurma.class" beforeDir="false" afterPath="$PROJECT_DIR$/EntrarEmTurma.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EntrarEmTurma.java" beforeDir="false" afterPath="$PROJECT_DIR$/EntrarEmTurma.java" afterDir="false" />
-    </list>
+    <list default="true" id="835ce07a-16a5-48fc-93cd-fcf22f86460b" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -36,13 +31,14 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
+    &quot;Application.Servidor.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/entrarTurma&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/tipo__conexao&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/projects/PI_IV_ES_TIME-8/server&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/ppm/Documents/PI_IV_ES_TIME-8/server&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -52,11 +48,16 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\projects\PI_IV_ES_TIME-8\server\src" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.23892.409" />
-        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-IU-252.23892.409" />
+        <option value="bundled-jdk-9823dce3aa75-125ca727e0f0-intellij.indexing.shared.core-IU-243.24978.46" />
+        <option value="bundled-js-predefined-d6986cc7102b-76f8388c3a79-JavaScript-IU-243.24978.46" />
       </set>
     </attachedChunks>
   </component>
@@ -76,6 +77,17 @@
       <workItem from="1760887504788" duration="4644000" />
       <workItem from="1760992655290" duration="1444000" />
       <workItem from="1760994119895" duration="3877000" />
+      <workItem from="1761079738177" duration="304000" />
+      <workItem from="1761330024846" duration="7276000" />
+      <workItem from="1761590309491" duration="6675000" />
+      <workItem from="1761683788226" duration="6973000" />
+      <workItem from="1761692649090" duration="3660000" />
+      <workItem from="1761773169796" duration="3430000" />
+      <workItem from="1761928446039" duration="4350000" />
+      <workItem from="1761943606128" duration="2267000" />
+      <workItem from="1762183832359" duration="8068000" />
+      <workItem from="1762276300918" duration="3139000" />
+      <workItem from="1762453803875" duration="6849000" />
     </task>
     <servers />
   </component>
@@ -84,5 +96,6 @@
   </component>
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName=".env" />
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.bat" />
   </component>
 </project>

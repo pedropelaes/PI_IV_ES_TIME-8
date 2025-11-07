@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart'; // <--- IMPORT OBRIGATÓRIO PARA listEquals
 import 'package:vocattio/extensions/string_extensions.dart';
+import 'package:vocattio/models/turma.dart';
 import 'package:vocattio/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:vocattio/models/user.dart';
@@ -28,17 +30,57 @@ class _HomeScreenState extends State<HomeScreen> {
   final SocketService _socketService = getIt<SocketService>();
   final AuthService _authService = AuthService();
   late Future<User?> _user;
+  Future<List<Turma>?>? _turmas;
   
+  // Variável de estado para armazenar os nomes das turmas a serem passadas para o Drawer
+  List<String> _turmaNames = []; 
 
-  // Dados das turmas baseados na imagem
-  final List<Map<String, dynamic>> turmas = [
-    {'nome': 'Turma 1', 'descricao': 'Descrição *', 'alunos': 32},
-    {'nome': 'Turma 2', 'descricao': 'Descrição *', 'alunos': 51},
-    {'nome': 'Turma 3', 'descricao': 'Descrição *', 'alunos': 17},
-    {'nome': 'Turma 4', 'descricao': 'Descrição *', 'alunos': 30},
-    {'nome': 'Turma 5', 'descricao': 'Descrição *', 'alunos': 42},
-    {'nome': 'Turma 6', 'descricao': 'Descrição *', 'alunos': 0},
-  ];
+  Future<List<Turma>?> _getTurmas(final List<String>? turmasIds) async{
+    if(turmasIds == null || turmasIds.isEmpty){
+      return [];
+    }
+    // ... (restante da lógica _getTurmas)
+    Map<String, dynamic> jsonGetTurmas = {
+      "operacao" : "GetTurmas",
+      "turmasId" : turmasIds
+    };
+
+    try{
+      final futureResponse = _socketService.messages.firstWhere((data) {
+        try{
+          final message = jsonDecode(data is String ? data : utf8.decode(data));
+          return message['operacao'] == 'ResultadoGetTurmas';
+        }catch(e){
+          return false;
+        }
+      }).timeout(const Duration(seconds: 10));
+      _socketService.send(jsonGetTurmas);
+
+      final responseData = await futureResponse;
+      final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
+
+      final List<dynamic>? turmasJsonList = responseJson['turmas'];
+
+      if (turmasJsonList == null) {
+        print("Erro: Resposta do servidor não continha o campo 'turmas'.");
+        return []; 
+      }
+      
+      final List<Turma> resultado = turmasJsonList
+          .map((turmaJson) => Turma.fromJson(turmaJson as Map<String, dynamic>))
+          .toList();
+
+      print("Resposta GetTurmas: $resultado");
+      return resultado;
+    }on TimeoutException{
+      print("Erro: tempo de resposta esgotado para a busca das turmas");
+      return null;
+    }
+    catch(e){
+      print("Erro ao processar resposta do servidor: $e");
+      return null;
+    }
+  }
 
   @override
   void initState(){
@@ -51,6 +93,21 @@ class _HomeScreenState extends State<HomeScreen> {
     final ThemeData theme = Theme.of(context);
     final TextTheme textTheme = theme.textTheme;
 
+    void _refreshData() async {
+      final updatedUser = await _authService.getUser(widget.uid);
+      if (updatedUser != null) {
+        if(getIt.isRegistered<User>()){
+          getIt.unregister<User>();
+        }
+        getIt.registerSingleton<User>(updatedUser);
+
+        setState(() {
+          _user = Future.value(updatedUser);
+          _turmas = _getTurmas(updatedUser.turmas);
+        });
+      }
+    }
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: theme.colorScheme.surface,
@@ -60,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _scaffoldKey.currentState?.openDrawer();
         },
       ),
-      drawer: AppDrawer(),
+      drawer: AppDrawer(uid: widget.uid), 
       body: SafeArea(
         child: Center(
           child: Container(
@@ -72,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: FutureBuilder<User?>(
                 future: _user,
                 builder: (context, asyncSnapshot) {
-
+                  // ... (handle loading/error state for user)
                   if(asyncSnapshot.connectionState == ConnectionState.waiting){
                     return Center(child: CircularProgressIndicator(color: theme.colorScheme.onSurface),);
                   }
@@ -90,14 +147,20 @@ class _HomeScreenState extends State<HomeScreen> {
                           setState(() {
                             _user = _authService.getUser(widget.uid);
                           });
-                       
+                        
                         }, width: 255, height: 55)
                       ],
                     ),
                   );
-                }
+                  }
 
                   final user = asyncSnapshot.data;
+
+                  if(!getIt.isRegistered<User>()){
+                    getIt.registerSingleton<User>(user!);
+                  }
+
+                  _turmas ??= _getTurmas(user!.turmas);
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,37 +178,92 @@ class _HomeScreenState extends State<HomeScreen> {
                       
                       // Grid de turmas
                       Expanded(
-                        child: GridView.builder(
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: ResponsiveHelper.getGridCrossAxisCount(context),
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
-                            childAspectRatio: ResponsiveHelper.isDesktop(context) ? 1.0 : 0.85,
-                          ),
-                          itemCount: turmas.length,
-                          itemBuilder: (context, index) {
-                            final turma = turmas[index];
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => DetalhesTurmaScreen(
-                                      nomeTurma: turma['nome'],
-                                      descricao: turma['descricao'],
-                                      numeroAlunos: turma['alunos'],
-                                    ),
+                        child: FutureBuilder<List<Turma>?>(
+                          future: _turmas,
+                          builder: (context, turmasSnapshot) {
+                            if (turmasSnapshot.connectionState == ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator(color: theme.colorScheme.onSurface));
+                            }
+
+                            if (turmasSnapshot.hasError || !turmasSnapshot.hasData || turmasSnapshot.data == null) {
+                              return Center(child: Text('Erro ao carregar as turmas.'));
+                            }
+                            
+                            final turmas = turmasSnapshot.data!;
+                            
+                            // Atualiza ou registra as turmas no getIt
+                            if(getIt.isRegistered<List<Turma>>()){
+                              getIt.unregister<List<Turma>>();
+                            }
+                            getIt.registerSingleton<List<Turma>>(turmas);
+
+                            // AQUI ESTÁ A CHAVE: Mapear e atualizar o estado do Drawer
+                            final List<String> novaListaDeTurmas = turmas.map((t) => t.nome).toList();
+                            
+                            // Usamos listEquals para evitar rebuilds desnecessários
+                            if (!listEquals(novaListaDeTurmas, _turmaNames)) {
+                               // Agendamos o setState para após o frame atual
+                               WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  if(mounted) {
+                                     setState(() {
+                                        _turmaNames = novaListaDeTurmas;
+                                     });
+                                  }
+                                });
+                            }
+                            
+                            print("Turmas: $turmas");
+
+                            if(turmas.isEmpty){
+                              return Center(
+                                child: Text(
+                                  user!.tipo == 'professor' ? 'Você ainda não tem nenhuma turma' : 'Você ainda não está em nenhuma turma',
+                                  textAlign: TextAlign.center,
+                                  style: textTheme.displaySmall?.copyWith(
+                                    color: theme.colorScheme.error
+                                  ),
+                                ),
+                              );
+                            }
+                            
+                            // ... (restante do GridView.builder)
+                            return GridView.builder(
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: ResponsiveHelper.getGridCrossAxisCount(context),
+                                crossAxisSpacing: 16,
+                                mainAxisSpacing: 16,
+                                childAspectRatio: ResponsiveHelper.isDesktop(context) ? 1.0 : 0.85,
+                              ),
+                              itemCount: turmas.length,
+                              itemBuilder: (context, index) {
+                                final turma = turmas[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => DetalhesTurmaScreen(
+                                          nomeTurma: turma.nome,
+                                          descricao: turma.descricao,
+                                          numeroAlunos: turma.alunos.length,
+                                          codigoTurma: turma.codigo, // código humano da turma
+                                          turmaId: turma.objectId,   // ObjectId para backend
+                                          locPadrao: turma.localizacaoPadrao,
+                                          user: user!
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: TurmaCard(
+                                    nomeTurma: turma.nome,
+                                    descricao: turma.descricao,
+                                    numeroAlunos: turma.alunos.length,
                                   ),
                                 );
                               },
-                              child: TurmaCard(
-                                nomeTurma: turma['nome'],
-                                descricao: turma['descricao'],
-                                numeroAlunos: turma['alunos'],
-                              ),
                             );
-                          },
-                        ),
+                          }
+                        )
                       ),
                     ],
                   );
@@ -168,10 +286,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
           final user = asyncSnapshot.data!;
           print(user.objectId);
-          return CustomFAB(tipo: user.tipo, objectId: user.objectId ?? "");
-  },
-),
-
+          return CustomFAB(
+            tipo: user.tipo, 
+            objectId: user.objectId ?? "",
+            onPressed: (){
+              setState(() {
+                _refreshData();
+              });
+            },
+            );
+      },
+    ),
     );
   }
 }

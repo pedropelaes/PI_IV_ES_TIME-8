@@ -1,6 +1,4 @@
-import 'dart:ffi';
-
-import 'package:vocattio/models/user.dart';
+import 'package:vocattio/models/loc_padrao.dart';
 
 class Turma {
   final String objectId;
@@ -8,9 +6,10 @@ class Turma {
   final String descricao;
   final String professorId;
   final String codigo;
-  final List<User> alunos;
+  final List<String> alunos;
   final DateTime criadoEm;
   final DateTime atualizadoEm;
+  final LocPadrao localizacaoPadrao;
 
   const Turma({
     required this.objectId, 
@@ -21,6 +20,7 @@ class Turma {
     required this.alunos, 
     required this.criadoEm, 
     required this.atualizadoEm, 
+    required this.localizacaoPadrao,
   });
 
     factory Turma.fromJson(Map<String, dynamic> json) {
@@ -28,13 +28,17 @@ class Turma {
       objectId: json['_id'] ?? '',
       nome: json['nome'] ?? '',
       descricao: json['descricao'] ?? '',
-      professorId: json['professorId'] ?? '',
+      professorId: json['professor'] ?? '',
       codigo: json['codigo'] ?? '',
-      alunos: (json['alunos'] as List<dynamic>? ?? [])
-          .map((e) => User.fromJson(e))
-          .toList(),
+      alunos: List<String>.from(json['alunos'] ?? []),
+      localizacaoPadrao: LocPadrao.fromJson(json['localizacaoPadrao']),
       criadoEm: DateTime.tryParse(json['criadoEm'] ?? '') ?? DateTime.now(),
       atualizadoEm: DateTime.tryParse(json['atualizadoEm'] ?? '') ?? DateTime.now(),
     );
+  }
+
+  @override
+  String toString(){
+    return "Turma: {$nome, $descricao, $professorId, $codigo, $alunos, $criadoEm, $atualizadoEm}";
   }
 }

@@ -1,14 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import 'socket_client_mobile.dart' 
   if (dart.library.html) 'socket_client_web.dart';
 
 import 'socket_client.dart';
 
 class SocketService {
-  static const String host = '10.147.19.224';
-  static const int port = 3000;
+  static const String host = '10.147.19.224'; 
+  static int  get port => kIsWeb ? 3001 : 3000;
 
   final SocketClient _client = getSocketClient();
   final _controller = StreamController<dynamic>.broadcast();
@@ -16,6 +18,8 @@ class SocketService {
   bool get isConnected => _client.isConnected;
 
   Stream<dynamic> get messages => _controller.stream;
+
+  VoidCallback? onConnectionLost;
 
   SocketService() {
     _client.stream.listen((data) {
@@ -27,6 +31,8 @@ class SocketService {
     }, onDone: () {
       print('Conexão encerrada pelo servidor');
       _controller.close();
+
+      onConnectionLost?.call();
     });
   }
 
@@ -37,6 +43,7 @@ class SocketService {
       print('Conectado com sucesso em $host:$port');
     } catch (e) {
       print('Falha ao conectar: $e');
+      rethrow;
     }
   }
 
@@ -53,5 +60,16 @@ class SocketService {
   void disconnect() {
     _client.disconnect();
     print('Desconectado.');
+  }
+
+  Future<void> pedidoParaSair() async {
+    if(isConnected){
+      print("Enviando pedido para sair");
+
+      send({'operacao' : 'PedidoParaSair'});
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      disconnect();
+    }
   }
 }

@@ -11,6 +11,7 @@ import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
+import 'package:vocattio/widgets/snackbars.dart';
 import 'package:vocattio/widgets/text_field.dart';
 
 class SignupScreen extends StatefulWidget{
@@ -49,57 +50,38 @@ class _SignupScreenState extends State<SignupScreen> {
   // Método para validar os campos do formulário
   bool _validateForm() {
     if (nameController.text.trim().isEmpty) {
-      _showErrorSnackBar('Por favor, digite seu nome');
+      showErrorSnackBar('Por favor, digite seu nome', context);
       return false;
     }
     
     if (_typeSelector.contains(AccountType.aluno) && idController.text.trim().isEmpty) {
-      _showErrorSnackBar('Por favor, digite seu número de identificação');
+      showErrorSnackBar('Por favor, digite seu número de identificação', context);
       return false;
     }
     
     if (emailController.text.trim().isEmpty) {
-      _showErrorSnackBar('Por favor, digite seu e-mail');
+      showErrorSnackBar('Por favor, digite seu e-mail', context);
       return false;
     }
     
     if (passwordController.text.trim().isEmpty) {
-      _showErrorSnackBar('Por favor, digite sua senha');
+      showErrorSnackBar('Por favor, digite sua senha', context);
       return false;
     }
     
     if (passwordController.text != confirmPasswordController.text) {
-      _showErrorSnackBar('As senhas não coincidem');
+      showErrorSnackBar('As senhas não coincidem', context);
       return false;
     }
     
     if (passwordController.text.length < 6) {
-      _showErrorSnackBar('A senha deve ter pelo menos 6 caracteres');
+      showErrorSnackBar('A senha deve ter pelo menos 6 caracteres', context);
       return false;
     }
     
     return true;
   }
 
-  // Método para mostrar mensagens de erro
-  void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
-
-  // Método para mostrar mensagens de sucesso
-  void _showSuccessSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
   Future<void> _signup() async {
     if (!_validateForm()) return;
 
@@ -114,7 +96,7 @@ class _SignupScreenState extends State<SignupScreen> {
       );
 
       if (authResult.containsKey('error')) {
-        _showErrorSnackBar(authResult['error']['message']);
+        if(mounted) showErrorSnackBar(authResult['error']['message'], context);
         return;                                               
       }
 
@@ -125,6 +107,7 @@ class _SignupScreenState extends State<SignupScreen> {
           email: emailController.text.trim(),
           tipo: _typeSelector.first.name,
           codigo: idController.text.trim(),
+          turmas: []
         ),
       );
 
@@ -132,7 +115,7 @@ class _SignupScreenState extends State<SignupScreen> {
         final errorMessage = registerNewUserResult == false
             ? 'Servidor não pôde registrar o usuário'
             : 'Erro ao adquirir resposta do servidor';
-        _showErrorSnackBar(errorMessage);
+        if(mounted) showErrorSnackBar(errorMessage, context);
         await _authService.deleteUser(authResult['idToken']);
         return; 
       }
@@ -141,19 +124,18 @@ class _SignupScreenState extends State<SignupScreen> {
           await _authService.sendEmailVerification(authResult['idToken']);
 
       if (verificationEmailResult.containsKey('error')) {
-        _showErrorSnackBar(verificationEmailResult['error']['message']);
+        if(mounted) showErrorSnackBar(verificationEmailResult['error']['message'], context);
         return; 
       }
 
-      _showSuccessSnackBar('Cadastro realizado com sucesso! Verifique seu e-mail.');
-
       if (mounted) {
+        showSuccessSnackBar('Cadastro realizado com sucesso! Verifique seu e-mail.', context);
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => LoginScreen()),
         );
       }
     } catch (e) {
-      _showErrorSnackBar('Erro inesperado: $e');
+      if(mounted) showErrorSnackBar('Erro inesperado: $e', context);
     } finally {
       setState(() {
         _isLoading = false;

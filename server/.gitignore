@@ -1,1 +1,18 @@
+# Compilação
+*.class
+out/
+bin/
+
+# IntelliJ / IDEA
+.idea/
+*.iml
+
+# Ambiente
 .env
+*.pem
+*.crt
+*.key
+
+# Logs e temporários
+*.log
+*.tmp

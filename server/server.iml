@@ -11,5 +11,6 @@
     <orderEntry type="library" name="mongodb-driver-sync-5.6.1" level="project" />
     <orderEntry type="library" name="bson-5.6.1" level="project" />
     <orderEntry type="library" name="libs" level="project" />
+    <orderEntry type="library" name="Java EE 6-Java EE 6" level="project" />
   </component>
 </module>
