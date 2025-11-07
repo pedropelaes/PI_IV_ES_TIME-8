@@ -164,6 +164,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                                 fontSize: ResponsiveHelper.getResponsiveFontSize(context, 18),
                               ),
                             ),
+                            if(widget.user.tipo == 'professor')
                             IconButton(
                               onPressed: (){
                                 editNameController.text = widget.nomeTurma;

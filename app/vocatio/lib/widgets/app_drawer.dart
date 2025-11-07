@@ -175,6 +175,7 @@ class _AppDrawerState extends State<AppDrawer> {
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.onSurface,
               ),
+              overflow: TextOverflow.ellipsis,
             ),
             onTap: () {
               Navigator.pop(context); 
@@ -364,6 +365,7 @@ class _AppDrawerState extends State<AppDrawer> {
       descricao: turma.descricao,
       numeroAlunos: turma.alunos.length,
       codigoTurma: turma.codigo,
+      locPadrao: turma.localizacaoPadrao,
       turmaId: turma.objectId,
       user: _currentUser!,
     );

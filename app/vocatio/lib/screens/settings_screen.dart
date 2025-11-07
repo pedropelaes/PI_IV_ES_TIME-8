@@ -116,100 +116,117 @@ class _SettingsScreenState extends State<SettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Versão do App: v$_version",
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSecondaryContainer,
-                        fontWeight: FontWeight.bold,
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 400),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Versão do App: v$_version",
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSecondaryContainer,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 24),
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        "Tema do aplicativo",
-                        style: textTheme.titleMedium?.copyWith(
-                          color: theme.colorScheme.onSecondaryContainer,
-                          fontWeight: FontWeight.bold,
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 400),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Tema do aplicativo",
+                          style: textTheme.titleMedium?.copyWith(
+                            color: theme.colorScheme.onSecondaryContainer,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      Column(
-                        children: [
-                          _TemaOpcao(
-                            texto: "Sistema",
-                            selecionado: _selectedTheme == "system",
-                            onTap: () => _selectTheme("system"),
-                            theme: theme,
-                          ),
-                          _TemaOpcao(
-                            texto: "Claro",
-                            selecionado: _selectedTheme == "light",
-                            onTap: () => _selectTheme("light"),
-                            theme: theme,
-                          ),
-                          _TemaOpcao(
-                            texto: "Escuro",
-                            selecionado: _selectedTheme == "dark",
-                            onTap: () => _selectTheme("dark"),
-                            theme: theme,
-                          ),
-                        ],
-                      ),
-                    ],
+                        const SizedBox(height: 12),
+                        Column(
+                          children: [
+                            _TemaOpcao(
+                              texto: "Sistema",
+                              selecionado: _selectedTheme == "system",
+                              onTap: () => _selectTheme("system"),
+                              theme: theme,
+                            ),
+                            Divider(
+                              color: theme.colorScheme.onSecondaryContainer,
+                              thickness: 2,
+                            ),
+                            _TemaOpcao(
+                              texto: "Claro",
+                              selecionado: _selectedTheme == "light",
+                              onTap: () => _selectTheme("light"),
+                              theme: theme,
+                            ),
+                            Divider(
+                              color: theme.colorScheme.onSecondaryContainer,
+                              thickness: 2,
+                            ),
+                            _TemaOpcao(
+                              texto: "Escuro",
+                              selecionado: _selectedTheme == "dark",
+                              onTap: () => _selectTheme("dark"),
+                              theme: theme,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        "Suporte",
-                        style: textTheme.titleMedium?.copyWith(
-                          color: theme.colorScheme.onSecondaryContainer,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "Caso tenha algum problema, envie uma mensagem para esse email:",
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSecondaryContainer.withOpacity(0.8),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      GestureDetector(
-                        onTap: _launchEmail,
-                        child: Text(
-                          "vocattioltda@gmail.com",
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.primary,
-                            decoration: TextDecoration.underline,
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 400),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Suporte",
+                          style: textTheme.titleMedium?.copyWith(
+                            color: theme.colorScheme.onSecondaryContainer,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        Text(
+                          "Caso tenha algum problema, envie uma mensagem para esse email:",
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSecondaryContainer.withOpacity(0.8),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: _launchEmail,
+                          child: Text(
+                            "vocattioltda@gmail.com",
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.primary,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -240,9 +257,9 @@ class _TemaOpcao extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
               texto,
@@ -252,6 +269,7 @@ class _TemaOpcao extends StatelessWidget {
                     : theme.colorScheme.onSecondaryContainer,
                 fontWeight: selecionado ? FontWeight.w600 : FontWeight.normal,
               ),
+              textAlign: TextAlign.start,
             ),
             if (selecionado) ...[
               const SizedBox(width: 8),
