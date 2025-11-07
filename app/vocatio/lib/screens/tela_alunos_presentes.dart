@@ -6,6 +6,7 @@ import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
+import 'package:vocattio/widgets/app_drawer.dart';
 
 class TelaAlunosPresentes extends StatefulWidget{
   final String idChamada;
@@ -20,6 +21,7 @@ class TelaAlunosPresentes extends StatefulWidget{
 
 class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
   final SocketService _socketService = getIt<SocketService>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final List<Presenca> _alunosPresentes = [];
   bool _carregando = false;
   bool _editando = false;
@@ -38,16 +40,18 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
     }
 
     return Scaffold(
+      key: _scaffoldKey, 
       appBar: AppHeader(
         title: widget.nomeTurma,
         hasGoBack: true,
         onMenuPressed: (){
-
+          _scaffoldKey.currentState?.openDrawer();
         },
         onGoBack: (){
           Navigator.pop(context);
         },
       ),
+      drawer: AppDrawer(),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(16.0),

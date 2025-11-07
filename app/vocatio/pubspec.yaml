@@ -26,7 +26,6 @@ dependencies:
   get_it: ^8.2.0
   web: ^1.1.1
   bson: ^5.0.7
-  audioplayers: ^5.0.0
   qr_flutter: ^4.1.0
   flutter_phoenix: ^1.1.1
   intl: ^0.20.2
@@ -47,7 +46,6 @@ flutter:
   assets: 
    - assets/images/
    - .env
-   - assets/audios/
 
 
 flutter_launcher_icons:

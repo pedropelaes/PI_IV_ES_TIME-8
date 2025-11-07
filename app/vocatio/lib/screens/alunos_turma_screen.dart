@@ -27,6 +27,7 @@ class _AlunosTurmaScreenState extends State<AlunosTurmaScreen> {
   String? _erro;
   List<AlunoSimpleInfo> _alunos = [];
   final SocketService _socketService = getIt<SocketService>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Future<void> _getAlunos() async{
     setState(() {
@@ -103,6 +104,7 @@ class _AlunosTurmaScreenState extends State<AlunosTurmaScreen> {
     final TextTheme textTheme = theme.textTheme;
     
     return Scaffold(
+      key: _scaffoldKey, 
       appBar: AppHeader(
         title: widget.nomeTurma,
         hasGoBack: true,
@@ -110,7 +112,7 @@ class _AlunosTurmaScreenState extends State<AlunosTurmaScreen> {
           Navigator.pop(context);
         },
         onMenuPressed: (){
-
+          _scaffoldKey.currentState?.openDrawer();
         },
       ),
       body: SafeArea(

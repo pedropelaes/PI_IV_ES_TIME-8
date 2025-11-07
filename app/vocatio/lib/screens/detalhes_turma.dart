@@ -21,6 +21,7 @@ import 'package:vocattio/widgets/forms_dialog.dart';
 import 'package:vocattio/widgets/location_picker.dart';
 import 'package:vocattio/widgets/slide_up_card.dart';
 import 'package:vocattio/widgets/snackbars.dart';
+import 'package:vocattio/widgets/app_drawer.dart'; 
 import 'package:vocattio/widgets/text_field.dart';
 
 class DetalhesTurmaScreen extends StatefulWidget {
@@ -63,6 +64,9 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
     _editedLocPadrao = widget.locPadrao;
   }
 
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -115,16 +119,22 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
   }
 
     return Scaffold(
+      key: _scaffoldKey, 
       backgroundColor: theme.colorScheme.surface,
       appBar: AppHeader(
         title: widget.nomeTurma,
         onMenuPressed: () {
+          _scaffoldKey.currentState?.openDrawer(); 
         },
         hasGoBack: true,
         onGoBack: () {
           Navigator.pop(context);
         },
       ),
+      drawer: AppDrawer(
+        user: widget.user,
+        currentTurmaId: widget.turmaId,
+      ), 
       body: SafeArea(
         child: Center(
           child: Container(
@@ -359,7 +369,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
         ),
       ),
       floatingActionButton: widget.user.tipo == 'professor' ? FloatingActionButton(
-        backgroundColor: const Color(0xFF9B71D9),
+        backgroundColor: theme.colorScheme.error,
         child: const Icon(Icons.delete, color: Colors.white),
         onPressed: () async {
           final confirm = await showCustomDialog(

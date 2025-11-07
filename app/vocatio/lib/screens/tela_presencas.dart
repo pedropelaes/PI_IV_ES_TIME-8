@@ -6,6 +6,7 @@ import 'package:vocattio/screens/tela_alunos_presentes.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/utils/date_formater.dart';
+import 'package:vocattio/widgets/app_drawer.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
@@ -31,6 +32,7 @@ class PresencasScreen extends StatefulWidget {
 class _PresencasScreenState extends State<PresencasScreen> {
   DateTime? _selectedDate;
   final SocketService _socketService = getIt<SocketService>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Aula> _aulas = [];
   List<Aula> _aulasFiltradas = [];
   bool _carregando = false;
@@ -224,15 +226,18 @@ class _PresencasScreenState extends State<PresencasScreen> {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
+      key: _scaffoldKey,
       appBar: AppHeader(
         title: 'Presenças',
         onMenuPressed: () {
+          _scaffoldKey.currentState?.openDrawer();
         },
         hasGoBack: true,
         onGoBack: () {
           Navigator.pop(context);
         },
       ),
+      drawer: AppDrawer(),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(16.0),
