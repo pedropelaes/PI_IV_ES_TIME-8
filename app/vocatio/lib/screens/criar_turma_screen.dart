@@ -12,6 +12,7 @@ import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
+import 'package:vocattio/widgets/forms_dialog.dart';
 import 'package:vocattio/widgets/location_picker.dart';
 import 'package:vocattio/widgets/slide_up_card.dart';
 import 'package:vocattio/widgets/text_field.dart';
@@ -97,86 +98,68 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
 
     final theme = Theme.of(context);
     try{
-      final bool? locationWasSaved = await showModalBottomSheet<bool>(
+      final bool? locationWasSaved = !kIsWeb 
+      ? await showModalBottomSheet<bool>(
         isDismissible: false,
         enableDrag: false,
         shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
         isScrollControlled: true,
         context: context,
         builder: (BuildContext context) {
-          return StatefulBuilder(
-            builder: (context, dialogSetState) {
-              return SlideUpContainer(
-                theme: theme,
-                content: [ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 400),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 20.0),
-                          child: Text(
-                            "Selecionar Local Padrão",
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              color: theme.colorScheme.primaryFixed,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: LocationPickerWidget(
-                            initialLocation: _selectedLocation, 
-                            onLocationChanged: (newLocation){
-                              dialogSelectedLocation = newLocation;
-                            }
-                          )
-                        ),
-                  
-                        Padding(
-                          padding: const EdgeInsets.all(8.0), 
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              TextButton(
-                               onPressed: () {
-                                if (mounted) {
-                                  Navigator.of(context).pop(false);
-                                }
-                              },
-                                child: Text(
-                                  "Cancelar",
-                                  style: theme.textTheme.bodyLarge?.copyWith(
-                                    color: theme.colorScheme.secondaryFixed
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 18,),
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _selectedLocation = dialogSelectedLocation;
-                                  });
-                                  Navigator.of(context).pop(true);
+          return Padding(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom,),
+            child: DraggableScrollableSheet(
+              initialChildSize: 0.85,
+              minChildSize: 0.6,
+              maxChildSize: 0.95,
+              expand: false,
+              builder: (context, scrollController){
+                return StatefulBuilder(
+                  builder: (context, dialogSetState) {
+                    return SlideUpContainer(
+                      theme: theme,
+                      content: [ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: 400),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: _buildFormWidgets(
+                              theme: theme, 
+                              onLocationChanged: (newLocation){
+                                dialogSelectedLocation = newLocation;
                               }, 
-                                child: Text(
-                                  "Salvar Local",
-                                  style: theme.textTheme.bodyLarge?.copyWith(
-                                    color: theme.colorScheme.primaryFixed
-                                  ),
-                                ),
-                              ),
-                            ],
+                              onConfirm: () {
+                                setState(() {
+                                  _selectedLocation = dialogSelectedLocation;
+                                });
+                                Navigator.of(context).pop(true);
+                              }
+                            )
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ]
-              );
-            }
+                      ]
+                    );
+                  }
+                );
+              }
+            ),
           );
         }
-      );
+      )
+      : await showFormsDialog(
+          context, 
+          (dialogSetState) => _buildFormWidgets(
+            theme: theme, 
+            onLocationChanged: (newLocation){
+              dialogSelectedLocation = newLocation;
+            }, 
+            onConfirm: () {
+            setState(() {
+              _selectedLocation = dialogSelectedLocation;
+            });
+            Navigator.of(context).pop(true);
+          }
+          )  
+        );
       if(locationWasSaved == true){
         setState(() {
           _selectedLocation = dialogSelectedLocation;
@@ -387,5 +370,62 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
         ),
       ),
     );
+  }
+
+  List<Widget> _buildFormWidgets({
+    required ThemeData theme,
+    required Function(LatLng) onLocationChanged,
+    required VoidCallback onConfirm
+  }){
+    return [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 20.0),
+        child: Text(
+          "Selecionar Local Padrão",
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: theme.colorScheme.primaryFixed,
+          ),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: LocationPickerWidget(
+          initialLocation: _selectedLocation, 
+          onLocationChanged: onLocationChanged
+        )
+      ),
+
+      Padding(
+        padding: const EdgeInsets.all(8.0), 
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            TextButton(
+            onPressed: () {
+              if (mounted) {
+                Navigator.of(context).pop(false);
+              }
+            },
+              child: Text(
+                "Cancelar",
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.secondaryFixed
+                ),
+              ),
+            ),
+            SizedBox(height: 18,),
+            TextButton(
+              onPressed: onConfirm, 
+              child: Text(
+                "Salvar Local",
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.primaryFixed
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ];
   }
 }

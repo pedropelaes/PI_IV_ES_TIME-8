@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vocattio/models/loc_padrao.dart';
@@ -16,6 +17,7 @@ import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/dialog_exc.dart';
 import 'package:vocattio/widgets/animated_button.dart';
 import 'package:vocattio/utils/responsive_helper.dart';
+import 'package:vocattio/widgets/forms_dialog.dart';
 import 'package:vocattio/widgets/location_picker.dart';
 import 'package:vocattio/widgets/slide_up_card.dart';
 import 'package:vocattio/widgets/snackbars.dart';
@@ -160,128 +162,70 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                                   _editedLocPadrao = widget.locPadrao;
                                 });
 
-                                showModalBottomSheet(
-                                  context: context, 
-                                  isScrollControlled: true,
-                                  isDismissible: false,
-                                  enableDrag: false,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft:Radius.circular(20), topRight: Radius.circular(20))),
-                                  builder: (BuildContext context){
-                                    return WillPopScope(
-                                      onWillPop: () async {
-                                        if (mounted) {
-                                          Navigator.of(context).pop(false);
-                                        }
-                                        return false;
-                                      },
-                                      child: StatefulBuilder(
-                                        builder: (BuildContext context, StateSetter dialogSetState){
-                                          return SlideUpContainer(
-                                            content: [
-                                              SingleChildScrollView(
-                                                child: ConstrainedBox(
-                                                  constraints: BoxConstraints(maxWidth: 400),
-                                                  child: primaryFixedGradientContainer(
-                                                    theme: theme,
-                                                    padding: EdgeInsets.all(24.0),
-                                                    child: Column(
-                                                      mainAxisSize: MainAxisSize.min,
-                                                      children: [
-                                                        Text(
-                                                          "Editar Turma",
-                                                          style: textTheme.titleLarge?.copyWith(
-                                                            color: theme.colorScheme.primaryFixed,
+                                if(!kIsWeb){
+                                  showModalBottomSheet(
+                                    context: context, 
+                                    isScrollControlled: true,
+                                    backgroundColor: Colors.transparent,
+                                    isDismissible: false,
+                                    enableDrag: false,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft:Radius.circular(20), topRight: Radius.circular(20))),
+                                    builder: (BuildContext context){
+                                      return Padding(
+                                        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom,),
+                                        child: DraggableScrollableSheet(
+                                          initialChildSize: 0.85,
+                                          minChildSize: 0.6,
+                                          maxChildSize: 0.95,
+                                          expand: false,
+                                          builder: (context, scrollController) {
+                                            return StatefulBuilder(
+                                              builder: (BuildContext context, StateSetter dialogSetState){
+                                                return SlideUpContainer(
+                                                  content: [
+                                                    SingleChildScrollView(
+                                                      child: ConstrainedBox(
+                                                        constraints: BoxConstraints(maxWidth: 400),
+                                                        child: primaryFixedGradientContainer(
+                                                          theme: theme,
+                                                          padding: EdgeInsets.all(24.0),
+                                                          child: Column(
+                                                            mainAxisSize: MainAxisSize.min,
+                                                            children: _buildFormWidgets(
+                                                              context: context, 
+                                                              theme: theme, 
+                                                              textTheme: textTheme,
+                                                              dialogSetState: dialogSetState, 
+                                                              onConfirm: () async{
+                                                                await _editarTurma();
+                                                              }
+                                                            )
                                                           ),
                                                         ),
-                                                        SizedBox(height: 24),
-                                                        TextFieldDesign(
-                                                          controller: editNameController,
-                                                          hintText: 'Nome da Turma',
-                                                          context: context,
-                                                        ),
-                                                        SizedBox(height: 16),
-                                                        TextFieldDesign(
-                                                          controller: editDescController,
-                                                          hintText: 'Descrição',
-                                                          context: context,
-                                                        ),
-                                                        SizedBox(height: 16,),
-                                                        Text(
-                                                          "Editar local padrão",
-                                                          style: textTheme.titleLarge?.copyWith(
-                                                            color: theme.colorScheme.primaryFixed,
-                                                          ),
-                                                        ),
-                                                        SizedBox(height: 8),
-                                                        LocationPickerWidget(
-                                                          initialLocation: LatLng(
-                                                            _editedLocPadrao.latitude,
-                                                            _editedLocPadrao.longitude),
-                                                            onLocationChanged: (newLocation) {
-                                                            dialogSetState(() { 
-                                                              _editedLocPadrao = LocPadrao(
-                                                                latitude: newLocation.latitude,
-                                                                longitude: newLocation.longitude,
-                                                              );
-                                                            });
-                                                          },
-                                                        ),
-                                                        Row(
-                                                          children: [
-                                                            TextButton(
-                                                              onPressed: () {
-                                                                if (mounted) {
-                                                                  Navigator.of(context).pop();
-                                                                }
-                                                              },
-                                                              child: Text(
-                                                                "Cancelar",
-                                                                style: theme.textTheme.bodyLarge?.copyWith(
-                                                                  color: theme.colorScheme.secondaryFixed
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            SizedBox(height: 18,),
-                                                            TextButton(
-                                                              onPressed: () async {
-                                                                if (_isLoadingEdit) return;
-                                                                                                        
-                                                                final resultado = await _editarTurma();
-                                                                
-                                                                if (mounted) {
-                                                                  Navigator.pop(context); // Fecha o modal
-                                                                }
-                                                                
-                                                                if (resultado == true && mounted) {
-                                                                  showSuccessSnackBar("Turma editada! Recarregando...", context);
-                                                                  Navigator.of(context).pop();
-                                                                } else if (mounted) {
-                                                                  showErrorSnackBar("Erro ao editar turma.", context);
-                                                                }
-                                                              },
-                                                              child: Text(
-                                                                "Confirmar",
-                                                                style: theme.textTheme.bodyLarge?.copyWith(
-                                                                  color: theme.colorScheme.primaryFixed,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ]
-                                                    ),
-                                                  ),
-                                                ),
-                                              )
-                                            ],
-                                            theme: theme
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  }
-                                );
-                              }, 
+                                                      ),
+                                                    )
+                                                  ],
+                                                  theme: theme
+                                                );
+                                              },
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    }
+                                  );
+                                }else{
+                                  showFormsDialog(
+                                    context, 
+                                    (dialogSetState) => _buildFormWidgets(context: context, theme: theme, textTheme: textTheme, 
+                                      dialogSetState: dialogSetState, 
+                                      onConfirm: () async{
+                                        await _editarTurma();
+                                      }
+                                    )
+                                  );
+                                } 
+                              },
                               icon: Icon(
                                 Icons.edit,
                                 color: theme.colorScheme.primaryFixed,
@@ -489,4 +433,96 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
   }
 }
 
+List<Widget> _buildFormWidgets({
+  required BuildContext context,
+  required ThemeData theme,
+  required TextTheme textTheme,
+  required StateSetter dialogSetState,
+  required VoidCallback onConfirm
+}){
+  return [
+    Text(
+      "Editar Turma",
+      style: textTheme.titleLarge?.copyWith(
+        color: theme.colorScheme.primaryFixed,
+      ),
+    ),
+    SizedBox(height: 18),
+    TextFieldDesign(
+      controller: editNameController,
+      hintText: 'Nome da Turma',
+      context: context,
+    ),
+    SizedBox(height: 12),
+    TextFieldDesign(
+      controller: editDescController,
+      hintText: 'Descrição',
+      context: context,
+    ),
+    SizedBox(height: 12,),
+    Text(
+      "Editar local padrão",
+      style: textTheme.titleLarge?.copyWith(
+        color: theme.colorScheme.primaryFixed,
+      ),
+    ),
+    SizedBox(height: 12),
+    LocationPickerWidget(
+      initialLocation: LatLng(
+        _editedLocPadrao.latitude,
+        _editedLocPadrao.longitude),
+        onLocationChanged: (newLocation) {
+        dialogSetState(() { 
+          _editedLocPadrao = LocPadrao(
+            latitude: newLocation.latitude,
+            longitude: newLocation.longitude,
+          );
+        });
+      },
+    ),
+    Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        TextButton(
+          onPressed: () {
+            if (mounted) {
+              Navigator.of(context).pop();
+            }
+          },
+          child: Text(
+            "Cancelar",
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.secondaryFixed
+            ),
+          ),
+        ),
+        SizedBox(height: 12,),
+        TextButton(
+          onPressed: () async {
+            if (_isLoadingEdit) return;
+                                                    
+            final resultado = onConfirm;
+            
+            if (mounted) {
+              Navigator.pop(context); // Fecha o modal
+            }
+            
+            if (resultado == true && mounted) {
+              showSuccessSnackBar("Turma editada! Recarregando...", context);
+              Navigator.of(context).pop();
+            } else if (mounted) {
+              showErrorSnackBar("Erro ao editar turma.", context);
+            }
+          },
+          child: Text(
+            "Confirmar",
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.primaryFixed,
+            ),
+          ),
+        ),
+      ],
+    ),
+  ];
+}
 }

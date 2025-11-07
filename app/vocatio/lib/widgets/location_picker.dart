@@ -6,13 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vocattio/services/location/location_service.dart';
 import 'package:vocattio/widgets/snackbars.dart';
-// Importe o SEU text_field.dart original, sem modificações
 import 'package:vocattio/widgets/text_field.dart'; 
 import 'package:geolocator/geolocator.dart';
 
 class LocationPickerWidget extends StatefulWidget {
   final LatLng initialLocation;
-  // Callback para notificar o pai (o modal) sobre a mudança de local
   final Function(LatLng) onLocationChanged;
 
   const LocationPickerWidget({
@@ -30,6 +28,7 @@ class _LocationPickerWidgetState extends State<LocationPickerWidget> {
   final Set<Marker> _markers = {};
   GoogleMapController? _mapController;
   bool _isMapLoading = true;
+  bool _isDisposed = false;
 
   final TextEditingController _latController = TextEditingController();
   final TextEditingController _lonController = TextEditingController();
@@ -37,6 +36,7 @@ class _LocationPickerWidgetState extends State<LocationPickerWidget> {
   @override
   void initState() {
     super.initState();
+    _isDisposed = false;
     _updateLocation(widget.initialLocation, shouldNotifyParent: false);
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -44,26 +44,29 @@ class _LocationPickerWidgetState extends State<LocationPickerWidget> {
     });
   }
 
+  void _safeDisposeController() {
+  try {
+    if (!kIsWeb) {
+      _mapController?.dispose();
+    } else {
+      _mapController = null;
+    }
+  } catch (e) {
+    debugPrint('Falha ao liberar mapa: $e');
+  }
+}
+
  @override
   void dispose() {
-    // Só descarta o controller depois do próximo frame,
-    // garantindo que o plugin web tenha completado o build do iframe.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      try {
-        _mapController?.dispose();
-      } catch (e) {
-        debugPrint('Erro ao descartar mapa: $e');
-      }
-      _mapController = null;
-    });
-
+    _isDisposed = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _safeDisposeController());
     _latController.dispose();
     _lonController.dispose();
     super.dispose();
   }
 
-  // Atualiza o estado interno, os marcadores, os textfields e notifica o pai
   void _updateLocation(LatLng location, {bool shouldNotifyParent = true}) {
+    if(_isDisposed) return;
     setState(() {
       _selectedLocation = location;
       _markers.clear();
@@ -86,7 +89,7 @@ class _LocationPickerWidgetState extends State<LocationPickerWidget> {
     }
   }
 
-  // Tenta obter a localização atual do usuário
+
   Future<void> _goToMyLocation() async {
     setState(() { _isMapLoading = true; });
     try {
@@ -97,7 +100,7 @@ class _LocationPickerWidgetState extends State<LocationPickerWidget> {
         _updateLocation(newPos);
         _mapController?.animateCamera(CameraUpdate.newLatLngZoom(newPos, 17.0));
         
-        if (position.accuracy > 40) { // Precisão mais rígida
+        if (position.accuracy > 40) {
           if (mounted) showTopSnackBar('Localização com baixa precisão. Ajuste manualmente.', context, isError: true);
         }
       } else {
@@ -110,7 +113,6 @@ class _LocationPickerWidgetState extends State<LocationPickerWidget> {
     }
   }
 
-  // Carrega a posição inicial do mapa
   Future<void> _loadInitialMapPosition() async {
     setState(() { _isMapLoading = true; });
     Position? posRapida = await LocationService.obterPosicaoInicialRapida();
@@ -128,16 +130,14 @@ class _LocationPickerWidgetState extends State<LocationPickerWidget> {
     setState(() { _isMapLoading = false; });
   }
 
-  // Atualiza o mapa se o usuário digitar nos campos de texto
   void _updateMapFromTextFields() {
     try {
       final lat = double.parse(_latController.text);
       final lon = double.parse(_lonController.text);
       final newPos = LatLng(lat, lon);
-      _updateLocation(newPos); // Notifica o pai
+      _updateLocation(newPos);
       _mapController?.animateCamera(CameraUpdate.newLatLng(newPos));
     } catch (e) {
-      // Se a formatação estiver errada, reseta para o último valor válido
       _updateLocation(_selectedLocation, shouldNotifyParent: false);
     }
   }
