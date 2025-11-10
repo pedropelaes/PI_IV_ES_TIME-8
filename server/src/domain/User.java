@@ -39,4 +39,27 @@ public class User {
                 ", codigo='" + codigo + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        User u = (User) obj;
+        if (!_id.equals(u._id)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int ret = 1;
+        ret = 31 * ret + _id.hashCode();
+        ret = 31 * ret + uid.hashCode();
+        ret =  31 * ret + nome.hashCode();
+        ret =  31 * ret + email.hashCode();
+        ret =  31 * ret + tipo.hashCode();
+        ret =  31 * ret + codigo.hashCode();
+        ret =  31 * ret + turmas.hashCode();
+        return ret;
+    }
+
 }
