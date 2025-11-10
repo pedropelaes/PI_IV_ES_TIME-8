@@ -100,4 +100,25 @@ public class GetAulas {
             return null;
         }
     }
+
+    @Override
+    public String toString(){return "" + this.turmaId + " - " + this.operacao;}
+
+    @Override
+    public boolean equals(Object obj){
+        if(obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        GetAulas g = (GetAulas) obj;
+        if (!this.turmaId.equals(g.turmaId) || !this.operacao.equals(g.operacao)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode(){
+        int ret = 1;
+        ret = ret * 31 + this.turmaId.hashCode();
+        ret = ret * 31 + this.operacao.hashCode();
+        return ret;
+    }
+
 }

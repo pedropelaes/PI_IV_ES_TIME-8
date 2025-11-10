@@ -11,6 +11,7 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.mongodb.client.model.Filters.*;
 
@@ -75,4 +76,26 @@ public class ApagarTurma {
             return false;
         }
     }
+
+    @Override
+    public String toString() {return "TurmaID: " + this.turmaId + "ProfessorID: " + this.professorId;}
+
+    @Override
+    public int hashCode() {
+        int ret = 1;
+        ret = 2 * ret + this.turmaId.hashCode();
+        ret = 2 * ret + this.professorId.hashCode();
+        return ret;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        ApagarTurma a = (ApagarTurma) obj;
+        if (!this.turmaId.equals(a.turmaId) || !this.professorId.equals(a.professorId)) return false;
+        return true;
+    }
+
 }

@@ -119,6 +119,28 @@ public class AbrirChamada {
     public String toString() {
         return operacao + " " + codigoTurma + " " + latitude + " " + longitude;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        AbrirChamada a = (AbrirChamada) obj;
+        if (!this.codigoTurma.equals(a.codigoTurma) || this.latitude != a.latitude || this.longitude != a.longitude
+                || this.operacao.equals(a.operacao)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int ret = 1;
+        ret = 31 * ret + this.codigoTurma.hashCode();
+        ret = 2 * ret + ((Double)this.latitude).hashCode();
+        ret = 31 * ret + ((Double)this.longitude).hashCode();
+        ret = 31 * ret + this.operacao.hashCode();
+        return ret;
+    }
+
 }
 
 

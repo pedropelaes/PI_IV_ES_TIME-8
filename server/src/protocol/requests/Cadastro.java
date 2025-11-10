@@ -39,6 +39,34 @@ public class Cadastro {
             return false;
         }
     }
+
+    @Override
+    public String toString() {return "UID: " + this.uid + ", Nome: " + this.nome + ", Email: " + this.email +
+                                ", Codigo: " + this.codigo + ", Tipo: " + this.tipo;}
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        Cadastro c = (Cadastro) obj;
+        if (!this.uid.equals(c.uid) || !this.nome.equals(c.nome) ||
+                !this.codigo.equals(c.codigo) || !this.email.equals(c.email) ||
+                !this.tipo.equals(c.tipo)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int ret = 1;
+        ret = ret * 2 + this.uid.hashCode();
+        ret = ret * 2 + this.nome.hashCode();
+        ret = ret * 2 + this.email.hashCode();
+        ret = ret * 2 + this.codigo.hashCode();
+        ret = ret * 2 + this.tipo.hashCode();
+        return ret;
+    }
+
 }
 
 

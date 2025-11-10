@@ -139,4 +139,32 @@ public class RegistrarPresenca {
     public String getCodigoChamada() { return codigoChamada; }
     public void setCodigoChamada(String codigoChamada) { this.codigoChamada = codigoChamada; }
     public String getMensagem() { return mensagem; }
+
+    @Override
+    public String toString() {return "" + this.aulaId + this.alunoId + this.codigoChamada + this.mensagem + this.latitude +  this.longitude;}
+
+    @Override
+    public int hashCode() {
+        int ret = 1;
+        ret = ret * 31 + this.aulaId.hashCode();
+        ret = ret * 31 + this.alunoId.hashCode();
+        ret = ret * 31 + this.codigoChamada.hashCode();
+        ret = ret * 31 + this.mensagem.hashCode();
+        ret = ret * 31 + this.latitude.hashCode();
+        ret = ret * 31 + this.longitude.hashCode();
+        return ret;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        RegistrarPresenca r = (RegistrarPresenca) obj;
+        if (!this.aulaId.equals(r.aulaId) || !this.alunoId.equals(r.alunoId) || !this.codigoChamada.equals(r.codigoChamada)||
+                !this.mensagem.equals(r.mensagem) || !this.latitude.equals(r.latitude)
+                || !this.longitude.equals(r.longitude)) return false;
+        return true;
+    }
+
 }
