@@ -13,6 +13,7 @@ import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_drawer.dart';
 import 'package:vocattio/widgets/app_header.dart';
+import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/snackbars.dart';
 import 'package:vocattio/widgets/text_field.dart';
@@ -33,6 +34,7 @@ class _ScanQrcodeState extends State<ScanQrcode> with AttendanceHandler {
   final MobileScannerController _scannerController = MobileScannerController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _scanned = false;
+  String? _imagemBase64;
 
   @override
   void dispose() {
@@ -76,11 +78,13 @@ class _ScanQrcodeState extends State<ScanQrcode> with AttendanceHandler {
     
     if(location == null) return;
 
-    // A validação de geofence é feita no servidor
+    
+    if(_imagemBase64 == null) return;
 
     final resultado = await registrarPresenca(
       aulaId: _codeController.text.trim(),
-      codigoTemporario: _tempController.text.trim()
+      codigoTemporario: _tempController.text.trim(),
+      imagemBase64: _imagemBase64!
     );
 
     if (!resultado) {
@@ -119,15 +123,6 @@ class _ScanQrcodeState extends State<ScanQrcode> with AttendanceHandler {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Título principal
-                    Text(
-                      'Aponte a câmera para o QR Code',
-                      textAlign: TextAlign.center,
-                      style: textTheme.titleLarge?.copyWith(
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
                     // Área da câmera
                     Container(
                       width: double.infinity,
@@ -142,12 +137,18 @@ class _ScanQrcodeState extends State<ScanQrcode> with AttendanceHandler {
                       clipBehavior: Clip.hardEdge,
                       child: hasScanner ? MobileScanner(
                         controller: _scannerController,
-                        onDetect: (capture) {
+                        onDetect: (capture) async {
                           if (_scanned) return;
                           _scanned = true;
                           final barcode = capture.barcodes.first.rawValue ?? '';
                           setState(() => _codeController.text = barcode);
                           showSuccessSnackBar('QR Code lido: $barcode', context);
+                          final imagem = await tirarSelfie();
+                          if (imagem != null) {
+                            setState(() {
+                              _imagemBase64 = imagem;
+                            });
+                          }
                         },
                       ) : Row()
                     ),
@@ -160,7 +161,6 @@ class _ScanQrcodeState extends State<ScanQrcode> with AttendanceHandler {
                       context: context,
                       enabled: false,
                     ),
-
                     const SizedBox(height: 8),
                 
                     TextFieldDesign(
@@ -168,8 +168,30 @@ class _ScanQrcodeState extends State<ScanQrcode> with AttendanceHandler {
                       hintText: 'Digite o código temporário', 
                       context: context
                     ),
+
+                    const SizedBox(height: 8),
+                    ButtonDesign(context: context, 
+                          childText: _imagemBase64 == null ? 'Tirar foto' : 'Tirar foto novamente', 
+                          onPressed: ()async{
+                            final imagem = await tirarSelfie();
+                            if (imagem != null) {
+                              setState(() {
+                                _imagemBase64 = imagem;
+                              });
+                            }
+                          }
+                        ),
+                    if(_imagemBase64 != null)
+                      tertiaryContainer(theme: theme, 
+                      padding: EdgeInsets.all(12.0),
+                      child: Text(
+                        'Foto tirada',
+                        style: textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.onTertiaryContainer
+                        ),
+                      )),
                 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 12),
                 
                     // Indicador de localização
                     /*if (currentLocation != null)
@@ -214,8 +236,6 @@ class _ScanQrcodeState extends State<ScanQrcode> with AttendanceHandler {
                           ],
                         ),
                       ),*/
-                
-                    const SizedBox(height: 24),
                 
                     primaryButtonDesign(
                       context: context,

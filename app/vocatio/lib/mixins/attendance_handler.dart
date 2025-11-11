@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:vocattio/services/location/location_service.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
@@ -108,6 +110,7 @@ mixin AttendanceHandler<T extends StatefulWidget> on State<T> {
   Future<bool> registrarPresenca({
     required String aulaId,
     required String codigoTemporario,
+    required String imagemBase64
   }) async {
     if (currentUser == null || currentUser!.objectId == null) {
       if (mounted) showErrorSnackBar('Erro: Usuário não identificado.', context);
@@ -128,6 +131,7 @@ mixin AttendanceHandler<T extends StatefulWidget> on State<T> {
       "alunoId": currentUser!.objectId!,
       "latitude": currentLocation!.latitude,
       "longitude": currentLocation!.longitude,
+      "imagemBase64" : imagemBase64,
     };
 
     socket.send(jsonRegistrar);
@@ -157,6 +161,31 @@ mixin AttendanceHandler<T extends StatefulWidget> on State<T> {
     } catch (e) {
       if (mounted) showErrorSnackBar("Erro de comunicação com o servidor: $e", context);
       return false;
+    }
+  }
+
+  Future<String?> tirarSelfie() async {
+    try {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(
+        source: ImageSource.camera,
+        preferredCameraDevice: CameraDevice.front,
+        maxWidth: 640,
+        maxHeight: 640,
+        imageQuality: 85,
+      );
+
+      if (pickedFile == null) {
+        if (mounted) showErrorSnackBar("Captura cancelada.", context);
+        return null;
+      }
+
+      final bytes = await File(pickedFile.path).readAsBytes();
+      final base64Image = base64Encode(bytes);
+      return base64Image;
+    } catch (e) {
+      if (mounted) showErrorSnackBar("Erro ao capturar imagem: $e", context);
+      return null;
     }
   }
 }

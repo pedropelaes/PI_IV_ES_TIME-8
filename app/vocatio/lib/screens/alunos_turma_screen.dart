@@ -190,31 +190,42 @@ class _AlunosTurmaScreenState extends State<AlunosTurmaScreen> {
                   itemBuilder: (context, index) {
                     final aluno = _alunos[index];
 
-                    return ListTile(
-                      leading: Icon(
-                        Icons.account_circle_outlined,
-                        color: theme.colorScheme.primaryFixed,
-                      ),
-                      title: Text(
-                        aluno.nome,
-                        style: textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.primaryFixed
-                        ),
-                      ),
-                      trailing: IconButton(
-                        onPressed: () async{
-                          final Uri emailLaunchUri = Uri(
-                            scheme: 'mailto',
-                            path: aluno.email,
-                          );
-                          if (await canLaunchUrl(emailLaunchUri)) {
-                            await launchUrl(emailLaunchUri);
-                          }
-                        }, 
-                        icon: Icon(
-                          Icons.mail,
-                          color: theme.colorScheme.primaryFixed,
-                        )
+                    return Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          ListTile(
+                            leading: Icon(
+                              Icons.account_circle_outlined,
+                              color: theme.colorScheme.primaryFixed,
+                            ),
+                            title: Text(
+                              aluno.nome,
+                              style: textTheme.bodyLarge?.copyWith(
+                                color: theme.colorScheme.primaryFixed
+                              ),
+                            ),
+                            trailing: IconButton(
+                              onPressed: () async{
+                                final Uri emailLaunchUri = Uri(
+                                  scheme: 'mailto',
+                                  path: aluno.email,
+                                );
+                                if (await canLaunchUrl(emailLaunchUri)) {
+                                  await launchUrl(emailLaunchUri);
+                                }
+                              }, 
+                              icon: Icon(
+                                Icons.mail,
+                                color: theme.colorScheme.primaryFixed,
+                              )
+                            ),
+                          ),
+                          Divider(
+                            color: theme.colorScheme.primaryFixed,
+                            thickness: 2,
+                          )
+                        ],
                       ),
                     );
                   },

@@ -5,6 +5,7 @@ import 'package:vocattio/mixins/attendance_handler.dart';
 import 'package:vocattio/services/location/location_service.dart';
 import 'package:vocattio/widgets/app_drawer.dart';
 import 'package:vocattio/widgets/app_header.dart';
+import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/snackbars.dart';
 import 'package:vocattio/widgets/text_field.dart';
@@ -27,6 +28,7 @@ class _ViaCodeState extends State<ViaCode> with AttendanceHandler {
   final TextEditingController _codeController = TextEditingController();
   final TextEditingController _tempCodeController = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  String? _imagemBase64;
 
   @override
   void initState(){
@@ -55,10 +57,13 @@ class _ViaCodeState extends State<ViaCode> with AttendanceHandler {
     // Obter a localização atual
     final location = await getCurrentLocation();
 
+    if(_imagemBase64 == null) return;
+
     // Envia presença ao servidor; validação de 100m ocorre no backend
     final sucesso = await registrarPresenca(
       aulaId: _codeController.text.trim(),
-      codigoTemporario: _tempCodeController.text.trim()
+      codigoTemporario: _tempCodeController.text.trim(),
+      imagemBase64: _imagemBase64!
     );
 
     if (sucesso && mounted) {
@@ -118,10 +123,31 @@ class _ViaCodeState extends State<ViaCode> with AttendanceHandler {
                                       
                         SizedBox(height: largeSpacing),
                         TextFieldDesign(controller: _codeController, hintText: "Digite o código", context: context),
+                        
                         SizedBox(height: smallSpacing),
                         TextFieldDesign(controller: _tempCodeController, hintText: "Digite o código temporário", context: context),
-                        SizedBox(height: largeSpacing),
-                                      
+                        SizedBox(height: smallSpacing),
+                        ButtonDesign(context: context, 
+                          childText: _imagemBase64 == null ? 'Tirar foto' : 'Tirar foto novamente', 
+                          onPressed: ()async{
+                            final imagem = await tirarSelfie();
+                            if (imagem != null) {
+                              setState(() {
+                                _imagemBase64 = imagem;
+                              });
+                            }
+                          }
+                        ),
+                        if(_imagemBase64 != null)
+                          tertiaryContainer(theme: theme, 
+                          padding: EdgeInsets.all(12.0),
+                          child: Text(
+                            'Foto tirada',
+                            style: textTheme.bodyLarge?.copyWith(
+                              color: theme.colorScheme.onTertiaryContainer
+                            ),
+                          )),
+                        SizedBox(height: smallSpacing,),
                         primaryButtonDesign(
                           context: context,
                           label: isGettingLocation ? 'Obtendo localização...' : 'Concluir chamada',

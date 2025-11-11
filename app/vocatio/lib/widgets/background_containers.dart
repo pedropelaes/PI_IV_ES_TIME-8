@@ -154,3 +154,22 @@ Container primaryFixedGradientContainer({
     child: child,
   );
 }
+
+Container tertiaryContainer({
+  required ThemeData theme,
+  required Widget child,
+  double? width,
+  double? height,
+  EdgeInsets? padding
+}){
+return Container(
+    width: width,
+    height: height,
+    padding: padding,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(20.0),
+      color: theme.colorScheme.tertiaryContainer
+    ),
+    child: child,
+  );
+}

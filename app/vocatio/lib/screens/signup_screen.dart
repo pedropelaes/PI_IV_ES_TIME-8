@@ -36,7 +36,13 @@ class _SignupScreenState extends State<SignupScreen> {
 
   Future<void> _tirarSelfie() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.camera, preferredCameraDevice: CameraDevice.front);
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.camera, 
+      preferredCameraDevice: CameraDevice.front,
+      imageQuality: 85,
+      maxWidth: 640,
+      maxHeight: 640,
+    );
 
     if (pickedFile != null) {
       setState(() {
@@ -181,7 +187,7 @@ class _SignupScreenState extends State<SignupScreen> {
         return; 
       }
 
-      if(_selfieFile == null){
+      if(_selfieFile == null && _typeSelector.contains(AccountType.aluno)){
         if(mounted) showErrorSnackBar('Tire uma foto.', context);
         return;
       }
