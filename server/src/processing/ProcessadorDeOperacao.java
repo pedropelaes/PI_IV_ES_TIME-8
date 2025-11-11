@@ -116,6 +116,11 @@ public class ProcessadorDeOperacao {
                             codigoTemporario
                     ));
                     break;
+                case "RegistrarNovaFace":
+                    RegistrarNovaFace registrarNovaFace = gson.fromJson(json, RegistrarNovaFace.class);
+                    resultado = registrarNovaFace.registrar();
+                    remetente.receba(new ResultadoOperacao(resultado, "ResultadoRegistrarNovaFace"));
+                    break;
                 default:
                     System.err.println("Comunicado desconhecido: '" + tipo + "'");
                     System.err.println("JSON completo recebido: " + json);

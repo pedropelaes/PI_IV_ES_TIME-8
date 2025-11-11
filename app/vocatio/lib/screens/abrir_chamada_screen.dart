@@ -38,7 +38,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
   
   Timer? _tempCodeTimer;
   Timer? _tempCodeCountdownTimer;
-  int _tempCodeTempoRestante = 15;
+  int _tempCodeTempoRestante = 20;
   StreamSubscription? _socketSubscription;
 
 
@@ -86,7 +86,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
   void _startTempCodeLoop() {
     _fetchTempCode(); 
     
-    _tempCodeTimer = Timer.periodic(const Duration(seconds: 15), (timer) { // busca codigo a cada 15 segundos
+    _tempCodeTimer = Timer.periodic(const Duration(seconds: 20), (timer) { // busca codigo a cada 20 segundos
       if (_chamadaFechada) {
         timer.cancel();
         return;
@@ -98,7 +98,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
   void _startVisualCountdown(){
     _tempCodeCountdownTimer?.cancel();
     setState(() {
-      _tempCodeTempoRestante = 15;
+      _tempCodeTempoRestante = 20;
     });
 
     _tempCodeCountdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {

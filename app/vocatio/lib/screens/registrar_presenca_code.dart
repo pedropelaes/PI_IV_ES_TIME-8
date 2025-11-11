@@ -124,11 +124,11 @@ class _ViaCodeState extends State<ViaCode> with AttendanceHandler {
                                       
                         primaryButtonDesign(
                           context: context,
-                          label: 'Concluir chamada',
+                          label: isGettingLocation ? 'Obtendo localização...' : 'Concluir chamada',
                           width: 255,
                           height: 55.0,
-                          onTap: () async {
-                            await _handleCompleteAttendance();
+                          onTap: isGettingLocation ? () {} : () {
+                            _handleCompleteAttendance();
                           },
                         ),
                       ],

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:vocattio/services/face_service/face_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:vocattio/extensions/string_extensions.dart';
@@ -34,7 +33,6 @@ class _SignupScreenState extends State<SignupScreen> {
   final _authService = AuthService();
   final SocketService _socketService = getIt<SocketService>();
   File? _selfieFile;
-  String? _faceToken;
 
   Future<void> _tirarSelfie() async {
     final picker = ImagePicker();
@@ -47,16 +45,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
       showSuccessSnackBar('Foto capturada! Processando...', context);
 
-      final token = await FaceService.detectarRosto(_selfieFile!);
-
-      if (token != null) {
-        setState(() {
-          _faceToken = token;
-        });
-        showSuccessSnackBar('Rosto registrado com sucesso!', context);
-      } else {
-        showErrorSnackBar('Nenhum rosto detectado. Tente novamente.', context);
-      }
     } else {
       showErrorSnackBar('Nenhuma foto selecionada.', context);
     }
@@ -110,12 +98,49 @@ class _SignupScreenState extends State<SignupScreen> {
       return false;
     }
 
-    if (_typeSelector.contains(AccountType.aluno) && _faceToken == null) {
+    if (_typeSelector.contains(AccountType.aluno) && _selfieFile == null) {
       showErrorSnackBar('Alunos precisam registrar o rosto para continuar.', context);
       return false;
     }
     
     return true;
+  }
+
+  Future<bool?>? _sendPicture(File imageFile, String uid) async {
+    try{
+      final bytes = await imageFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      final Map<String, dynamic> jsonFace = {
+        "operacao" : "RegistrarNovaFace",
+        "imagem" : base64Image,
+        "uid" : uid
+      };
+
+      _socketService.send(jsonFace);
+
+      final responseData = await _socketService.messages.firstWhere((data) {
+      try {
+        final msg = jsonDecode(data is String ? data : utf8.decode(data));
+        return msg['operacao'] == 'ResultadoRegistrarNovaFace';
+      } catch (e) {
+        return false;
+      }
+    }).timeout(const Duration(seconds: 15));
+
+    final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
+
+    if (responseJson['resultado'] == true) {
+      return true;
+    } else {
+      return null;
+    }
+
+    }catch(e){
+      print("Erro ao enviar rosto: $e");
+      if(mounted) showErrorSnackBar("Erro ao processar o rosto.", context);
+      return null;
+    }
   }
 
   Future<void> _signup() async {
@@ -144,7 +169,6 @@ class _SignupScreenState extends State<SignupScreen> {
           tipo: _typeSelector.first.name,
           codigo: idController.text.trim(),
           turmas: [],
-          faceToken: _typeSelector.first == AccountType.aluno ? _faceToken : null,
         ),
       );
 
@@ -155,6 +179,21 @@ class _SignupScreenState extends State<SignupScreen> {
         if(mounted) showErrorSnackBar(errorMessage, context);
         await _authService.deleteUser(authResult['idToken']);
         return; 
+      }
+
+      if(_selfieFile == null){
+        if(mounted) showErrorSnackBar('Tire uma foto.', context);
+        return;
+      }
+
+      final registerUserFace = await _sendPicture(_selfieFile!, authResult['localId']);
+
+      if(registerUserFace != true){
+        final errorMessage = registerUserFace == false
+          ? "Servidor não pode registrar a foto."
+          : "Erro ao adquirir resposta do servidor.";
+          if(mounted) showErrorSnackBar('$errorMessage Contate nosso suporte.', context);
+          return; 
       }
 
       final verificationEmailResult =                                       // enviando e-mail de verificacao
