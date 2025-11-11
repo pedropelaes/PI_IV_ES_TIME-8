@@ -43,6 +43,7 @@ public class Parceiro implements IParceiro
         try
         {
             String json = gson.toJson(x);
+            System.out.println("Enviando resposta para app: " + json);
             this.transmissor.write (json + "\n");
             this.transmissor.flush ();
         }
@@ -78,7 +79,6 @@ public class Parceiro implements IParceiro
 
             String json = this.proximoComunicado;
             this.proximoComunicado = null;
-
             return new ComunicadoJson(json);
         }
         catch (Exception erro)

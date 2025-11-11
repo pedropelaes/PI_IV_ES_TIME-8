@@ -61,7 +61,7 @@ public class RegistrarPresenca {
                 return false;
             }
 
-            String chaveTOTP = aula.getString("chaveSecretaTOTP");
+            String chaveTOTP = aula.getString("chaveTOTP");
             if(chaveTOTP == null || this.codigoTemporario == null){
                 return false;
             }
@@ -69,7 +69,7 @@ public class RegistrarPresenca {
             TimeProvider timeProvider = new SystemTimeProvider();
             CodeGenerator codeGenerator = new DefaultCodeGenerator(HashingAlgorithm.SHA1, 6);
             DefaultCodeVerifier verifier = new DefaultCodeVerifier(codeGenerator, timeProvider);
-            verifier.setTimePeriod(15);
+            verifier.setTimePeriod(20);
             verifier.setAllowedTimePeriodDiscrepancy(1);
 
             if(!verifier.isValidCode(chaveTOTP, this.codigoTemporario)){ // verificação de codigo temporario

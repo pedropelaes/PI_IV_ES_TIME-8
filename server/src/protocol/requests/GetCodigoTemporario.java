@@ -40,7 +40,7 @@ public class GetCodigoTemporario {
 
             TimeProvider timeProvider = new SystemTimeProvider();
             CodeGenerator codeGenerator = new DefaultCodeGenerator(HashingAlgorithm.SHA1, 6);
-            long counter = (timeProvider.getTime() - 0) / 15; // 15 segundos
+            long counter = (timeProvider.getTime() - 0) / 20; // 15 segundos
 
             return codeGenerator.generate(chaveTOTP, counter);
         }catch (Exception e){

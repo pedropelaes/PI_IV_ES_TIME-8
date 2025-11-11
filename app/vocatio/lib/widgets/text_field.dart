@@ -5,12 +5,14 @@ class TextFieldDesign extends StatefulWidget {
   final String hintText;
   final BuildContext context;
   final bool isPassword;
+  final bool enabled;
 
   const TextFieldDesign({
     required this.controller,
     required this.hintText,
     required this.context,
     this.isPassword = false,
+    this.enabled = true,
   });
 
   @override
@@ -27,6 +29,7 @@ class _TextFieldDesignState extends State<TextFieldDesign> {
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 400, maxHeight: 40),
       child: TextField(
+        enabled: widget.enabled,
         controller: widget.controller,
         obscureText: widget.isPassword ? _obscureText : false,
         decoration: InputDecoration(

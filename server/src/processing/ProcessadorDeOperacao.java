@@ -106,6 +106,16 @@ public class ProcessadorDeOperacao {
                     EditarTurma editarTurma = gson.fromJson(json, EditarTurma.class);
                     resultado = editarTurma.editarTurma();
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoEditarTurma"));
+                case "GetCodigoTemporario":
+                    GetCodigoTemporario getCodigoTemporario = gson.fromJson(json, GetCodigoTemporario.class);
+                    String codigoTemporario = getCodigoTemporario.getCodigo();
+                    resultado = codigoTemporario != null;
+                    remetente.receba(new ResultadoGetCodigoTemporario(
+                            resultado,
+                            "ResultadoGetCodigoTemporario",
+                            codigoTemporario
+                    ));
+                    break;
                 default:
                     System.err.println("Comunicado desconhecido: '" + tipo + "'");
                     System.err.println("JSON completo recebido: " + json);

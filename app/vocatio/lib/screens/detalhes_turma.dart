@@ -8,7 +8,7 @@ import 'package:vocattio/models/loc_padrao.dart';
 import 'package:vocattio/models/user.dart';
 import 'package:vocattio/screens/alunos_turma_screen.dart';
 import 'package:vocattio/screens/tela_presencas.dart';
-import 'package:vocattio/screens/gerar_qrcode_screen.dart';
+import 'package:vocattio/screens/abrir_chamada_screen.dart';
 import 'package:vocattio/screens/validate_attendance_screen.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';

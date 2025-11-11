@@ -32,11 +32,7 @@ class _ScanQrcodeState extends State<ScanQrcode> with AttendanceHandler {
   final TextEditingController _tempController = TextEditingController();
   final MobileScannerController _scannerController = MobileScannerController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final _locationService = LocationService();
   bool _scanned = false;
-  Position? _currentLocation;
-  bool _isGettingLocation = false;
-  User? _currentUser;
 
   @override
   void dispose() {
@@ -73,7 +69,7 @@ class _ScanQrcodeState extends State<ScanQrcode> with AttendanceHandler {
       return;
     }
 
-    if (_currentLocation == null) {
+    if (currentLocation == null) {
       if(mounted) showErrorSnackBar('Não foi possível obter sua localização.', context);
       return;
     }
@@ -157,9 +153,18 @@ class _ScanQrcodeState extends State<ScanQrcode> with AttendanceHandler {
                     ),
                 
                     const SizedBox(height: 16),
-                
+
                     TextFieldDesign(
                       controller: _codeController, 
+                      hintText: 'Código da chamada', 
+                      context: context,
+                      enabled: false,
+                    ),
+
+                    const SizedBox(height: 8),
+                
+                    TextFieldDesign(
+                      controller: _tempController, 
                       hintText: 'Digite o código temporário', 
                       context: context
                     ),
@@ -167,7 +172,7 @@ class _ScanQrcodeState extends State<ScanQrcode> with AttendanceHandler {
                     const SizedBox(height: 24),
                 
                     // Indicador de localização
-                    if (_currentLocation != null)
+                    /*if (currentLocation != null)
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -197,7 +202,7 @@ class _ScanQrcodeState extends State<ScanQrcode> with AttendanceHandler {
                                     ),
                                   ),
                                   Text(
-                                    'Lat: ${_currentLocation!.latitude.toStringAsFixed(4)}, Lng: ${_currentLocation!.longitude.toStringAsFixed(4)}',
+                                    'Lat: ${currentLocation!.latitude.toStringAsFixed(4)}, Lng: ${currentLocation!.longitude.toStringAsFixed(4)}',
                                     style: textTheme.bodyMedium?.copyWith(
                                       color: theme.colorScheme.onPrimaryContainer,
                                       fontWeight: FontWeight.w500,
@@ -208,16 +213,16 @@ class _ScanQrcodeState extends State<ScanQrcode> with AttendanceHandler {
                             ),
                           ],
                         ),
-                      ),
+                      ),*/
                 
                     const SizedBox(height: 24),
                 
                     primaryButtonDesign(
                       context: context,
-                      label: _isGettingLocation ? 'Obtendo localização...' : 'Concluir chamada',
+                      label: isGettingLocation ? 'Obtendo localização...' : 'Concluir chamada',
                       width: double.infinity,
                       height: 55.0,
-                      onTap: _isGettingLocation ? () {} : () {
+                      onTap: isGettingLocation ? () {} : () {
                         _handleCompleteAttendance();
                       },
                     ),

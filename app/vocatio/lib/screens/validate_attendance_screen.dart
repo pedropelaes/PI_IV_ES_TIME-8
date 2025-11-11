@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:vocattio/screens/scan_qrcode.dart';
-import 'package:vocattio/screens/via_code.dart';
+import 'package:vocattio/screens/registrar_presenca_qr_code.dart';
+import 'package:vocattio/screens/registrar_presenca_code.dart';
 import 'package:vocattio/utils/responsive_helper.dart';
 import 'package:vocattio/widgets/animated_button.dart';
 import 'package:vocattio/widgets/app_drawer.dart';

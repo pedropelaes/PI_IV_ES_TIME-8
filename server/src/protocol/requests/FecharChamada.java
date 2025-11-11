@@ -40,7 +40,8 @@ public class FecharChamada {
                 Filters.eq("codigo", codigoChamada),
                 Updates.combine(
                     Updates.set("aberta", false),
-                    Updates.set("dataFechamento", new Date())
+                    Updates.set("dataFechamento", new Date()),
+                    Updates.unset("chaveTOTP")
                 )
             );
 
