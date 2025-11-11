@@ -9,18 +9,22 @@ public class User {
     private String email;
     private String tipo;
     private String codigo;
+    private String faceToken;
     private List<String> turmas;
+
 
     public User(){}
 
-    public User(String _id,String uid, String nome, String email, String tipo, String codigo, List<String> turmas) {
+    public User(String _id,String uid, String nome, String email, String tipo, String codigo, String faceToken, List<String> turmas) {
         this._id = _id;
         this.uid = uid;
         this.nome = nome;
         this.email = email;
         this.tipo = tipo;
         this.codigo = codigo;
+        this.faceToken = faceToken;
         this.turmas = turmas;
+
     }
 
     public String getUid() { return uid; }
@@ -28,6 +32,7 @@ public class User {
     public String getNome() { return nome; }
     public String getTipo() { return tipo; }
     public String getCodigo() { return codigo; }
+    public String getFaceToken() { return faceToken; }
 
     @Override
     public String toString() {
@@ -37,6 +42,8 @@ public class User {
                 ", nome='" + nome + '\'' +
                 ", tipo='" + tipo + '\'' +
                 ", codigo='" + codigo + '\'' +
+                ", turmas=" + turmas +
+                ", faceToken='" + faceToken + '\'' +
                 '}';
     }
 
@@ -58,6 +65,7 @@ public class User {
         ret =  31 * ret + email.hashCode();
         ret =  31 * ret + tipo.hashCode();
         ret =  31 * ret + codigo.hashCode();
+        ret =  31 * ret + faceToken.hashCode();
         ret =  31 * ret + turmas.hashCode();
         return ret;
     }

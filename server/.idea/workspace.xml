@@ -5,13 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="835ce07a-16a5-48fc-93cd-fcf22f86460b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/domain/AlunoSimples.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/AlunoSimples.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/domain/Aula.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/Aula.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/domain/LocPadrao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/LocPadrao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/domain/Presenca.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/Presenca.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/domain/Turma.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/Turma.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/models/user.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/models/user.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/screens/signup_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/screens/signup_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/linux/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/linux/flutter/generated_plugin_registrant.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/linux/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/linux/flutter/generated_plugins.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/windows/flutter/generated_plugins.cmake" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/domain/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/protocol/requests/Cadastro.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/Cadastro.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/protocol/requests/Login.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/protocol/requests/Login.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,10 +48,10 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "develop",
+    "git-widget-placeholder": "feature/reconhecimento",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/ppm/Documents/PI_IV_ES_TIME-8/server",
+    "last_opened_file_path": "C:/swe/PI_IV_ES_TIME-8/server",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -96,6 +101,7 @@
       <workItem from="1762183832359" duration="8068000" />
       <workItem from="1762276300918" duration="3139000" />
       <workItem from="1762453803875" duration="6849000" />
+      <workItem from="1762822137463" duration="425000" />
     </task>
     <servers />
   </component>

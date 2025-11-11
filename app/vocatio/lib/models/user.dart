@@ -5,6 +5,7 @@ class User{
   final String email;
   final String tipo;
   final String codigo;
+  final String faceToken;
   final List<String>? turmas;
 
   const User({
@@ -14,8 +15,10 @@ class User{
     required this.email,
     required this.tipo,
     required this.codigo,
+    required this.faceToken,
     this.turmas
   });
+
 
   String getUid(){
     return uid;
@@ -37,6 +40,10 @@ class User{
     return codigo;
   }
 
+  String getFaceToken(){
+    return faceToken;
+  }
+
   List<String>? getTurmas(){
     return turmas;
   }
@@ -48,6 +55,7 @@ class User{
     String? email,
     String? tipo,
     String? codigo,
+    String? faceToken,
     List<String>? turmas
   }) {
     return User(
@@ -57,6 +65,7 @@ class User{
       email: email ?? this.email,
       tipo: tipo ?? this.tipo,
       codigo: codigo ?? this.codigo,
+      faceToken: faceToken ?? this.faceToken,
       turmas: turmas ?? this.turmas
     );
   }
@@ -69,6 +78,7 @@ class User{
       email: json['email'] ?? '',
       tipo: json['tipo'] ?? '',
       codigo: json['codigo'] ?? '',
+      faceToken: json['face_token'] ?? '',
       turmas: json['turmas'] != null 
                             ? List<String>.from(json['turmas']) 
                             : null
@@ -83,13 +93,14 @@ class User{
       'email': email,
       'tipo': tipo,
       'codigo': codigo,
-      'turmas': turmas
+      'turmas': turmas,
+      'faceToken': faceToken
     };
   }
 
   @override
   String toString(){
-    return 'User{_id: $objectId, $uid, name: $nome, email: $email, tipo: $tipo, codigo: $codigo, turmas: $turmas}';
+    return 'User{_id: $objectId, $uid, name: $nome, email: $email, tipo: $tipo, codigo: $codigo, turmas: $turmas, faceToken: $faceToken}';
   }
 
 }

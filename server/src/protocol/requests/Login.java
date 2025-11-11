@@ -49,6 +49,7 @@ public class Login {
                 doc.getString("email"),
                 doc.getString("tipo"),
                 doc.getString("codigo"),
+                doc.getString("faceToken"),
                 turmas
             );
 

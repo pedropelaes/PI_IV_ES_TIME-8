@@ -12,6 +12,7 @@ public class Cadastro {
     private String email;
     private String codigo;
     private String tipo;
+    private String faceToken;
 
     public Cadastro() {}
 
@@ -28,6 +29,7 @@ public class Cadastro {
                     .append("email", this.email)
                     .append("tipo", this.tipo)
                     .append("codigo", this.codigo)
+                    .append("faceToken", this.faceToken)
                     .append("turmas", new ArrayList<>());
 
 
@@ -42,7 +44,7 @@ public class Cadastro {
 
     @Override
     public String toString() {return "UID: " + this.uid + ", Nome: " + this.nome + ", Email: " + this.email +
-                                ", Codigo: " + this.codigo + ", Tipo: " + this.tipo;}
+                                ", Codigo: " + this.codigo + ", Tipo: " + this.tipo + ", faceToken: " + this.faceToken;}
 
     @Override
     public boolean equals(Object obj) {
@@ -63,6 +65,7 @@ public class Cadastro {
         ret = ret * 2 + this.nome.hashCode();
         ret = ret * 2 + this.email.hashCode();
         ret = ret * 2 + this.codigo.hashCode();
+        ret = ret * 2 + this.faceToken.hashCode();
         ret = ret * 2 + this.tipo.hashCode();
         return ret;
     }

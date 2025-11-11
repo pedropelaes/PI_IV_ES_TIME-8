@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:vocattio/services/face_service/face_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:vocattio/extensions/string_extensions.dart';
@@ -31,6 +33,35 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController idController = TextEditingController();
   final _authService = AuthService();
   final SocketService _socketService = getIt<SocketService>();
+  File? _selfieFile;
+  String? _faceToken;
+
+  Future<void> _tirarSelfie() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      setState(() {
+        _selfieFile = File(pickedFile.path);
+      });
+
+      showSuccessSnackBar('Foto capturada! Processando...', context);
+
+      final token = await FaceService.detectarRosto(_selfieFile!);
+
+      if (token != null) {
+        setState(() {
+          _faceToken = token;
+        });
+        showSuccessSnackBar('Rosto registrado com sucesso!', context);
+      } else {
+        showErrorSnackBar('Nenhum rosto detectado. Tente novamente.', context);
+      }
+    } else {
+      showErrorSnackBar('Nenhuma foto selecionada.', context);
+    }
+  }
+
   
   
   bool _isLoading = false;
@@ -100,6 +131,12 @@ class _SignupScreenState extends State<SignupScreen> {
         return;                                               
       }
 
+      if (_faceToken == null) {
+        if(mounted) showErrorSnackBar('Por favor, registre seu rosto antes de continuar.', context);
+        await _authService.deleteUser(authResult['idToken']);
+        return; 
+      }
+
       final registerNewUserResult = await _registerNewUser(     // registrando usuario no banco
         User(
           uid: authResult['localId'],
@@ -107,7 +144,8 @@ class _SignupScreenState extends State<SignupScreen> {
           email: emailController.text.trim(),
           tipo: _typeSelector.first.name,
           codigo: idController.text.trim(),
-          turmas: []
+          turmas: [],
+          faceToken: _faceToken!,
         ),
       );
 
@@ -347,6 +385,40 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       ),
       SizedBox(height: largeSpacing),
+      SizedBox(height: smallSpacing),
+
+      // --- Seção de reconhecimento facial ---
+      if (_selfieFile != null)
+        Column(
+          children: [
+            Image.file(
+              _selfieFile!,
+              height: 120,
+              width: 120,
+              fit: BoxFit.cover,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Rosto detectado!',
+              style: textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      const SizedBox(height: 10),
+      primaryButtonDesign(
+        context: context,
+        width: 180,
+        height: 45,
+        label: _selfieFile == null ? 'Registrar Rosto' : 'Refazer Foto',
+        onTap: _tirarSelfie,
+      ),
+
+      SizedBox(height: largeSpacing),
+      // --- fim da seção de reconhecimento facial ---
+
       primaryButtonDesign(
         context: context, 
         width: 140,
