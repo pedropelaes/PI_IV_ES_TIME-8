@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
+import dev.samstevens.totp.secret.DefaultSecretGenerator;
+import dev.samstevens.totp.secret.SecretGenerator;
+
 public class AbrirChamada {
     private String codigoTurma;      // _id da aula (string enviada pelo app)
     private double latitude;
@@ -79,10 +82,15 @@ public class AbrirChamada {
             // Gera um código único para a chamada
             String codigoChamada = "CHAMADA-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
 
+            // Gera chave secreta para os codigos temporários
+            SecretGenerator secretGenerator = new DefaultSecretGenerator(64);
+            String chaveTOTP = secretGenerator.generate();
+
             // Cria o documento de aula
             Document aula = new Document()
                     .append("turmaId", new ObjectId(codigoTurma))
                     .append("codigo", codigoChamada)
+                    .append("chaveTOTP", chaveTOTP)
                     .append("aberta", true)
                     .append("latitude", latitude)
                     .append("longitude", longitude)

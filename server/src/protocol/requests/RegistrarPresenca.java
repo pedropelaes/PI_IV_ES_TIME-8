@@ -7,6 +7,9 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
+import dev.samstevens.totp.code.*;
+import dev.samstevens.totp.time.SystemTimeProvider;
+import dev.samstevens.totp.time.TimeProvider;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -17,6 +20,7 @@ public class RegistrarPresenca {
     private Double latitude;   // latitude do aluno
     private Double longitude;  // longitude do aluno
     private String codigoChamada; // código textual da chamada (QR)
+    private String codigoTemporario;
     private String mensagem;
 
     public RegistrarPresenca() {}
@@ -57,9 +61,24 @@ public class RegistrarPresenca {
                 return false;
             }
 
+            String chaveTOTP = aula.getString("chaveSecretaTOTP");
+            if(chaveTOTP == null || this.codigoTemporario == null){
+                return false;
+            }
+
+            TimeProvider timeProvider = new SystemTimeProvider();
+            CodeGenerator codeGenerator = new DefaultCodeGenerator(HashingAlgorithm.SHA1, 6);
+            DefaultCodeVerifier verifier = new DefaultCodeVerifier(codeGenerator, timeProvider);
+            verifier.setTimePeriod(15);
+            verifier.setAllowedTimePeriodDiscrepancy(1);
+
+            if(!verifier.isValidCode(chaveTOTP, this.codigoTemporario)){ // verificação de codigo temporario
+                return false;
+            }
+
             double distancia = haversineMeters(latProfessor, lonProfessor, latitude, longitude);
             System.out.println("Distância aluno-professor: " + distancia + "m");
-            if (distancia > 100.0) {
+            if (distancia > 80.0) {
                 this.mensagem = "Fora do raio permitido (100m)";
                 System.out.println(this.mensagem);
                 return false;
