@@ -29,9 +29,9 @@ public class Cadastro {
                     .append("email", this.email)
                     .append("tipo", this.tipo)
                     .append("codigo", this.codigo)
-                    .append("faceToken", this.faceToken)
                     .append("turmas", new ArrayList<>());
 
+            if(this.faceToken != null && !this.faceToken.isEmpty()) usuario.append("faceToken", this.faceToken);
 
 
             colecao.insertOne(usuario);

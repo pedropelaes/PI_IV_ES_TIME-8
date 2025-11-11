@@ -38,7 +38,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
   Future<void> _tirarSelfie() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+    final pickedFile = await picker.pickImage(source: ImageSource.camera, preferredCameraDevice: CameraDevice.front);
 
     if (pickedFile != null) {
       setState(() {
@@ -109,6 +109,11 @@ class _SignupScreenState extends State<SignupScreen> {
       showErrorSnackBar('A senha deve ter pelo menos 6 caracteres', context);
       return false;
     }
+
+    if (_typeSelector.contains(AccountType.aluno) && _faceToken == null) {
+      showErrorSnackBar('Alunos precisam registrar o rosto para continuar.', context);
+      return false;
+    }
     
     return true;
   }
@@ -131,12 +136,6 @@ class _SignupScreenState extends State<SignupScreen> {
         return;                                               
       }
 
-      if (_faceToken == null) {
-        if(mounted) showErrorSnackBar('Por favor, registre seu rosto antes de continuar.', context);
-        await _authService.deleteUser(authResult['idToken']);
-        return; 
-      }
-
       final registerNewUserResult = await _registerNewUser(     // registrando usuario no banco
         User(
           uid: authResult['localId'],
@@ -145,7 +144,7 @@ class _SignupScreenState extends State<SignupScreen> {
           tipo: _typeSelector.first.name,
           codigo: idController.text.trim(),
           turmas: [],
-          faceToken: _faceToken!,
+          faceToken: _typeSelector.first == AccountType.aluno ? _faceToken : null,
         ),
       );
 
@@ -384,40 +383,42 @@ class _SignupScreenState extends State<SignupScreen> {
           color: theme.colorScheme.primary
         ),
       ),
-      SizedBox(height: largeSpacing),
       SizedBox(height: smallSpacing),
-
-      // --- Seção de reconhecimento facial ---
-      if (_selfieFile != null)
+      if (_typeSelector.contains(AccountType.aluno))
         Column(
           children: [
-            Image.file(
-              _selfieFile!,
-              height: 120,
-              width: 120,
-              fit: BoxFit.cover,
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Rosto detectado!',
-              style: textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.bold,
+            
+            // --- Seção de reconhecimento facial ---
+            if (_selfieFile != null)
+              Column(
+                children: [
+                  Image.file(
+                    _selfieFile!,
+                    height: 120,
+                    width: 120,
+                    fit: BoxFit.cover,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Rosto detectado!',
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
+            const SizedBox(height: 10),
+            primaryButtonDesign(
+              context: context,
+              width: 180,
+              height: 45,
+              label: _selfieFile == null ? 'Registrar Rosto' : 'Refazer Foto',
+              onTap: _tirarSelfie,
             ),
+            SizedBox(height: largeSpacing),
           ],
         ),
-      const SizedBox(height: 10),
-      primaryButtonDesign(
-        context: context,
-        width: 180,
-        height: 45,
-        label: _selfieFile == null ? 'Registrar Rosto' : 'Refazer Foto',
-        onTap: _tirarSelfie,
-      ),
-
-      SizedBox(height: largeSpacing),
-      // --- fim da seção de reconhecimento facial ---
 
       primaryButtonDesign(
         context: context, 

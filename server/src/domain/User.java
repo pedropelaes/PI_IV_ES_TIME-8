@@ -65,7 +65,7 @@ public class User {
         ret =  31 * ret + email.hashCode();
         ret =  31 * ret + tipo.hashCode();
         ret =  31 * ret + codigo.hashCode();
-        ret =  31 * ret + faceToken.hashCode();
+        if(this.faceToken != null) ret =  31 * ret + faceToken.hashCode();
         ret =  31 * ret + turmas.hashCode();
         return ret;
     }

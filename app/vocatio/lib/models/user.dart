@@ -5,7 +5,7 @@ class User{
   final String email;
   final String tipo;
   final String codigo;
-  final String faceToken;
+  final String? faceToken;
   final List<String>? turmas;
 
   const User({
@@ -15,7 +15,7 @@ class User{
     required this.email,
     required this.tipo,
     required this.codigo,
-    required this.faceToken,
+    this.faceToken,
     this.turmas
   });
 
@@ -40,7 +40,7 @@ class User{
     return codigo;
   }
 
-  String getFaceToken(){
+  String? getFaceToken(){
     return faceToken;
   }
 
@@ -86,17 +86,20 @@ class User{
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      '_id': objectId,
-      'uid': uid,
-      'nome': nome,
-      'email': email,
-      'tipo': tipo,
-      'codigo': codigo,
-      'turmas': turmas,
-      'faceToken': faceToken
-    };
+  final map = <String, dynamic>{
+    'uid': uid,
+    'nome': nome,
+    'email': email,
+    'tipo': tipo,
+    'codigo': codigo,
+    'turmas': turmas,
+  };
+  if (faceToken != null) {
+    map['faceToken'] = faceToken;
   }
+
+  return map;
+}
 
   @override
   String toString(){
