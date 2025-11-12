@@ -23,6 +23,8 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
   final SocketService _socketService = getIt<SocketService>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final List<Presenca> _alunosPresentes = [];
+  List<Presenca> _editados = [];
+  Map<String, bool> _presencasTemporarias = {};
   bool _carregando = false;
   bool _editando = false;
   String? _erro;
@@ -37,6 +39,10 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
 
     if(widget.alunosPresentes.isNotEmpty && _alunosPresentes.isEmpty){
       _alunosPresentes.addAll(widget.alunosPresentes);
+
+      for (final aluno in widget.alunosPresentes) {
+        _presencasTemporarias[aluno.alunoId] = aluno.presente;
+      }
     }
 
     return Scaffold(
@@ -119,19 +125,23 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                         physics: const BouncingScrollPhysics(),
                         itemBuilder: (context, index) {
                           final aluno = _alunosPresentes[index];
+                          final bool presenteTemp = _presencasTemporarias[aluno.alunoId] ?? aluno.presente;
                           Widget trailingIcon; 
-                          if(aluno.presente ){
+                          if (_editando) {
                             trailingIcon = Icon(
-                              Icons.check_circle,
-                              color: theme.colorScheme.primaryFixed,
+                              presenteTemp ? Icons.check_circle : Icons.cancel,
+                              color: presenteTemp ? theme.colorScheme.primary : theme.colorScheme.error,
+                              size: 28,
                             );
-                          }else{
+                          } else {
                             trailingIcon = Icon(
-                              Icons.cancel,
-                              color: theme.colorScheme.error,
+                              aluno.presente ? Icons.check_circle_outline : Icons.cancel_outlined,
+                              color: aluno.presente
+                                  ? theme.colorScheme.primaryFixed
+                                  : theme.colorScheme.error,
+                              size: 28,
                             );
                           }
-                          
                 
                           return Padding(
                             padding: const EdgeInsets.all(16.0),
@@ -149,7 +159,17 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                                     ),
                                   ),
                                   trailing: trailingIcon,
-                                ).animate().flipH(perspective: -0.5, begin: 0.3).fadeIn(),
+                                  onTap: (){
+                                    if(_editando){
+                                      if (_editando) {
+                                        setState(() {
+                                          final atual = _presencasTemporarias[aluno.alunoId] ?? aluno.presente;
+                                          _presencasTemporarias[aluno.alunoId] = !atual;
+                                        });
+                                      }
+                                    }
+                                  },
+                                ).animate().slideY().flipH(perspective: -0.5, begin: 0.3).fadeIn(),
                                 Divider(
                                   color: theme.colorScheme.primaryFixed,
                                   thickness: 2,
@@ -205,7 +225,10 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                         label: 'Cancelar',
                         onTap: (){
                           setState(() {
+                            _editados = [];
                             _editando = false;
+                            _alunosPresentes.clear();
+                            _alunosPresentes.addAll(widget.alunosPresentes);
                           });
                         },
                         width: 150, 
@@ -216,7 +239,18 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                         context: context, 
                         label: 'Confirmar', 
                         onTap: (){
-                          // salvar edicoes
+                          setState(() {
+                            _editando = false;
+                            _editados.clear();
+
+                            for (var aluno in _alunosPresentes) {
+                              final bool novoValor = _presencasTemporarias[aluno.alunoId] ?? aluno.presente;
+                              if (novoValor != aluno.presente) {
+                                final editado = aluno.copyWith(presente: novoValor);
+                                _editados.add(editado);
+                              }
+                            }
+                          });
                         }, 
                         width: 150,
                         height: 55)
