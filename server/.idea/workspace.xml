@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="835ce07a-16a5-48fc-93cd-fcf22f86460b" name="Changes" comment="">
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/../app/vocatio/android/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/android/app/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/vocatio/linux/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/linux/flutter/generated_plugin_registrant.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/vocatio/linux/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/linux/flutter/generated_plugins.cmake" afterDir="false" />
@@ -12,7 +13,13 @@
       <change beforePath="$PROJECT_DIR$/../app/vocatio/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/vocatio/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/vocatio/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/windows/flutter/generated_plugins.cmake" afterDir="false" />
+=======
+      <change afterPath="$PROJECT_DIR$/src/protocol/requests/EditarChamada.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vocatio/lib/services/socket/socket_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vocatio/lib/services/socket/socket_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+>>>>>>> e53354061af13240a86076277b363935a8cf355e
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/processing/ProcessadorDeOperacao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/processing/ProcessadorDeOperacao.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,6 +70,7 @@
       <recent name="D:\projects\PI_IV_ES_TIME-8\server\src" />
     </key>
   </component>
+<<<<<<< HEAD
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -71,6 +79,8 @@
       </set>
     </attachedChunks>
   </component>
+=======
+>>>>>>> e53354061af13240a86076277b363935a8cf355e
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">

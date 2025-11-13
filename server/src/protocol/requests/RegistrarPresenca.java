@@ -89,6 +89,7 @@ public class RegistrarPresenca {
             verifier.setAllowedTimePeriodDiscrepancy(1);
 
             if(!verifier.isValidCode(chaveTOTP, this.codigoTemporario)){ // verificação de codigo temporario
+                System.out.println("Erro ao validar codigo temporario ----------");
                 return false;
             }
 
