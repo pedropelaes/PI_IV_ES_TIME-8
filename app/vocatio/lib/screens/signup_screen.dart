@@ -187,22 +187,36 @@ class _SignupScreenState extends State<SignupScreen> {
         return; 
       }
 
-      if(_selfieFile == null && _typeSelector.contains(AccountType.aluno)){
-        if(mounted) showErrorSnackBar('Tire uma foto.', context);
-        return;
+      // --- Apenas alunos enviam foto ---
+      if (_typeSelector.contains(AccountType.aluno)) {
+
+        // valida selfie
+        if (_selfieFile == null) {
+          if (mounted) {
+            showErrorSnackBar('Você precisa tirar uma foto.', context);
+          }
+          return;
+        }
+
+        // envia selfie
+        final registerUserFace =
+            await _sendPicture(_selfieFile!, authResult['localId']);
+
+        // valida resposta do servidor
+        if (registerUserFace != true) {
+          final errorMessage = registerUserFace == false
+              ? "Servidor não pôde registrar a foto."
+              : "Erro ao adquirir resposta do servidor.";
+
+          if (mounted) {
+            showErrorSnackBar('$errorMessage Contate nosso suporte.', context);
+          }
+          return;
+        }
       }
 
-      final registerUserFace = await _sendPicture(_selfieFile!, authResult['localId']);
 
-      if(registerUserFace != true){
-        final errorMessage = registerUserFace == false
-          ? "Servidor não pode registrar a foto."
-          : "Erro ao adquirir resposta do servidor.";
-          if(mounted) showErrorSnackBar('$errorMessage Contate nosso suporte.', context);
-          return; 
-      }
-
-      final verificationEmailResult =                                       // enviando e-mail de verificacao
+      final verificationEmailResult = // enviando e-mail de verificacao
           await _authService.sendEmailVerification(authResult['idToken']);
 
       if (verificationEmailResult.containsKey('error')) {
