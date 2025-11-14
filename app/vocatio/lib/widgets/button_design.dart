@@ -76,23 +76,28 @@ Widget primaryButtonDesign({
   required VoidCallback onTap,
   required double width,
   required double height,
+  bool? enabled
 }){
   final ThemeData theme = Theme.of(context);
+  final bool isEnabled = enabled ?? true;
   return InkWell(
     splashColor: theme.colorScheme.inversePrimary,
-    onTap: onTap,
-    child: primaryGradientContainer(
-      theme: theme, 
-      width: width,
-      height: height,
-      child: Center(
-        child: Text(
-          label,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: theme.colorScheme.onPrimary
+    onTap: isEnabled ? onTap : null,
+    child: Opacity(
+      opacity: isEnabled ? 1.0 : 0.5,
+      child: primaryGradientContainer(
+        theme: theme, 
+        width: width,
+        height: height,
+        child: Center(
+          child: Text(
+            label,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onPrimary
+            ),
           ),
-        ),
-      )
+        )
+      ),
     ),
   );
 }

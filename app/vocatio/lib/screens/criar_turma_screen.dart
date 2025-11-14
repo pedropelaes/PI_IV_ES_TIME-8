@@ -112,7 +112,7 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
           return Padding(
             padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom,),
             child: DraggableScrollableSheet(
-              initialChildSize: 0.85,
+              initialChildSize: 0.65,
               minChildSize: 0.6,
               maxChildSize: 0.95,
               expand: false,

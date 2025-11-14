@@ -315,6 +315,8 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                   itemCount: _aulasFiltradas.length,
                                   itemBuilder: (context, index) {
                                     final aula = _aulasFiltradas[index];
+                                    final Duration diferenca = DateTime.now().difference(aula.dataAbertura);
+                                    final bool isEditavel = diferenca.inDays < 14;
 
                                     Widget trailingIcon;
                                     if (widget.userType == 'professor') {
@@ -351,7 +353,7 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                             Icon(
                                               Icons.circle,
                                               size: 18,
-                                              color: aula.aberta ? theme.colorScheme.primary : theme.colorScheme.inversePrimary,
+                                              color: isEditavel ? theme.colorScheme.primaryFixed : theme.colorScheme.primary,
                                             ),
                                             Icon(
                                               Icons.assignment,
@@ -367,18 +369,24 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                         ),
                                       ),
                                       trailing: trailingIcon,
-                                      onTap: (){
-                                        if(widget.userType == 'professor'){Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => TelaAlunosPresentes(
-                                              idChamada: aula.objectId, 
-                                              nomeTurma: widget.nomeTurma!,
-                                              data: formatarDataAula(aula.dataAbertura),
-                                              alunosPresentes: aula.presentes,
+                                      onTap: () async {
+                                        if(widget.userType == 'professor'){
+                                          final bool resultado = await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => TelaAlunosPresentes(
+                                                idChamada: aula.objectId, 
+                                                nomeTurma: widget.nomeTurma!,
+                                                data: formatarDataAula(aula.dataAbertura),
+                                                alunosPresentes: aula.presentes,
+                                                isEditavel: isEditavel
+                                              )
                                             )
-                                          )
-                                        );
+                                          );
+
+                                          if(resultado){
+                                            _buscarChamadas();
+                                          }
                                         }
                                       },
                                     );

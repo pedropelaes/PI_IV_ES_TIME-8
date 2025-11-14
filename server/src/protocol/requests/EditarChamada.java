@@ -1,5 +1,6 @@
 package src.protocol.requests;
 
+import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -8,9 +9,13 @@ import com.mongodb.client.model.*;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import src.domain.Presenca;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class EditarChamada {
@@ -33,17 +38,26 @@ public class EditarChamada {
             MongoDatabase db = client.getDatabase("vocattio_db");
             MongoCollection<Document> aulas = db.getCollection("aulas");
 
+            // calculo do limite da edicao da presenca ( 14 dias)
+            Instant agora = Instant.now();
+            Instant limite = agora.minus(14, ChronoUnit.DAYS);
+            Date dataLimite = Date.from(limite);
+
             List<WriteModel<Document>> operations = new ArrayList<>();
 
             for (Presenca p : this.presentesEditados){
-                Bson filter = Filters.eq("codigo", this.codigoChamada);
+                Bson filter = Filters.and(
+                        Filters.eq("_id", new ObjectId(this.codigoChamada)),
+                        Filters.gte("dataAbertura", dataLimite) // Só permite se dataAbertura for >= dataLimite
+                );
 
-                Bson update = Updates.set("presentes.$[elem].presente", p.getPresente());
+                Bson update = Updates.combine(
+                        Updates.set("presentes.$[elem].presente", p.getPresente()),
+                        Updates.set("atualizadoEm", new Date()) // Adiciona a data/hora atual
+                );
                 UpdateOptions options = new UpdateOptions().arrayFilters(
                         List.of(
-                                // Ajuste "elem.alunoId" se o nome do campo no DB for diferente
-                                // Ajuste "p.getAlunoId()" se o método no seu POJO for diferente
-                                Filters.eq("alunoId", p.getAlunoId())
+                                Filters.eq("elem.alunoId", new ObjectId(p.getAlunoId()))
                         )
                 );
                 operations.add(new UpdateOneModel<>(filter, update, options));
@@ -51,7 +65,8 @@ public class EditarChamada {
             if (!operations.isEmpty()) {
                 // ordered(false) permite que o MongoDB execute as atualizações
                 // em paralelo (se possível) para maior eficiência.
-                aulas.bulkWrite(operations, new BulkWriteOptions().ordered(false));
+                BulkWriteResult result = aulas.bulkWrite(operations, new BulkWriteOptions().ordered(false));
+                return result.getModifiedCount() > 0;
             }
 
             return true;

@@ -17,6 +17,14 @@ class Presenca {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'alunoId': alunoId,
+      'nome': nome,
+      'presente': presente,
+    };
+  }
+
   Presenca copyWith({
     String? alunoId,
     String? nome,
