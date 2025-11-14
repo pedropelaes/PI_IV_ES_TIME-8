@@ -29,6 +29,9 @@ public class Aula {
         this.dataFechamento = dataFechamento;
     }
 
+    public Date getDataAbertura(){ return this.dataAbertura; }
+    public List<Presenca> getPresentes (){return this.presentes;}
+
     @Override
     public String toString(){
         return "_id: " + this._id +

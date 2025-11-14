@@ -210,7 +210,7 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                       if(_editando) controller.repeat();
                     },
                   ).boxShadow(
-                    duration: 800.ms,
+                    duration: 1.5.seconds,
                     curve: Curves.easeIn,
                     borderRadius: BorderRadius.circular(20),
                     begin: _editando ? BoxShadow(
