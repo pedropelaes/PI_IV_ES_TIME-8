@@ -157,7 +157,7 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                             }
                   
                             return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+                              padding: const EdgeInsets.only(right: 10.0, left: 10.0, top: 4.0),
                               child: Column(
                                 children: [
                                   ListTile(
@@ -194,6 +194,7 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                                     duration: 1.seconds
                                   )*/
                                   ,
+                                  if(index + 1 != _alunosPresentes.length)
                                   Divider(
                                     color: theme.colorScheme.primaryFixed,
                                     thickness: 2,

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:vocattio/models/aula.dart';
 import 'package:vocattio/screens/tela_alunos_presentes.dart';
 import 'package:vocattio/services/locator.dart';
@@ -312,6 +313,8 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                   ),
                                 )
                               : ListView.builder(
+                                  cacheExtent: 1,
+                                  physics: const BouncingScrollPhysics(),
                                   itemCount: _aulasFiltradas.length,
                                   itemBuilder: (context, index) {
                                     final aula = _aulasFiltradas[index];
@@ -344,51 +347,63 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                             : theme.colorScheme.error,
                                       );
                                     }
-                                    return ListTile(
-                                      leading: SizedBox(
-                                        width: 60,
-                                        child: Row(
-                                          spacing: 12.0,
-                                          children: [
-                                            Icon(
-                                              Icons.circle,
-                                              size: 18,
-                                              color: isEditavel ? theme.colorScheme.primaryFixed : theme.colorScheme.primary,
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 10.0, left: 10.0, top: 4.0),
+                                      child: Column(
+                                        children: [
+                                          ListTile(
+                                            leading: SizedBox(
+                                              width: 60,
+                                              child: Row(
+                                                spacing: 12.0,
+                                                children: [
+                                                  Icon(
+                                                    Icons.circle,
+                                                    size: 18,
+                                                    color: isEditavel ? theme.colorScheme.primaryFixed : theme.colorScheme.primary,
+                                                  ),
+                                                  Icon(
+                                                    Icons.assignment,
+                                                    color: theme.colorScheme.primaryFixed,
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                            Icon(
-                                              Icons.assignment,
-                                              color: theme.colorScheme.primaryFixed,
+                                            title: Text(
+                                              formatarDataAula(aula.dataAbertura),
+                                              style: textTheme.bodyLarge?.copyWith(
+                                                color: theme.colorScheme.primaryFixed
+                                              ),
                                             ),
-                                          ],
-                                        ),
+                                            trailing: trailingIcon,
+                                            onTap: () async {
+                                              if(widget.userType == 'professor'){
+                                                final bool resultado = await Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) => TelaAlunosPresentes(
+                                                      idChamada: aula.objectId, 
+                                                      nomeTurma: widget.nomeTurma!,
+                                                      data: formatarDataAula(aula.dataAbertura),
+                                                      alunosPresentes: aula.presentes,
+                                                      isEditavel: isEditavel
+                                                    )
+                                                  )
+                                                );
+                                          
+                                                if(resultado){
+                                                  _buscarChamadas();
+                                                }
+                                              }
+                                            },
+                                          ),
+                                          if(index + 1 != _aulasFiltradas.length)
+                                          Divider(
+                                            color: theme.colorScheme.primaryFixed,
+                                            thickness: 2,
+                                          )
+                                        ].animate().flipH(perspective: !isLargeScreen ? -0.5 : 0, begin: 0.3).fadeIn(),
                                       ),
-                                      title: Text(
-                                        formatarDataAula(aula.dataAbertura),
-                                        style: textTheme.bodyLarge?.copyWith(
-                                          color: theme.colorScheme.primaryFixed
-                                        ),
-                                      ),
-                                      trailing: trailingIcon,
-                                      onTap: () async {
-                                        if(widget.userType == 'professor'){
-                                          final bool resultado = await Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => TelaAlunosPresentes(
-                                                idChamada: aula.objectId, 
-                                                nomeTurma: widget.nomeTurma!,
-                                                data: formatarDataAula(aula.dataAbertura),
-                                                alunosPresentes: aula.presentes,
-                                                isEditavel: isEditavel
-                                              )
-                                            )
-                                          );
-
-                                          if(resultado){
-                                            _buscarChamadas();
-                                          }
-                                        }
-                                      },
                                     );
                                   },
                                 ),

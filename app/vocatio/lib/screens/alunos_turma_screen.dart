@@ -191,7 +191,7 @@ class _AlunosTurmaScreenState extends State<AlunosTurmaScreen> {
                     final aluno = _alunos[index];
 
                     return Padding(
-                      padding: EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.only(right: 10.0, left: 10.0, top: 4.0),
                       child: Column(
                         children: [
                           ListTile(
@@ -221,6 +221,7 @@ class _AlunosTurmaScreenState extends State<AlunosTurmaScreen> {
                               )
                             ),
                           ),
+                          if(index + 1 != _alunos.length)
                           Divider(
                             color: theme.colorScheme.primaryFixed,
                             thickness: 2,
