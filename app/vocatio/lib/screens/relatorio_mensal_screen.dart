@@ -198,144 +198,146 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(16.0),
-          child: Center(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final bool isLargeScreen = constraints.maxWidth > 700;
-                double screenHeight = constraints.maxHeight;
-                double scale = (screenHeight / 700).clamp(1.0, 1.5);
-                double smallSpacing = (screenHeight * 0.015 * scale).clamp(6, 28);
-                double largeSpacing = (screenHeight * 0.03 * scale).clamp(12, 72);
-
-                Widget listaPresencasMes = 
-                  primaryFixedGradientContainer(
-                    theme: theme,
-                    width: double.maxFinite,
-                    child: _carregando
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final bool isLargeScreen = constraints.maxWidth > 700;
+              double screenHeight = constraints.maxHeight;
+              double scale = (screenHeight / 700).clamp(1.0, 1.5);
+              double smallSpacing = (screenHeight * 0.015 * scale).clamp(6, 28);
+              double largeSpacing = (screenHeight * 0.03 * scale).clamp(12, 72);
+          
+              Widget listaPresencasMes = 
+                primaryFixedGradientContainer(
+                  theme: theme,
+                  width: double.maxFinite,
+                  child: _carregando
+                    ? Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: theme.colorScheme.primaryFixed,
+                        ),
+                      ),
+                    )
+                    : _erro != null
                       ? Padding(
-                        padding: EdgeInsets.all(20.0),
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            color: theme.colorScheme.primaryFixed,
-                          ),
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              color: theme.colorScheme.error,
+                              size: 48,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              _erro!,
+                              style: textTheme.bodyLarge?.copyWith(
+                                color: theme.colorScheme.error,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
                       )
-                      : _erro != null
-                        ? Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.error_outline,
-                                color: theme.colorScheme.error,
-                                size: 48,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                _erro!,
-                                style: textTheme.bodyLarge?.copyWith(
-                                  color: theme.colorScheme.error,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                        )
-                      : _listaRelatorioAlunos.isEmpty
-                        ? Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.calendar_month,
-                                color: theme.colorScheme.primaryFixed,
-                                size: 48,
-                              ),
-                              SizedBox(height: smallSpacing,),
-                              Text(
-                                'Não há presenças registradas nesse mês',
-                                style: textTheme.bodyLarge?.copyWith(
-                                  color: theme.colorScheme.primaryFixed,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                        )
-                      : _selectedDate == null
-                        ? Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Text(
-                            'Selecione uma data',
-                            style: textTheme.bodyLarge?.copyWith(
+                    : _listaRelatorioAlunos.isEmpty
+                      ? Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.calendar_month,
                               color: theme.colorScheme.primaryFixed,
+                              size: 48,
                             ),
-                            textAlign: TextAlign.center,
+                            SizedBox(height: smallSpacing,),
+                            Text(
+                              'Não há presenças registradas nesse mês',
+                              style: textTheme.bodyLarge?.copyWith(
+                                color: theme.colorScheme.primaryFixed,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      )
+                    : _selectedDate == null
+                      ? Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Text(
+                          'Selecione uma data',
+                          style: textTheme.bodyLarge?.copyWith(
+                            color: theme.colorScheme.primaryFixed,
                           ),
-                        )
-                      : ListView.builder(
-                        cacheExtent: 1,
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: _listaRelatorioAlunos.length,
-                        itemBuilder:(context, index) {
-                          final relatorioAluno = _listaRelatorioAlunos[index];
-
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 10.0, left: 10.0, top: 4.0),
-                            child: Column(
-                              children: [
-                                ListTile(
-                                  leading: Text(
-                                    relatorioAluno.alunoNome,
-                                    style: textTheme.bodyLarge?.copyWith(
-                                      color: theme.colorScheme.primaryFixed
-                                    ),
-                                  ),
-                                  title: Text(
-                                    '${relatorioAluno.totalDeFaltas} ${relatorioAluno.totalDeFaltas == 1 ? "falta" : "faltas"}',
-                                    style: textTheme.bodyLarge?.copyWith(
-                                      color: theme.colorScheme.primaryFixed
-                                    ),
-                                  ),
-                                  trailing: Text(
-                                    '${(relatorioAluno.porcentagemPresenca * 100).toStringAsFixed(0)}%',
-                                    style: textTheme.bodyLarge?.copyWith(
-                                      color: theme.colorScheme.primaryFixed
-                                    ),
+                          textAlign: TextAlign.center,
+                        ),
+                      )
+                    : ListView.builder(
+                      cacheExtent: 1,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: _listaRelatorioAlunos.length,
+                      itemBuilder:(context, index) {
+                        final relatorioAluno = _listaRelatorioAlunos[index];
+                    
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 10.0, left: 10.0, top: 4.0),
+                          child: Column(
+                            children: [
+                              ListTile(
+                                leading: Text(
+                                  relatorioAluno.alunoNome,
+                                  style: textTheme.bodyLarge?.copyWith(
+                                    color: theme.colorScheme.primaryFixed
                                   ),
                                 ),
-                                if(index + 1 != _listaRelatorioAlunos.length)
-                                Divider(
-                                  color: theme.colorScheme.primaryFixed,
-                                  thickness: 2,
-                                )
-                              ].animate().flipH(perspective: !isLargeScreen ? -0.5 : 0, begin: 0.3).fadeIn(),
-                            ),
-                          );
-                        },
-                      )
-                  );
-
-                  Widget containerMediaPresenca = 
-                  tertiaryGradientContainer(
-                    theme: theme, 
-                    right: true,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Média de presença',
-                            style: textTheme.bodyLarge?.copyWith(
-                              color: theme.colorScheme.primaryFixed
-                            ),
+                                title: Text(
+                                  '${relatorioAluno.totalDeFaltas} ${relatorioAluno.totalDeFaltas == 1 ? "falta" : "faltas"}',
+                                  style: textTheme.bodyLarge?.copyWith(
+                                    color: theme.colorScheme.primaryFixed
+                                  ),
+                                ),
+                                trailing: Text(
+                                  '${(relatorioAluno.porcentagemPresenca * 100).toStringAsFixed(0)}%',
+                                  style: textTheme.bodyLarge?.copyWith(
+                                    color: theme.colorScheme.primaryFixed
+                                  ),
+                                ),
+                              ),
+                              if(index + 1 != _listaRelatorioAlunos.length)
+                              Divider(
+                                color: theme.colorScheme.primaryFixed,
+                                thickness: 2,
+                              )
+                            ].animate().flipH(perspective: !isLargeScreen ? -0.5 : 0, begin: 0.3).fadeIn(),
                           ),
-                          SizedBox(height: smallSpacing,),
-                          Row(
+                        );
+                      },
+                    )
+                );
+          
+                Widget containerMediaPresenca = 
+                tertiaryGradientContainer(
+                  theme: theme, 
+                  right: true,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Média de presença',
+                          style: textTheme.bodyLarge?.copyWith(
+                            color: theme.colorScheme.primaryFixed
+                          ),
+                        ),
+                        SizedBox(height: smallSpacing,),
+                        Expanded(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SizedBox(
                                 width: 50,
@@ -377,30 +379,31 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                               ),
                             ],
                           ),
-                          
-                        ],
-                      ),
-                    )
-                  );
-
-                  Widget containerDiasMaisFaltados = tertiaryGradientContainer(
-                    theme: theme,
-                    right: false,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Dias mais faltados',
-                            style: textTheme.bodyLarge?.copyWith(
-                              color: theme.colorScheme.primaryFixed,
-                            ),
+                        ),
+                        
+                      ],
+                    ),
+                  )
+                );
+          
+                Widget containerDiasMaisFaltados = tertiaryGradientContainer(
+                  theme: theme,
+                  right: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Dias mais faltados',
+                          style: textTheme.bodyLarge?.copyWith(
+                            color: theme.colorScheme.primaryFixed,
                           ),
-
-                          SizedBox(height: smallSpacing),
-
-                          SizedBox(
+                        ),
+                        SizedBox(height: smallSpacing),
+                        Expanded(
+                          child: SizedBox(
                             height: 60, 
                             child: ListView(
                               padding: EdgeInsets.zero,
@@ -416,7 +419,7 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                                     ),
                                   ),
                                 ],
-
+                          
                                 ..._diasMaisFaltados.skip(1).map((faltas) {
                                   final nomeDia = faltas.diaDasemana;
                                   return Padding(
@@ -428,6 +431,7 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                                           color: theme.colorScheme.primaryFixed.withOpacity(0.4),
                                           thickness: 1,
                                         ),
+                                        SizedBox(height: 6),
                                         Text(
                                           '$nomeDia: ${faltas.totalDeFaltas}',
                                           style: textTheme.bodyLarge?.copyWith(
@@ -440,13 +444,26 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                                 }),
                               ],
                             ),
-                          )
-                        ],
-                      ),
+                          ),
+                        )
+                      ],
                     ),
+                  ),
+                );
+          
+                Widget containersRow = 
+                Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: containerMediaPresenca),
+                      SizedBox(width: smallSpacing,),
+                      Expanded(child: containerDiasMaisFaltados)
+                    ],
                   );
-            
-                return Column(
+          
+              final double viewportHeight = constraints.maxHeight;
+              return SingleChildScrollView(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
@@ -466,39 +483,30 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                       height: 55
                     ),
                     SizedBox(height: smallSpacing,),
-                    Expanded(
-                    child: isLargeScreen ? Center(
-                      child: SizedBox(
-                        width: 1000,
-                        child: listaPresencasMes,
+                    SizedBox(
+                        height: (viewportHeight * 0.5).clamp(300.0, 700.0),
+                        child: isLargeScreen ? Center(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(maxWidth: 1000), 
+                            child: listaPresencasMes,
+                          ),
+                        )
+                        : listaPresencasMes,
                       ),
-                    )
-                    : listaPresencasMes
-                  ),
                   SizedBox(height: smallSpacing,),
                   isLargeScreen ? SizedBox(
                     width: 1000,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: containerMediaPresenca),
-                        SizedBox(width: smallSpacing,),
-                        Expanded(child: containerDiasMaisFaltados)
-                      ],
-                    ),
+                    height: 150,
+                    child: containersRow
                   )
-                  : Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: containerMediaPresenca),
-                        SizedBox(width: smallSpacing,),
-                        Expanded(child: containerDiasMaisFaltados)
-                      ],
+                  : SizedBox(
+                    height: 150,
+                    child: containersRow
                     )
                   ],
-                );
-              }
-            ),
+                ),
+              );
+            }
           ),
         ),
       ),

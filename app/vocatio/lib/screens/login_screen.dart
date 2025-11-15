@@ -64,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen>{
       
       if (result.containsKey('error')) {
         if(mounted){
-          showErrorSnackBar(result['error']['message'], context);
+          showErrorSnackBar(result['error']['message'] == 'INVALID_LOGIN_CREDENTIALS' ? 'Conta inexistente.' : result['error']['message'] , context);
         }
       }else {
         final userInfo = await _authService.userLookUp(result['idToken']);
