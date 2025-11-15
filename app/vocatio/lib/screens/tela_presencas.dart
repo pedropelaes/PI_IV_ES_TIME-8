@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:vocattio/models/aula.dart';
+import 'package:vocattio/models/user.dart';
 import 'package:vocattio/screens/tela_alunos_presentes.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
@@ -32,6 +33,7 @@ class PresencasScreen extends StatefulWidget {
 
 class _PresencasScreenState extends State<PresencasScreen> {
   DateTime? _selectedDate;
+  final User currentUser = getIt<User>();
   final SocketService _socketService = getIt<SocketService>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Aula> _aulas = [];
@@ -238,7 +240,10 @@ class _PresencasScreenState extends State<PresencasScreen> {
           Navigator.pop(context);
         },
       ),
-      drawer: AppDrawer(),
+      drawer: AppDrawer(
+        user: currentUser,
+        currentTurmaId: widget.turmaId,
+      ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(16.0),
@@ -248,7 +253,7 @@ class _PresencasScreenState extends State<PresencasScreen> {
                 double screenHeight = constraints.maxHeight;
                 double scale = (screenHeight / 700).clamp(1.0, 1.5);
                 double smallSpacing = (screenHeight * 0.015 * scale).clamp(6, 28);
-                double largeSpacing = (screenHeight * 0.03 * scale).clamp(12, 72);
+                //double largeSpacing = (screenHeight * 0.03 * scale).clamp(12, 72);
 
                 Widget listaPresencas = 
                   primaryFixedGradientContainer(

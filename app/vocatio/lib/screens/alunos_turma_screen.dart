@@ -4,8 +4,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vocattio/models/aluno_simple_info.dart';
+import 'package:vocattio/models/user.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
+import 'package:vocattio/widgets/app_drawer.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 
@@ -23,6 +25,7 @@ class AlunosTurmaScreen extends StatefulWidget{
 }
 
 class _AlunosTurmaScreenState extends State<AlunosTurmaScreen> {
+  final User currentUser = getIt<User>();
   bool _carregando = false;
   String? _erro;
   List<AlunoSimpleInfo> _alunos = [];
@@ -115,6 +118,10 @@ class _AlunosTurmaScreenState extends State<AlunosTurmaScreen> {
           _scaffoldKey.currentState?.openDrawer();
         },
       ),
+      drawer: AppDrawer(
+        user: currentUser,
+        currentTurmaId: widget.turmaId,
+      ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(16.0),
@@ -124,7 +131,7 @@ class _AlunosTurmaScreenState extends State<AlunosTurmaScreen> {
               double screenHeight = constraints.maxHeight;
               double scale = (screenHeight / 700).clamp(1.0, 1.5);
               double smallSpacing = (screenHeight * 0.015 * scale).clamp(6, 28);
-              double largeSpacing = (screenHeight * 0.03 * scale).clamp(12, 72);
+              //double largeSpacing = (screenHeight * 0.03 * scale).clamp(12, 72);
 
               Widget _listaAlunos = 
               primaryFixedGradientContainer(

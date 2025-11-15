@@ -9,8 +9,10 @@ import 'package:vocattio/extensions/string_extensions.dart';
 import 'package:vocattio/models/faltas_do_dia.dart';
 import 'package:vocattio/models/relatorio_aluno.dart';
 import 'package:vocattio/models/relatorio_turma.dart';
+import 'package:vocattio/models/user.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
+import 'package:vocattio/widgets/app_drawer.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
@@ -31,6 +33,7 @@ class RelatorioMensalScreen extends StatefulWidget{
 class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final SocketService _socketService = getIt<SocketService>();
+  final User currentUser = getIt<User>();
   DateTime? _selectedDate;
   bool _carregando = false;
   String? _erro;
@@ -99,7 +102,7 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
 
   String _getDateText() {
     if (_selectedDate == null) {
-      return 'Filtrar por data';
+      return 'Escolher mês';
     }
     return DateFormat.MMMM('pt_BR').format(_selectedDate!).capitalize();
   }
@@ -176,7 +179,11 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
     }
   }
 
-  
+  @override
+  void initState(){
+    super.initState();
+    
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -195,6 +202,10 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
           Navigator.pop(context);
         },
       ),
+      drawer: AppDrawer(
+        user: currentUser,
+        currentTurmaId: widget.turmaId,
+      ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(16.0),
@@ -204,7 +215,7 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
               double screenHeight = constraints.maxHeight;
               double scale = (screenHeight / 700).clamp(1.0, 1.5);
               double smallSpacing = (screenHeight * 0.015 * scale).clamp(6, 28);
-              double largeSpacing = (screenHeight * 0.03 * scale).clamp(12, 72);
+              //double largeSpacing = (screenHeight * 0.03 * scale).clamp(12, 72);
           
               Widget listaPresencasMes = 
                 primaryFixedGradientContainer(
@@ -241,6 +252,22 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                           ],
                         ),
                       )
+                    : _selectedDate == null
+                      ? Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Selecione uma data',
+                                style: textTheme.bodyLarge?.copyWith(
+                                  color: theme.colorScheme.primaryFixed,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        )
                     : _listaRelatorioAlunos.isEmpty
                       ? Padding(
                         padding: const EdgeInsets.all(20.0),
@@ -261,17 +288,6 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                               textAlign: TextAlign.center,
                             ),
                           ],
-                        ),
-                      )
-                    : _selectedDate == null
-                      ? Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Text(
-                          'Selecione uma data',
-                          style: textTheme.bodyLarge?.copyWith(
-                            color: theme.colorScheme.primaryFixed,
-                          ),
-                          textAlign: TextAlign.center,
                         ),
                       )
                     : ListView.builder(
@@ -359,7 +375,7 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                                     ),
                                     SizedBox(width: smallSpacing),
                                     Text(
-                                      '${((relatorioTurma?.mediaDaTurma ?? 0.0) * 100).toStringAsFixed(0)}%',
+                                      '${((relatorioTurma?.mediaDaTurma ?? 0.0)* 100).toStringAsFixed(0)}%',
                                       style: textTheme.titleMedium?.copyWith(
                                         color: theme.colorScheme.primaryFixed,
                                         fontWeight: FontWeight.bold,

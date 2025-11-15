@@ -1,4 +1,3 @@
-import 'package:intl/intl.dart';
 import 'package:vocattio/models/presenca.dart';
 import 'package:vocattio/utils/date_formater.dart';
 

@@ -2,16 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vocattio/services/location/location_service.dart'; 
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_drawer.dart';
 import 'package:vocattio/widgets/app_header.dart';
-import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/forms_dialog.dart';
 import 'package:vocattio/widgets/location_picker.dart';
@@ -34,8 +31,6 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
   final SocketService _socketService = getIt<SocketService>();
   final LocationService _locationService = LocationService();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  bool _isEthernet = false; 
-  bool _isLoadingConnection = true; 
   
   LatLng _selectedLocation = const LatLng(-22.9068, -47.0616); // campinas padrao
 
@@ -56,48 +51,9 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
 
   Future<void> _showLocationPickerDialog() async {
     LatLng dialogSelectedLocation = _selectedLocation;
-    final Set<Marker> dialogMarkers = {};
-    GoogleMapController? dialogMapController;
-    bool isDialogMapLoading = true;
 
     final TextEditingController dialogLatController = TextEditingController();
     final TextEditingController dialogLonController = TextEditingController();
-
-    void updateDialogState(LatLng location, Function dialogSetState) {
-      dialogSelectedLocation = location;
-      dialogMarkers.clear();
-      dialogMarkers.add(
-        Marker(
-          markerId: const MarkerId("selected_location"),
-          position: location,
-          draggable: true,
-          onDragEnd: (newPosition) {
-            updateDialogState(newPosition, dialogSetState);
-          },
-        ),
-      );
-      dialogLatController.text = location.latitude.toStringAsFixed(6);
-      dialogLonController.text = location.longitude.toStringAsFixed(6);
-      
-      // Atualiza o estado do dialog
-      dialogSetState(() {});
-    }
-
-    // Função para carregar a localização inicial *do dialog*
-    Future<void> defLocInicialDoMapaDialog(Function dialogSetState) async {
-      Position? posRapida = await LocationService.obterPosicaoInicialRapida();
-      LatLng localInicial = (posRapida != null)
-          ? LatLng(posRapida.latitude, posRapida.longitude)
-          : _selectedLocation; // Usa a localização já salva como ponto de partida
-
-      if(posRapida != null){
-        if(posRapida.accuracy > 100 && mounted) showTopSnackBar('Localização obtida é muito imprecisa. Use o mapa para selecionar o local manualmente.', context, isError: true);
-      }
-
-      updateDialogState(localInicial, dialogSetState);
-      dialogMapController?.animateCamera(CameraUpdate.newLatLngZoom(localInicial, 15.0));
-      dialogSetState(() { isDialogMapLoading = false; });
-    }
 
     final theme = Theme.of(context);
     try{
@@ -112,7 +68,7 @@ class _CriarTurmaScreenState extends State<CriarTurmaScreen> {
           return Padding(
             padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom,),
             child: DraggableScrollableSheet(
-              initialChildSize: 0.65,
+              initialChildSize: 0.85,
               minChildSize: 0.6,
               maxChildSize: 0.95,
               expand: false,

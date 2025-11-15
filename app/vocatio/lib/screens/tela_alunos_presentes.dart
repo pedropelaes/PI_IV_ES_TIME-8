@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:vocattio/models/presenca.dart';
+import 'package:vocattio/models/user.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
@@ -25,6 +26,7 @@ class TelaAlunosPresentes extends StatefulWidget{
 }
 
 class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
+  final User currentUser = getIt<User>();
   final SocketService _socketService = getIt<SocketService>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final List<Presenca> _alunosPresentes = [];
@@ -70,7 +72,9 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
             Navigator.pop(context, _mudancasSalvas);
           },
         ),
-        drawer: AppDrawer(),
+        drawer: AppDrawer(
+          user: currentUser,
+        ),
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.all(16.0),

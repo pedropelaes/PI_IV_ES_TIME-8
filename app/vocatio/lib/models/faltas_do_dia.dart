@@ -1,5 +1,3 @@
-import 'package:vocattio/utils/date_formater.dart';
-
 class FaltasDoDia {
   final String diaDasemana;
   final int totalDeFaltas;
