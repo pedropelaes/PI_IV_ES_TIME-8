@@ -67,5 +67,25 @@ public class GetPresencas {
         this.operacao = operacao;
     }
 
+    @Override
+    public String toString(){return "ChamadaID: " + this.chamadaId + " - " + this.operacao;}
+
+    @Override
+    public boolean equals(Object obj){
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        GetPresencas g = (GetPresencas) obj;
+        if (!this.chamadaId.equals(g.chamadaId) || !this.operacao.equals(g.operacao)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode(){
+        int ret = 1;
+        ret = ret * 31 + this.chamadaId.hashCode();
+        ret = ret * 31 + this.operacao.hashCode();
+        return ret;
+    }
+
 }
 

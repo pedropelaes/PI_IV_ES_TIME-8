@@ -18,3 +18,21 @@ String formatarDataAula(DateTime data) {
     return '$dataFormatada - $horaFormatada';
   }
 }
+
+class DateParser {
+  static DateTime parseCustomDate(String? dateString) {
+    if (dateString == null || dateString.isEmpty) {
+      return DateTime.now();
+    }
+
+    try {
+      // Remove espaçamentos estranhos
+      final cleaned = dateString.replaceAll(RegExp(r'\s+'), ' ');
+
+      return DateFormat("MMM d, yyyy, h:mm:ss a", 'en_US').parse(cleaned);
+    } catch (e) {
+      print("Erro ao converter data: $e");
+      return DateTime.now();
+    }
+  }
+}

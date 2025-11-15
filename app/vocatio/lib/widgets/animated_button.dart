@@ -8,6 +8,7 @@ class AnimatedButton extends StatefulWidget {
   final Color? textColor;
   final EdgeInsetsGeometry? padding;
   final double? borderRadius;
+  final bool enabled;
 
   const AnimatedButton({
     super.key,
@@ -17,6 +18,7 @@ class AnimatedButton extends StatefulWidget {
     this.textColor,
     this.padding,
     this.borderRadius,
+    this.enabled = true
   });
 
   @override
@@ -79,25 +81,28 @@ class _AnimatedButtonState extends State<AnimatedButton>
           scale: _scaleAnimation.value,
           child: Opacity(
             opacity: _fadeAnimation.value,
-            child: SizedBox(
-              width: double.infinity,
-              height: ResponsiveHelper.isDesktop(context) ? 56 : 50,
-              child: ElevatedButton(
-                onPressed: widget.onPressed,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.onPrimaryFixedVariant,
-                  foregroundColor: theme.colorScheme.onSurface,
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(widget.borderRadius ?? 12),
+            child: Opacity(
+              opacity: widget.enabled ? 1.0 : 0.6,
+              child: SizedBox(
+                width: double.infinity,
+                height: ResponsiveHelper.isDesktop(context) ? 56 : 50,
+                child: ElevatedButton(
+                  onPressed: widget.enabled ? widget.onPressed : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.onPrimaryFixedVariant,
+                    foregroundColor: theme.colorScheme.onSurface,
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(widget.borderRadius ?? 12),
+                    ),
                   ),
-                ),
-                child: Text(
-                  widget.text,
-                  style: textTheme.titleMedium?.copyWith(
-                    color: widget.textColor ?? Colors.white,
-                    fontWeight: FontWeight.w500,
-                    fontSize: ResponsiveHelper.getResponsiveFontSize(context, 16),
+                  child: Text(
+                    widget.text,
+                    style: textTheme.titleMedium?.copyWith(
+                      color: widget.textColor ?? Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: ResponsiveHelper.getResponsiveFontSize(context, 16),
+                    ),
                   ),
                 ),
               ),

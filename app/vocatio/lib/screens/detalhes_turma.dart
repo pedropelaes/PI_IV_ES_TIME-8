@@ -7,8 +7,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vocattio/models/loc_padrao.dart';
 import 'package:vocattio/models/user.dart';
 import 'package:vocattio/screens/alunos_turma_screen.dart';
+import 'package:vocattio/screens/relatorio_mensal_screen.dart';
 import 'package:vocattio/screens/tela_presencas.dart';
-import 'package:vocattio/screens/gerar_qrcode_screen.dart';
+import 'package:vocattio/screens/abrir_chamada_screen.dart';
 import 'package:vocattio/screens/validate_attendance_screen.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
@@ -336,10 +337,11 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                         if(widget.user.tipo == 'professor') AnimatedButton(
                           text: 'Relatório Mensal',
                           onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Funcionalidade de relatório será implementada'),
-                              ),
+                            Navigator.push(context, 
+                              MaterialPageRoute(builder: (context) => RelatorioMensalScreen(
+                                nomeTurma: widget.nomeTurma, 
+                                turmaId: widget.turmaId)
+                              )
                             );
                           },
                         ),

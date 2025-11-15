@@ -58,4 +58,29 @@ public class EditarTurma {
             return false;
         }
     }
+
+    @Override
+    public String toString(){return "TurmaID: " + this.turmaId + "Nome: " + this.nome + "Descricao: " + this.descricao +  "LocPadrao: " + this.locPadrao;}
+
+    @Override
+    public boolean equals(Object obj){
+        if (obj == this) return true;
+        if (obj == null) return false;
+        if (obj.getClass() != this.getClass()) return false;
+        EditarTurma e = (EditarTurma) obj;
+        if (!this.turmaId.equals(e.turmaId) || !this.nome.equals(e.nome)
+                || !this.descricao.equals(e.descricao) || !this.locPadrao.equals(e.locPadrao)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int ret = 1;
+        ret = ret * 31 + this.turmaId.hashCode();
+        ret = ret * 31 + this.nome.hashCode();
+        ret = ret * 31 + this.descricao.hashCode();
+        ret = ret * 31 + this.locPadrao.hashCode();
+        return ret;
+    }
+
 }

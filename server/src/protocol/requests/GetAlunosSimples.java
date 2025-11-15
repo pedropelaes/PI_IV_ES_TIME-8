@@ -64,4 +64,20 @@ public class GetAlunosSimples {
             return null;
         }
     }
+
+    @Override
+    public String toString(){return "" + this.turmaId;}
+
+    @Override
+    public boolean equals(Object obj){
+        if (obj == this) return true;
+        if(obj == null) return false;
+        if(this.getClass() != obj.getClass()) return false;
+        GetAlunosSimples g = (GetAlunosSimples) obj;
+        return this.turmaId.equals(g.turmaId);
+    }
+
+    @Override
+    public int hashCode(){return this.turmaId.hashCode();}
+
 }

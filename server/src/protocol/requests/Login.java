@@ -49,6 +49,7 @@ public class Login {
                 doc.getString("email"),
                 doc.getString("tipo"),
                 doc.getString("codigo"),
+                doc.getString("faceToken"),
                 turmas
             );
 
@@ -60,7 +61,27 @@ public class Login {
         }
     }
 
+    @Override
     public String toString() {
         return this.operacao + " " + this.uid;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == this) return true;
+        if(obj == null) return false;
+        if(obj.getClass() != this.getClass()) return false;
+        Login l = (Login)obj;
+        if (!this.uid.equals(l.uid) || !this.operacao.equals(l.operacao)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int ret = 1;
+        ret = ret * 31 + this.uid.hashCode();
+        ret = ret * 31 + this.operacao.hashCode();
+        return ret;
+    }
+
 }

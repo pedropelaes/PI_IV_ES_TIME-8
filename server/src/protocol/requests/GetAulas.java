@@ -22,12 +22,10 @@ import java.util.stream.Collectors;
 
 public class GetAulas {
     private String turmaId;
-    private String operacao;
 
     public GetAulas(){}
-    public GetAulas(String turmaId, String operacao) {
+    public GetAulas(String turmaId) {
         this.turmaId = turmaId;
-        this.operacao = operacao;
     }
 
     public List<Aula> getAulasFromTurma(){
@@ -100,4 +98,25 @@ public class GetAulas {
             return null;
         }
     }
+
+    @Override
+    public String toString(){return "" + this.turmaId;}
+
+    @Override
+    public boolean equals(Object obj){
+        if(obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        GetAulas g = (GetAulas) obj;
+        if (!this.turmaId.equals(g.turmaId)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode(){
+        int ret = 1;
+        ret = ret * 31 + this.turmaId.hashCode();
+        if(ret < 0) ret=-ret;
+        return ret;
+    }
+
 }

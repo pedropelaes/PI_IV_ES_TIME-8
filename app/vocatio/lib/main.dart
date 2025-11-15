@@ -4,8 +4,9 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:vocattio/screens/settings_screen.dart';
 import 'package:vocattio/screens/welcome_screen.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
@@ -36,6 +37,9 @@ void main() async {
   }
 
   setupLocator();
+
+  await initializeDateFormatting('pt_BR', null);
+  Intl.defaultLocale = 'pt_BR';
 
   runApp(
     Phoenix(

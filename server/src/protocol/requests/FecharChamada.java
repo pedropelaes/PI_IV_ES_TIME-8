@@ -40,7 +40,8 @@ public class FecharChamada {
                 Filters.eq("codigo", codigoChamada),
                 Updates.combine(
                     Updates.set("aberta", false),
-                    Updates.set("dataFechamento", new Date())
+                    Updates.set("dataFechamento", new Date()),
+                    Updates.unset("chaveTOTP")
                 )
             );
 
@@ -71,5 +72,27 @@ public class FecharChamada {
     public void setCodigoChamada(String codigoChamada) { this.codigoChamada = codigoChamada; }
     public String getOperacao() { return operacao; }
     public void setOperacao(String operacao) { this.operacao = operacao; }
+
+    @Override
+    public String toString() {return codigoChamada + " - " + operacao;}
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        FecharChamada f = (FecharChamada) obj;
+        if (!this.codigoChamada.equals(f.codigoChamada) || !this.operacao.equals(f.operacao)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int ret = 1;
+        ret = ret * 31 + this.codigoChamada.hashCode();
+        ret = ret * 31 + this.operacao.hashCode();
+        return ret;
+    }
+
 }
 

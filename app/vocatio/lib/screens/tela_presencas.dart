@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:vocattio/models/aula.dart';
+import 'package:vocattio/models/user.dart';
 import 'package:vocattio/screens/tela_alunos_presentes.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
@@ -31,6 +33,7 @@ class PresencasScreen extends StatefulWidget {
 
 class _PresencasScreenState extends State<PresencasScreen> {
   DateTime? _selectedDate;
+  final User currentUser = getIt<User>();
   final SocketService _socketService = getIt<SocketService>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Aula> _aulas = [];
@@ -237,7 +240,10 @@ class _PresencasScreenState extends State<PresencasScreen> {
           Navigator.pop(context);
         },
       ),
-      drawer: AppDrawer(),
+      drawer: AppDrawer(
+        user: currentUser,
+        currentTurmaId: widget.turmaId,
+      ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(16.0),
@@ -247,7 +253,7 @@ class _PresencasScreenState extends State<PresencasScreen> {
                 double screenHeight = constraints.maxHeight;
                 double scale = (screenHeight / 700).clamp(1.0, 1.5);
                 double smallSpacing = (screenHeight * 0.015 * scale).clamp(6, 28);
-                double largeSpacing = (screenHeight * 0.03 * scale).clamp(12, 72);
+                //double largeSpacing = (screenHeight * 0.03 * scale).clamp(12, 72);
 
                 Widget listaPresencas = 
                   primaryFixedGradientContainer(
@@ -312,9 +318,13 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                   ),
                                 )
                               : ListView.builder(
+                                  cacheExtent: 1,
+                                  physics: const BouncingScrollPhysics(),
                                   itemCount: _aulasFiltradas.length,
                                   itemBuilder: (context, index) {
                                     final aula = _aulasFiltradas[index];
+                                    final Duration diferenca = DateTime.now().difference(aula.dataAbertura);
+                                    final bool isEditavel = diferenca.inDays < 14;
 
                                     Widget trailingIcon;
                                     if (widget.userType == 'professor') {
@@ -342,45 +352,63 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                             : theme.colorScheme.error,
                                       );
                                     }
-                                    return ListTile(
-                                      leading: SizedBox(
-                                        width: 60,
-                                        child: Row(
-                                          spacing: 12.0,
-                                          children: [
-                                            Icon(
-                                              Icons.circle,
-                                              size: 18,
-                                              color: aula.aberta ? theme.colorScheme.primary : theme.colorScheme.inversePrimary,
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 10.0, left: 10.0, top: 4.0),
+                                      child: Column(
+                                        children: [
+                                          ListTile(
+                                            leading: SizedBox(
+                                              width: 60,
+                                              child: Row(
+                                                spacing: 12.0,
+                                                children: [
+                                                  Icon(
+                                                    Icons.circle,
+                                                    size: 18,
+                                                    color: isEditavel ? theme.colorScheme.primaryFixed : theme.colorScheme.primary,
+                                                  ),
+                                                  Icon(
+                                                    Icons.assignment,
+                                                    color: theme.colorScheme.primaryFixed,
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                            Icon(
-                                              Icons.assignment,
-                                              color: theme.colorScheme.primaryFixed,
+                                            title: Text(
+                                              formatarDataAula(aula.dataAbertura),
+                                              style: textTheme.bodyLarge?.copyWith(
+                                                color: theme.colorScheme.primaryFixed
+                                              ),
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                      title: Text(
-                                        formatarDataAula(aula.dataAbertura),
-                                        style: textTheme.bodyLarge?.copyWith(
-                                          color: theme.colorScheme.primaryFixed
-                                        ),
-                                      ),
-                                      trailing: trailingIcon,
-                                      onTap: (){
-                                        if(widget.userType == 'professor'){Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => TelaAlunosPresentes(
-                                              idChamada: aula.objectId, 
-                                              nomeTurma: widget.nomeTurma!,
-                                              data: formatarDataAula(aula.dataAbertura),
-                                              alunosPresentes: aula.presentes,
-                                            )
+                                            trailing: trailingIcon,
+                                            onTap: () async {
+                                              if(widget.userType == 'professor'){
+                                                final bool resultado = await Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) => TelaAlunosPresentes(
+                                                      idChamada: aula.objectId, 
+                                                      nomeTurma: widget.nomeTurma!,
+                                                      data: formatarDataAula(aula.dataAbertura),
+                                                      alunosPresentes: aula.presentes,
+                                                      isEditavel: isEditavel
+                                                    )
+                                                  )
+                                                );
+                                          
+                                                if(resultado){
+                                                  _buscarChamadas();
+                                                }
+                                              }
+                                            },
+                                          ),
+                                          if(index + 1 != _aulasFiltradas.length)
+                                          Divider(
+                                            color: theme.colorScheme.primaryFixed,
+                                            thickness: 2,
                                           )
-                                        );
-                                        }
-                                      },
+                                        ].animate().flipH(perspective: !isLargeScreen ? -0.5 : 0, begin: 0.3).fadeIn(),
+                                      ),
                                     );
                                   },
                                 ),

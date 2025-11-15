@@ -107,4 +107,25 @@ public class GetTurmas {
         }
     }
 
+    @Override
+    public String toString() {return "TurmasID: " + this.turmasId.toString() + " " + this.operacao;}
+
+    @Override
+    public boolean equals(Object obj){
+        if (this ==  obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        GetTurmas g = (GetTurmas) obj;
+        if (!this.turmasId.equals(g.turmasId) || !this.operacao.equals(g.operacao)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode(){
+        int ret = 1;
+        ret = ret * 31 + this.turmasId.hashCode();
+        ret = ret * 31 + this.operacao.hashCode();
+        return ret;
+    }
+
 }

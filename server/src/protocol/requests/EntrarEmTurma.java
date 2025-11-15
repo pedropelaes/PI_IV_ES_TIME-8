@@ -79,4 +79,24 @@ public class EntrarEmTurma {
     public String toString() {
         return this.operacao + " aluno " + this.objectId + " entrou na turma " + this.codigoTurma;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || this.getClass() != obj.getClass()) return false;
+        EntrarEmTurma e = (EntrarEmTurma) obj;
+        if (this.codigoTurma.equals(e.codigoTurma) || this.objectId.equals(e.objectId)
+                || this.operacao.equals(e.operacao)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int ret = 1;
+        ret = ret * 31 + this.codigoTurma.hashCode();
+        ret = ret * 31 + this.objectId.hashCode();
+        ret = ret * 31 + this.operacao.hashCode();
+        return ret;
+    }
+
 }

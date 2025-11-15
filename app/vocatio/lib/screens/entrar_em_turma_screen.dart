@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:vocattio/models/user.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
@@ -20,7 +21,7 @@ class EntrarEmTurmaScreen extends StatefulWidget {
 }
 
 class _EntrarEmTurmaScreenState extends State<EntrarEmTurmaScreen> {
-  
+  final User currentUser = getIt<User>();
   // 2. Adicionar o GlobalKey para controlar o Scaffold
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -113,7 +114,9 @@ class _EntrarEmTurmaScreenState extends State<EntrarEmTurmaScreen> {
           _scaffoldKey.currentState?.openDrawer();
         },
       ),
-      drawer: const AppDrawer(),  
+      drawer: AppDrawer(
+        user: currentUser
+      ),  
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(24),

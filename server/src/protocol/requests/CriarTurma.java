@@ -101,4 +101,26 @@ public class CriarTurma {
                 ", operacao='" + operacao + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        CriarTurma c = (CriarTurma) obj;
+        if (!this.nome.equals(c.nome) || !this.operacao.equals(c.operacao) || !this.descricao.equals(c.descricao)
+            || !this.objectId.equals(c.objectId) || !this.localizacaoPadrao.equals(c.localizacaoPadrao)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int ret = 1;
+        ret = ret * 31 + this.nome.hashCode();
+        ret = ret * 31 + this.operacao.hashCode();
+        ret = ret * 31 + this.descricao.hashCode();
+        ret = ret * 31 + this.objectId.hashCode();
+        ret = ret * 31 + this.localizacaoPadrao.hashCode();
+        return ret;
+    }
+
 }

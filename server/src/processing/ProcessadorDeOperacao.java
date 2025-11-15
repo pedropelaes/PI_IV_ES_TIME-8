@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.bson.Document;
 import src.connection.IParceiro;
-import src.domain.AlunoSimples;
-import src.domain.Aula;
-import src.domain.Turma;
-import src.domain.User;
+import src.domain.*;
 import src.protocol.requests.*;
 import src.protocol.responses.*;
 
@@ -106,6 +103,36 @@ public class ProcessadorDeOperacao {
                     EditarTurma editarTurma = gson.fromJson(json, EditarTurma.class);
                     resultado = editarTurma.editarTurma();
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoEditarTurma"));
+                case "GetCodigoTemporario":
+                    GetCodigoTemporario getCodigoTemporario = gson.fromJson(json, GetCodigoTemporario.class);
+                    String codigoTemporario = getCodigoTemporario.getCodigo();
+                    resultado = codigoTemporario != null;
+                    remetente.receba(new ResultadoGetCodigoTemporario(
+                            resultado,
+                            "ResultadoGetCodigoTemporario",
+                            codigoTemporario
+                    ));
+                    break;
+                case "RegistrarNovaFace":
+                    RegistrarNovaFace registrarNovaFace = gson.fromJson(json, RegistrarNovaFace.class);
+                    resultado = registrarNovaFace.registrar();
+                    remetente.receba(new ResultadoOperacao(resultado, "ResultadoRegistrarNovaFace"));
+                    break;
+                case "EditarChamada":
+                    EditarChamada editarChamada = gson.fromJson(json, EditarChamada.class);
+                    resultado = editarChamada.editar();
+                    remetente.receba(new ResultadoOperacao(resultado, "ResultadoEditarChamada"));
+                    break;
+                case "GetRelatorioMensal":
+                    GetRelatorioMensal getRelatorioMensal = gson.fromJson(json, GetRelatorioMensal.class);
+                    RelatorioMensalTurma relatorio = getRelatorioMensal.gerarRelatorio();
+                    resultado = relatorio != null;
+                    remetente.receba(new ResultadoGetRelatorioMensal(
+                            "ResultadoGetRelatorioMensal",
+                            resultado,
+                            relatorio
+                        ));
+                    break;
                 default:
                     System.err.println("Comunicado desconhecido: '" + tipo + "'");
                     System.err.println("JSON completo recebido: " + json);

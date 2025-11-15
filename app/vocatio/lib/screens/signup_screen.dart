@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:vocattio/extensions/string_extensions.dart';
@@ -31,6 +32,30 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController idController = TextEditingController();
   final _authService = AuthService();
   final SocketService _socketService = getIt<SocketService>();
+  File? _selfieFile;
+
+  Future<void> _tirarSelfie() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.camera, 
+      preferredCameraDevice: CameraDevice.front,
+      imageQuality: 85,
+      maxWidth: 640,
+      maxHeight: 640,
+    );
+
+    if (pickedFile != null) {
+      setState(() {
+        _selfieFile = File(pickedFile.path);
+      });
+
+      showSuccessSnackBar('Foto capturada! Processando...', context);
+
+    } else {
+      showErrorSnackBar('Nenhuma foto selecionada.', context);
+    }
+  }
+
   
   
   bool _isLoading = false;
@@ -78,8 +103,50 @@ class _SignupScreenState extends State<SignupScreen> {
       showErrorSnackBar('A senha deve ter pelo menos 6 caracteres', context);
       return false;
     }
+
+    if (_typeSelector.contains(AccountType.aluno) && _selfieFile == null) {
+      showErrorSnackBar('Alunos precisam registrar o rosto para continuar.', context);
+      return false;
+    }
     
     return true;
+  }
+
+  Future<bool?>? _sendPicture(File imageFile, String uid) async {
+    try{
+      final bytes = await imageFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      final Map<String, dynamic> jsonFace = {
+        "operacao" : "RegistrarNovaFace",
+        "imagem" : base64Image,
+        "uid" : uid
+      };
+
+      _socketService.send(jsonFace);
+
+      final responseData = await _socketService.messages.firstWhere((data) {
+      try {
+        final msg = jsonDecode(data is String ? data : utf8.decode(data));
+        return msg['operacao'] == 'ResultadoRegistrarNovaFace';
+      } catch (e) {
+        return false;
+      }
+    }).timeout(const Duration(seconds: 15));
+
+    final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
+
+    if (responseJson['resultado'] == true) {
+      return true;
+    } else {
+      return null;
+    }
+
+    }catch(e){
+      print("Erro ao enviar rosto: $e");
+      if(mounted) showErrorSnackBar("Erro ao processar o rosto.", context);
+      return null;
+    }
   }
 
   Future<void> _signup() async {
@@ -107,7 +174,7 @@ class _SignupScreenState extends State<SignupScreen> {
           email: emailController.text.trim(),
           tipo: _typeSelector.first.name,
           codigo: idController.text.trim(),
-          turmas: []
+          turmas: [],
         ),
       );
 
@@ -118,6 +185,21 @@ class _SignupScreenState extends State<SignupScreen> {
         if(mounted) showErrorSnackBar(errorMessage, context);
         await _authService.deleteUser(authResult['idToken']);
         return; 
+      }
+
+      if(_selfieFile == null && _typeSelector.contains(AccountType.aluno)){
+        if(mounted) showErrorSnackBar('Tire uma foto.', context);
+        return;
+      }
+
+      final registerUserFace = await _sendPicture(_selfieFile!, authResult['localId']);
+
+      if(registerUserFace != true){
+        final errorMessage = registerUserFace == false
+          ? "Servidor não pode registrar a foto."
+          : "Erro ao adquirir resposta do servidor.";
+          if(mounted) showErrorSnackBar('$errorMessage Contate nosso suporte.', context);
+          return; 
       }
 
       final verificationEmailResult =                                       // enviando e-mail de verificacao
@@ -346,7 +428,43 @@ class _SignupScreenState extends State<SignupScreen> {
           color: theme.colorScheme.primary
         ),
       ),
-      SizedBox(height: largeSpacing),
+      SizedBox(height: smallSpacing),
+      if (_typeSelector.contains(AccountType.aluno))
+        Column(
+          children: [
+            
+            // --- Seção de reconhecimento facial ---
+            if (_selfieFile != null)
+              Column(
+                children: [
+                  Image.file(
+                    _selfieFile!,
+                    height: 120,
+                    width: 120,
+                    fit: BoxFit.cover,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Rosto detectado!',
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            const SizedBox(height: 10),
+            primaryButtonDesign(
+              context: context,
+              width: 180,
+              height: 45,
+              label: _selfieFile == null ? 'Registrar Rosto' : 'Refazer Foto',
+              onTap: _tirarSelfie,
+            ),
+            SizedBox(height: largeSpacing),
+          ],
+        ),
+
       primaryButtonDesign(
         context: context, 
         width: 140,
