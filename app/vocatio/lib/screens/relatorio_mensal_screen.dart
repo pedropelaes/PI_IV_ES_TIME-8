@@ -3,7 +3,9 @@ import 'dart:convert';
 
 import 'package:date_picker_plus/date_picker_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
+import 'package:vocattio/extensions/string_extensions.dart';
 import 'package:vocattio/models/faltas_do_dia.dart';
 import 'package:vocattio/models/relatorio_aluno.dart';
 import 'package:vocattio/models/relatorio_turma.dart';
@@ -99,7 +101,7 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
     if (_selectedDate == null) {
       return 'Filtrar por data';
     }
-    return _selectedDate!.month.toString().padLeft(2, '0');
+    return DateFormat.MMMM('pt_BR').format(_selectedDate!).capitalize();
   }
 
   Future<void> _gerarRelatorioDoMes() async{
@@ -212,8 +214,10 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                     child: _carregando
                       ? Padding(
                         padding: EdgeInsets.all(20.0),
-                        child: CircularProgressIndicator(
-                          color: theme.colorScheme.primaryFixed,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: theme.colorScheme.primaryFixed,
+                          ),
                         ),
                       )
                       : _erro != null
@@ -255,13 +259,25 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                                 style: textTheme.bodyLarge?.copyWith(
                                   color: theme.colorScheme.primaryFixed,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
                             ],
                           ),
                         )
+                      : _selectedDate == null
+                        ? Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Text(
+                            'Selecione uma data',
+                            style: textTheme.bodyLarge?.copyWith(
+                              color: theme.colorScheme.primaryFixed,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
                       : ListView.builder(
-                        //cacheExtent: 1,
-                        //physics: const BouncingScrollPhysics(),
+                        cacheExtent: 1,
+                        physics: const BouncingScrollPhysics(),
                         itemCount: _listaRelatorioAlunos.length,
                         itemBuilder:(context, index) {
                           final relatorioAluno = _listaRelatorioAlunos[index];
@@ -295,7 +311,7 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                                   color: theme.colorScheme.primaryFixed,
                                   thickness: 2,
                                 )
-                              ],
+                              ].animate().flipH(perspective: !isLargeScreen ? -0.5 : 0, begin: 0.3).fadeIn(),
                             ),
                           );
                         },
@@ -307,7 +323,7 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                     theme: theme, 
                     right: true,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -332,15 +348,16 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                                       height: 50,
                                       child: CircularProgressIndicator(
                                         value: relatorioTurma?.mediaDaTurma ?? 0.0, 
-                                        strokeWidth: 8.0,
+                                        strokeWidth: 6.0,
                                         backgroundColor: theme.colorScheme.primaryFixed.withValues(alpha: 0.2),
                                         valueColor: AlwaysStoppedAnimation<Color>(
                                           theme.colorScheme.primaryFixed,
                                         ),
                                       ),
                                     ),
+                                    SizedBox(width: smallSpacing),
                                     Text(
-                                      ((relatorioTurma?.mediaDaTurma ?? 0.0) * 100).toStringAsFixed(0),
+                                      '${((relatorioTurma?.mediaDaTurma ?? 0.0) * 100).toStringAsFixed(0)}%',
                                       style: textTheme.titleMedium?.copyWith(
                                         color: theme.colorScheme.primaryFixed,
                                         fontWeight: FontWeight.bold,
@@ -349,7 +366,7 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                                   ],
                                 ),
                               ),
-                              SizedBox(width: smallSpacing), // Espaçamento
+                              SizedBox(width: smallSpacing),
                               Expanded(
                                 child: Text(
                                   '${relatorioTurma?.totalDeFaltas ?? 0} ${relatorioTurma?.totalDeFaltas == 1 ? "falta" : "faltas"}',
@@ -370,7 +387,7 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                     theme: theme,
                     right: false,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -390,7 +407,7 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                               children: [
                                 if (_diasMaisFaltados.isNotEmpty) ...[
                                   Text(
-                                    '${DateFormat("EEEE", "pt_BR").format(_diasMaisFaltados.first.data)}: '
+                                    '${_diasMaisFaltados.first.diaDasemana}: '
                                     '${_diasMaisFaltados.first.totalDeFaltas}',
                                     style: textTheme.titleLarge?.copyWith(
                                       color: theme.colorScheme.primaryFixed.withOpacity(0.95),
@@ -398,11 +415,10 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                                       fontSize: 20,
                                     ),
                                   ),
-                                  SizedBox(height: smallSpacing),
                                 ],
 
                                 ..._diasMaisFaltados.skip(1).map((faltas) {
-                                  final nomeDia = DateFormat("EEEE", "pt_BR").format(faltas.data);
+                                  final nomeDia = faltas.diaDasemana;
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 4.0),
                                     child: Column(
@@ -412,7 +428,6 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                                           color: theme.colorScheme.primaryFixed.withOpacity(0.4),
                                           thickness: 1,
                                         ),
-                                        SizedBox(height: 6),
                                         Text(
                                           '$nomeDia: ${faltas.totalDeFaltas}',
                                           style: textTheme.bodyLarge?.copyWith(
@@ -461,8 +476,8 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                     : listaPresencasMes
                   ),
                   SizedBox(height: smallSpacing,),
-                  ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 400),
+                  isLargeScreen ? SizedBox(
+                    width: 1000,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -472,6 +487,14 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                       ],
                     ),
                   )
+                  : Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: containerMediaPresenca),
+                        SizedBox(width: smallSpacing,),
+                        Expanded(child: containerDiasMaisFaltados)
+                      ],
+                    )
                   ],
                 );
               }

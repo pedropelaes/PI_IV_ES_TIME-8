@@ -61,6 +61,9 @@ public class GetRelatorioMensal {
 
         int faltasTotais = 0;
 
+        Map<Integer, Integer> faltasPorDiaDaSemana = new HashMap<>();
+        Calendar cal = Calendar.getInstance();
+
         for(Aula aula : aulasDoMes){
             int faltasDoDia = 0;
             for(Presenca p : aula.getPresentes()){
@@ -72,14 +75,37 @@ public class GetRelatorioMensal {
             }
             faltasTotais += faltasDoDia;
 
-            relatorio.getDiasInfo().add(
-                    new FaltasDoDia(aula.getDataAbertura(), faltasDoDia)
-            );
+            cal.setTime(aula.getDataAbertura());
+            int diaDaSemana = cal.get(Calendar.DAY_OF_WEEK);
+
+            faltasPorDiaDaSemana.merge(diaDaSemana, faltasDoDia, Integer::sum);
         }
-        relatorio.setTotalDeFaltas(faltasTotais);
+
+        for (Map.Entry<Integer, Integer> entry : faltasPorDiaDaSemana.entrySet()) {
+            String nomeDia = getNomeDiaDaSemana(entry.getKey());
+            int totalFaltasDia = entry.getValue();
+
+            relatorio.getDiasInfo().add(new FaltasDoDia(nomeDia, totalFaltasDia));
+        }
+
         relatorio.getAlunosInfo().addAll(alunosMap.values());
+        relatorio.setTotalDeFaltas(faltasTotais);
+
 
         return relatorio;
+    }
+
+    private String getNomeDiaDaSemana(int calendarDayOfWeek) {
+        switch (calendarDayOfWeek) {
+            case Calendar.SUNDAY: return "Domingo";
+            case Calendar.MONDAY: return "Segunda-feira";
+            case Calendar.TUESDAY: return "Terça-feira";
+            case Calendar.WEDNESDAY: return "Quarta-feira";
+            case Calendar.THURSDAY: return "Quinta-feira";
+            case Calendar.FRIDAY: return "Sexta-feira";
+            case Calendar.SATURDAY: return "Sábado";
+            default: return "Desconhecido";
+        }
     }
 
     public String getTurmaId() { return turmaId; }

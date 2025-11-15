@@ -15,16 +15,25 @@ public class RelatorioMensalTurma {
         this.diasInfo = new ArrayList<FaltasDoDia>(5);
         this.totalDeAulas = totalDeAulas;
         this.totalDeFaltas = 0;
-        this.mediaDaTurma = 100.0;
+        this.mediaDaTurma = 1.0;
     }
 
     public void setTotalDeFaltas(int totalDeFaltas){
         this.totalDeFaltas = totalDeFaltas;
-        if(this.totalDeAulas > 0){
-            int presencas = this.totalDeAulas - totalDeFaltas;
-            this.mediaDaTurma = ((double) presencas / this.totalDeAulas);
-        }else{
-            this.mediaDaTurma = 100.0;
+        int numeroDeAlunos = this.alunosInfo.size();
+
+        if(this.totalDeAulas > 0 && numeroDeAlunos > 0){
+
+            int totalPresencasPossiveis = this.totalDeAulas * numeroDeAlunos;
+
+            int presencasReais = totalPresencasPossiveis - totalDeFaltas;
+
+            this.mediaDaTurma = ((double) presencasReais / totalPresencasPossiveis);
+
+        } else if (this.totalDeAulas == 0) {
+            this.mediaDaTurma = 1.0;
+        } else {
+            this.mediaDaTurma = 0.0;
         }
     }
 

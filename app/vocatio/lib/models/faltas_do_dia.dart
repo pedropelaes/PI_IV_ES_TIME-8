@@ -1,24 +1,24 @@
 import 'package:vocattio/utils/date_formater.dart';
 
 class FaltasDoDia {
-  final DateTime data;
+  final String diaDasemana;
   final int totalDeFaltas;
 
   const FaltasDoDia({
-    required this.data,
+    required this.diaDasemana,
     required this.totalDeFaltas,
   });
 
   factory FaltasDoDia.fromJson(Map<String, dynamic> json) {
     return FaltasDoDia(
-      data: DateParser.parseCustomDate(json['data']),
+      diaDasemana: json['diaDaSemana'],
       totalDeFaltas: json['totalDeFaltas'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'data': data.toIso8601String(),
+      'diaDasemana': diaDasemana,
       'totalDeFaltas': totalDeFaltas,
     };
   }

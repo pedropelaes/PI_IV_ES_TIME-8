@@ -1,18 +1,17 @@
 package src.domain;
 
-import java.util.Date;
 
 public class FaltasDoDia {
-    private Date data;
+    private String diaDaSemana;
     private int totalDeFaltas;
 
-    public FaltasDoDia(Date data, int totalFaltas) {
-        this.data = data;
+    public FaltasDoDia(String data, int totalFaltas) {
+        this.diaDaSemana = data;
         this.totalDeFaltas = totalFaltas;
     }
 
-    public Date getData() {
-        return data;
+    public String getData() {
+        return diaDaSemana;
     }
 
     public int getTotalFaltas() {
@@ -22,7 +21,7 @@ public class FaltasDoDia {
     public FaltasDoDia(FaltasDoDia mod)throws Exception{
         if(mod == null) throw new Exception("Modelo ausente");
 
-        this.data = mod.data != null ? new Date(mod.data.getTime()) : null;
+        this.diaDaSemana = mod.diaDaSemana;
         this.totalDeFaltas = mod.totalDeFaltas;
     }
 }
