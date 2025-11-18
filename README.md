@@ -27,32 +27,32 @@ A biblioteca MongoDB Java Driver será utilizada.
 ## ✨ Funcionalidades  
 
 👩‍🏫 **Para Professores**  
-- Criar turmas e adicionar alunos  
-- Iniciar chamadas com QR Code dinâmico ou código temporário  
-- Visualizar relatórios de presença  
+- Criar e gerenciar turmas;  
+- Iniciar chamadas com QR Code dinâmico e código temporário;
+- Visualizar relatórios de presença;
+- Editar presenças.
 
 🎓 **Para Alunos**  
-- Entrar em turmas com código fornecido  
-- Validar identidade por biometria  
-- Registrar presença por QR Code ou código  
-- Consultar histórico pessoal de presenças  
+- Entrar em turmas com código fornecido;  
+- Validar identidade por biometria facial; 
+- Registrar presença por QR Code ou código;  
+- Consultar histórico pessoal de presenças.  
 
 ⚙️ **Funcionalidades Gerais**  
-- Validação de presença por geolocalização  
-- Limite de tempo para registro  
-- Armazenamento automático em banco de dados  
-- Suporte a modo offline  
+- Validação de presença por geolocalização, biometria e código temporário;  
+- Limite de tempo para registro;  
+- Armazenamento automático em banco de dados;  
 
 ---
 
 ## 📂 Estrutura do Repositório  
 📦 vocatio
 
-┣ 📂 frontend # Aplicativo Flutter
+┣ 📂 app # Aplicativo Flutter
 
-┣ 📂 backend # API em Java
+┣ 📂 server # API em Java
 
-┣ 📂 docs # Relatórios, protótipos e diagramas
+┣ 📂 vocattio_res # Relatórios, protótipos e diagramas
 
 ┣ LICENSE
 
@@ -60,8 +60,10 @@ A biblioteca MongoDB Java Driver será utilizada.
 
 ---
 
-## 📌 Status do Projeto
+## 📄 O Problema
+A chamada oral tradicional consome tempo valioso de aula e é suscetível a falhas humanas. A imprecisão no registro gera frustração para professores e pode prejudicar a frequência real dos alunos.
 
-📍 Em desenvolvimento – MVP em andamento com foco nas funcionalidades principais.
-
----
+## 🎯 Objetivos
+Otimização de Tempo: Reduzir drasticamente o tempo gasto com chamadas.
+Confiabilidade: Automatizar o processo para eliminar erros de escuta ou confusão.
+Justiça: Garantir um registro de frequência preciso e auditável.
