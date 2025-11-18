@@ -394,7 +394,7 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                                     ),
                                     SizedBox(width: smallSpacing),
                                     Text(
-                                      '${((relatorioTurma?.mediaDaTurma ?? 0.0)).toStringAsFixed(0)}%',
+                                      '${((relatorioTurma?.mediaDaTurma ?? 0.0)*100).toStringAsFixed(0)}%',
                                       style: textTheme.titleMedium?.copyWith(
                                         color: theme.colorScheme.primaryFixed,
                                         fontWeight: FontWeight.bold,
