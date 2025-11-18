@@ -46,7 +46,7 @@ A biblioteca MongoDB Java Driver será utilizada.
 ---
 
 ## 📂 Estrutura do Repositório  
-📦 vocatio
+📦 vocattio
 
 ┣ 📂 app # Aplicativo Flutter
 
