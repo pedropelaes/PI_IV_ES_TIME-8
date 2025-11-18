@@ -1,23 +1,16 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:vocattio/mixins/attendance_handler.dart';
-import 'package:vocattio/services/location/location_service.dart';
-import 'package:vocattio/services/locator.dart';
-import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_drawer.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/snackbars.dart';
 import 'package:vocattio/widgets/text_field.dart';
-import 'package:vocattio/models/user.dart';
 
 class ScanQrcode extends StatefulWidget {
   final String? uid;
@@ -239,7 +232,7 @@ class _ScanQrcodeState extends State<ScanQrcode> with AttendanceHandler {
                 
                     primaryButtonDesign(
                       context: context,
-                      label: isGettingLocation ? 'Obtendo localização...' : 'Concluir chamada',
+                      label: isGettingLocation ? 'Obtendo localização...' : 'Registrar Presença',
                       width: double.infinity,
                       height: 55.0,
                       onTap: isGettingLocation ? () {} : () {

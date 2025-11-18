@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:vocattio/screens/registrar_presenca_qr_code.dart';
 import 'package:vocattio/screens/registrar_presenca_code.dart';
@@ -80,8 +81,17 @@ class _ValidateAttendanceScreenState extends State<ValidateAttendanceScreen> {
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                       ),
                     ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'ATENÇÃO! Conexões públicas ou cabeadas podem prejudicar a coleta da sua localização. Evite-as para registrar sua presença',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+                      ),
+                    ),
                     const SizedBox(height: 28),
                     AnimatedButton(
+                      enabled: !kIsWeb,
                       text: 'Via QR Code',
                       onPressed: () {
                         Navigator.push(

@@ -4,12 +4,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:vocattio/models/presenca.dart';
+import 'package:vocattio/models/user.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/app_drawer.dart';
+import 'package:vocattio/widgets/dialog_exc.dart';
 import 'package:vocattio/widgets/snackbars.dart';
 
 class TelaAlunosPresentes extends StatefulWidget{
@@ -18,13 +20,15 @@ class TelaAlunosPresentes extends StatefulWidget{
   final String data;
   final List<Presenca> alunosPresentes;
   final bool isEditavel;
-  const TelaAlunosPresentes({super.key, required this.idChamada, required this.nomeTurma ,required this.data, required this.alunosPresentes, required this.isEditavel});
+  final bool isDeletavel;
+  const TelaAlunosPresentes({super.key, required this.idChamada, required this.nomeTurma ,required this.data, required this.alunosPresentes, required this.isEditavel, required this.isDeletavel});
 
   @override
   State<TelaAlunosPresentes> createState() => _TelaAlunosPresentesState();
 }
 
 class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
+  final User currentUser = getIt<User>();
   final SocketService _socketService = getIt<SocketService>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final List<Presenca> _alunosPresentes = [];
@@ -70,7 +74,9 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
             Navigator.pop(context, _mudancasSalvas);
           },
         ),
-        drawer: AppDrawer(),
+        drawer: AppDrawer(
+          user: currentUser,
+        ),
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.all(16.0),
@@ -210,7 +216,7 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                       if(_editando) controller.repeat();
                     },
                   ).boxShadow(
-                    duration: 800.ms,
+                    duration: 1.5.seconds,
                     curve: Curves.easeIn,
                     borderRadius: BorderRadius.circular(20),
                     begin: _editando ? BoxShadow(
@@ -243,17 +249,91 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                     ),
                     SizedBox(height: smallSpacing,),
                     if(!_editando)
-                    primaryButtonDesign(
-                      context: context, 
-                      enabled: widget.isEditavel,
-                      label: 'Editar lista de presença', 
-                      onTap: (){
-                        setState(() {
-                          _editando = true;
-                        });
-                      }, 
-                      width: 350, 
-                      height: 55
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        primaryButtonDesign(
+                          context: context, 
+                          enabled: widget.isEditavel,
+                          label: 'Editar lista de presença', 
+                          onTap: (){
+                            setState(() {
+                              _editando = true;
+                            });
+                          }, 
+                          width: 250, 
+                          height: 55
+                        ),
+                        if(widget.isDeletavel)
+                        Padding(
+                          padding: EdgeInsets.only(left: smallSpacing),
+                          child: InkWell(
+                            onTap: () async {
+                              /*final bool confirmar = await showDialog<bool>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text(
+                                    'Confirmar exclusão',
+                                    style: textTheme.titleLarge?.copyWith(
+                                      color: theme.colorScheme.error,
+                                    ),
+                                  ),
+                                  content: Text(
+                                    'Tem certeza que deseja excluir esta chamada? Esta ação não pode ser desfeita.',
+                                    style: textTheme.bodyMedium,
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context, false),
+                                      child: Text('Cancelar'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context, true),
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: theme.colorScheme.error,
+                                      ),
+                                      child: Text('Excluir'),
+                                    ),
+                                  ],
+                                ),
+                              ) ?? false;*/
+
+                              final bool confirmar = await showCustomDialog(
+                                isCritical: true,
+                                context, 
+                                Icons.delete_forever_outlined,
+                                'Confirmar exclusão', 
+                                'Tem certeza que deseja excluir esta chamada? Esta ação não pode ser desfeita.', 
+                                () { 
+                                  showSuccessSnackBar('Chamada apagada com sucesso!', context);
+                                  Navigator.pop(context, true);
+                                }, 
+                                'Excluir'
+                              ) ?? false;
+
+                              if(confirmar){
+                                final bool resultado = await _deletarChamada();
+                                if(resultado && mounted){
+                                  Navigator.pop(context, true);
+                                }
+                              }
+                            },
+                            child: Container(
+                              width: 55,
+                              height: 55,
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.error,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                Icons.delete,
+                                color: theme.colorScheme.onError,
+                                size: 28,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     if(_editando)
                     Row(
@@ -374,6 +454,69 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
     }catch(e){
       print("Erro ao editar lista: $e");
       if(mounted) showErrorSnackBar('Erro ao editar lista: $e', context);
+      return false;
+    }
+  }
+
+  Future<bool> _deletarChamada() async{
+    Map<String, dynamic> jsonDeletarChamada = {
+      "operacao" : "DeletarChamada",
+      "codigoChamada" : widget.idChamada,
+    };
+
+    try{
+      setState(() {
+        _carregando = true;
+        _erro = null;
+      });
+
+      _socketService.send(jsonDeletarChamada);
+
+      final responseData = await _socketService.messages.firstWhere(
+        (data) {
+          try{
+            final message = jsonDecode(data is String ? data : utf8.decode(data));
+            return message['operacao'] == 'ResultadoDeletarChamada';
+          }catch(e){
+            return false;
+          }
+        }
+      ).timeout(const Duration(seconds: 10));
+
+      final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
+      final resultado = responseJson['resultado'];
+
+      if(mounted){
+        setState(() {
+          _carregando = false;
+        });
+      }
+
+       if(resultado == true || resultado == 'true'){
+         if(mounted) showSuccessSnackBar('Chamada excluída com sucesso.', context);
+         _mudancasSalvas = true;
+         return true;
+       }
+       if(mounted) showErrorSnackBar('Erro ao excluir chamada.', context);
+      return false;
+    }on TimeoutException{
+      print("Erro: Tempo de resposta para deletar chamada");
+      if(mounted) {
+        setState(() {
+          _carregando = false;
+        });
+        showErrorSnackBar('Tempo de resposta esgotado para excluir chamada.', context);
+      }
+      return false;
+    }catch(e){
+      print("Erro ao deletar chamada: $e");
+      if(mounted) {
+        setState(() {
+          _carregando = false;
+          _erro = 'Erro ao excluir chamada: $e';
+        });
+        showErrorSnackBar('Erro ao excluir chamada: $e', context);
+      }
       return false;
     }
   }

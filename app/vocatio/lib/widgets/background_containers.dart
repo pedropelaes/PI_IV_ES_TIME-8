@@ -173,3 +173,29 @@ return Container(
     child: child,
   );
 }
+
+Container tertiaryGradientContainer({
+  required ThemeData theme,
+  required Widget child,
+  double? width,
+  double? height,
+  EdgeInsets? padding,
+  bool right = false,
+}){
+  final bool isDark = theme.brightness == Brightness.dark;
+return Container(
+    width: width,
+    height: height,
+    padding: padding,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(20.0),
+      gradient: LinearGradient(
+        colors: isDark ? [theme.colorScheme.tertiaryContainer, theme.colorScheme.onTertiary] : [theme.colorScheme.onTertiaryFixed, theme.colorScheme.onTertiaryFixedVariant],
+        stops: [0, 1.0],
+        begin: right ? Alignment.centerLeft : Alignment.centerRight,
+        end: right ? Alignment.centerRight : Alignment.centerLeft,
+      ),
+    ),
+    child: child,
+  );
+}

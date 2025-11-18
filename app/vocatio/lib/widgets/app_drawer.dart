@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:vocattio/main.dart';
 import 'package:vocattio/models/turma.dart';
 import 'package:vocattio/models/user.dart';
+import 'package:vocattio/screens/welcome_screen.dart';
 import 'package:vocattio/services/auth_service.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/utils/responsive_helper.dart';
@@ -296,8 +297,30 @@ class _AppDrawerState extends State<AppDrawer> {
             ),
             onTap: () {
               Navigator.pop(context);
-              Phoenix.rebirth(context);
-              print('Usuário deslogado!');
+              WidgetsBinding.instance.addPostFrameCallback((_) async {
+                try{
+                  await getIt.reset(dispose: true);
+                }catch(e){
+                  print('Erro ao resetar getIt: $e');
+                }
+
+                try{
+                  setupLocator();
+                }catch (e) {
+                  print('Erro ao re-registrar locator: $e');
+                }
+
+                final nav = navigatorKey.currentState;
+                if(nav != null){
+                  nav.pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+                    (route) => false,
+                  );
+                }else{
+                  print("Navigator nulo após tentar logout");
+                }
+              });
+              print("Usuario deslogado.");
             },
           ),
           const SizedBox(height: 16),

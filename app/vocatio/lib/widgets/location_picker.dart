@@ -12,11 +12,13 @@ import 'package:geolocator/geolocator.dart';
 class LocationPickerWidget extends StatefulWidget {
   final LatLng initialLocation;
   final Function(LatLng) onLocationChanged;
+  final bool isEditing;
 
   const LocationPickerWidget({
     super.key,
     required this.initialLocation,
     required this.onLocationChanged,
+    this.isEditing = false
   });
 
   @override
@@ -117,17 +119,22 @@ class _LocationPickerWidgetState extends State<LocationPickerWidget> {
     setState(() { _isMapLoading = true; });
     Position? posRapida = await LocationService.obterPosicaoInicialRapida();
     if (!mounted) return;
-    LatLng localInicial = (posRapida != null)
-        ? LatLng(posRapida.latitude, posRapida.longitude)
-        : widget.initialLocation;
+    LatLng localInicial;
+    if(widget.isEditing){ // caso uma turma esteja sendo editada, preferivel usar a loc da turma ao inves da do usuario ao abrir o mapa
+      localInicial = widget.initialLocation;
+    }else{ // caso contrario, usamos a localizacao do usuario
+      localInicial = (posRapida != null)
+          ? LatLng(posRapida.latitude, posRapida.longitude)
+          : widget.initialLocation;
 
-    if(posRapida != null && posRapida.accuracy > 100 && mounted){
-       showTopSnackBar('Localização imprecisa. Use o mapa para selecionar.', context, isError: true);
+      if(posRapida != null && posRapida.accuracy > 100 && mounted){
+        showTopSnackBar('Localização imprecisa. Use o mapa para selecionar.', context, isError: true);
+      }
     }
-
-    _updateLocation(localInicial, shouldNotifyParent: false); 
-    _mapController?.animateCamera(CameraUpdate.newLatLngZoom(localInicial, 15.0));
-    setState(() { _isMapLoading = false; });
+      _updateLocation(localInicial, shouldNotifyParent: false); 
+      _mapController?.animateCamera(CameraUpdate.newLatLngZoom(localInicial, 15.0));
+      setState(() { _isMapLoading = false; });
+    
   }
 
   void _updateMapFromTextFields() {

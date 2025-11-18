@@ -3,13 +3,20 @@ package src;
 import src.connection.AceitadoraDeConexao;
 import src.connection.IParceiro;
 import src.connection.ServidorWebSocket;
+import src.processing.ProcessadorDeOperacao;
 import src.protocol.ComunicadoDeDesligamento;
 import src.util.Teclado;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 public class Servidor
 {
+    // map de codigoChamada -> ultimo timestamp recebido
+    private static final ConcurrentMap<String, Long> chamadaHeartbeats = new ConcurrentHashMap<>();
+    // scheduler para checar chamadas sem HeartBeat
+    private static final ScheduledExecutorService heartbeatScheduler = Executors.newSingleThreadScheduledExecutor();
+
     public static String PORTA_TCP = "3000";
     public static int PORTA_WEB = 3001;
     
@@ -97,5 +104,45 @@ public class Servidor
             else
                 System.err.println ("Comando invalido!\n");
         }
+    }
+    /**
+     * Os seguintes metodos servem no contexto desse servidor para em caso de perca de conexao com o cliente
+     * fechar uma chamada que esteja em aberto, caso apos uma request de codigo temporario, demore mais de 30
+     * segundos para outra request ser feita.
+     */
+    static {
+        heartbeatScheduler.scheduleAtFixedRate(() -> {
+            try {
+                long now = System.currentTimeMillis();
+                long timeoutMs = 30_000L; // timeout: 30s
+                List<String> stale = new ArrayList<>();
+                for (Map.Entry<String, Long> e : chamadaHeartbeats.entrySet()) {
+                    if (now - e.getValue() > timeoutMs) {
+                        stale.add(e.getKey());
+                    }
+                }
+                for (String codigo : stale) {
+                    chamadaHeartbeats.remove(codigo);
+                    System.out.println("KeepAlive timeout para chamada " + codigo + " — fechando automaticamente.");
+
+                    boolean closed = ProcessadorDeOperacao.fecharChamadaPorCodigo(codigo);
+                    if (!closed) {
+                        System.err.println("Falha ao fechar chamada " + codigo + " por timeout.");
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }, 10, 15, TimeUnit.SECONDS);
+    }
+    // este metodo registra o codigo da chamada no map do heartbeats
+    public static void registrarHeartbeat(String codigoChamada, long timestampMillis) {
+        if (codigoChamada == null) return;
+        chamadaHeartbeats.put(codigoChamada, timestampMillis);
+    }
+
+    public static void removerHeartbeat(String codigoChamada) {
+        if (codigoChamada == null) return;
+        chamadaHeartbeats.remove(codigoChamada);
     }
 }

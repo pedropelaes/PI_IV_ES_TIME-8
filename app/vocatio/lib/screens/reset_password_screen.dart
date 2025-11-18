@@ -68,8 +68,12 @@ class _ResetPasswordScreenState extends State<ResetPassowordScreen>{
     TargetPlatform platform = theme.platform;   
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(title: Text('Voltar', style: textTheme.headlineSmall?.copyWith(color: theme.colorScheme.onSurface),), 
-      backgroundColor: Colors.transparent, elevation: 0, shadowColor: Colors.transparent, surfaceTintColor: Colors.transparent,),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: theme.colorScheme.onSurface,
+        surfaceTintColor: Colors.transparent,
+      ), 
       body: surfaceGradientContainer(
         context: context,
         child: SafeArea(

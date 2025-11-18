@@ -3,11 +3,9 @@ package src.processing;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.bson.Document;
+import src.Servidor;
 import src.connection.IParceiro;
-import src.domain.AlunoSimples;
-import src.domain.Aula;
-import src.domain.Turma;
-import src.domain.User;
+import src.domain.*;
 import src.protocol.requests.*;
 import src.protocol.responses.*;
 
@@ -73,12 +71,8 @@ public class ProcessadorDeOperacao {
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoRegistrarPresenca", mensagem));
                     break;
                 case "FecharChamada":
-                    System.out.println("CASE FecharChamada ACIONADO! JSON: " + json);
                     FecharChamada fecharChamada = gson.fromJson(json, FecharChamada.class);
-                    System.out.println("Parsing FecharChamada concluído. Código: " + fecharChamada.getCodigoChamada());
-                    resultado = fecharChamada.fechar();
-                    System.out.println("Resultado FecharChamada: " + resultado);
-                    remetente.receba(new ResultadoOperacao(resultado, "ResultadoFecharChamada"));
+                    fecharChamadaInterno(fecharChamada, remetente);
                     break;
                 case "GetPresencas":
                     GetPresencas getPresencas = gson.fromJson(json, GetPresencas.class);
@@ -102,14 +96,20 @@ public class ProcessadorDeOperacao {
                     ApagarTurma apagarTurma = gson.fromJson(json, ApagarTurma.class);
                     resultado = apagarTurma.apagarTurma();
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoApagarTurma"));
+                    break;
                 case "EditarTurma":
                     EditarTurma editarTurma = gson.fromJson(json, EditarTurma.class);
                     resultado = editarTurma.editarTurma();
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoEditarTurma"));
+                    break;
                 case "GetCodigoTemporario":
                     GetCodigoTemporario getCodigoTemporario = gson.fromJson(json, GetCodigoTemporario.class);
                     String codigoTemporario = getCodigoTemporario.getCodigo();
                     resultado = codigoTemporario != null;
+
+                    // registrando o 'heartBeat' do cliente
+                    Servidor.registrarHeartbeat(getCodigoTemporario.getCodigoChamada(), System.currentTimeMillis());
+
                     remetente.receba(new ResultadoGetCodigoTemporario(
                             resultado,
                             "ResultadoGetCodigoTemporario",
@@ -126,6 +126,21 @@ public class ProcessadorDeOperacao {
                     resultado = editarChamada.editar();
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoEditarChamada"));
                     break;
+                case "DeletarChamada":
+                    DeletarChamada deletarChamada = gson.fromJson(json, DeletarChamada.class);
+                    resultado = deletarChamada.deletar();
+                    remetente.receba(new ResultadoOperacao(resultado, "ResultadoDeletarChamada"));
+                    break;
+                case "GetRelatorioMensal":
+                    GetRelatorioMensal getRelatorioMensal = gson.fromJson(json, GetRelatorioMensal.class);
+                    RelatorioMensalTurma relatorio = getRelatorioMensal.gerarRelatorio();
+                    resultado = relatorio != null;
+                    remetente.receba(new ResultadoGetRelatorioMensal(
+                            "ResultadoGetRelatorioMensal",
+                            resultado,
+                            relatorio
+                        ));
+                    break;
                 default:
                     System.err.println("Comunicado desconhecido: '" + tipo + "'");
                     System.err.println("JSON completo recebido: " + json);
@@ -138,6 +153,35 @@ public class ProcessadorDeOperacao {
         }
 
         return false;
+    }
+
+
+    // requisicao de fechar chamada reutilizavel para cliente e heartBeat do serivodr
+    private static boolean fecharChamadaInterno(FecharChamada req, IParceiro remetente) {
+        try {
+            boolean resultado = req.fechar();
+            if (remetente != null) {
+                remetente.receba(new ResultadoOperacao(resultado, "ResultadoFecharChamada"));
+            }
+            if (resultado) {
+                Servidor.removerHeartbeat(req.getCodigoChamada());
+            }
+            return resultado;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean fecharChamadaPorCodigo(String codigoChamada) {
+        try {
+            FecharChamada req = new FecharChamada();
+            req.setCodigoChamada(codigoChamada); // certifique-se de ter esse setter em FecharChamada
+            return fecharChamadaInterno(req, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }

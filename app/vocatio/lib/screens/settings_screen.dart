@@ -18,7 +18,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _selectedTheme = 'system';
   String _version = '...';
-  String _buildNumber = '...';
 
   @override
   void initState() {
@@ -31,7 +30,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final info = await PackageInfo.fromPlatform();
     setState(() {
       _version = info.version;
-      _buildNumber = info.buildNumber;
     });
   }
 

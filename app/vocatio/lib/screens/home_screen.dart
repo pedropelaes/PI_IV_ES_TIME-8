@@ -238,8 +238,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               itemBuilder: (context, index) {
                                 final turma = turmas[index];
                                 return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
+                                  onTap: () async {
+                                     final bool resultado = await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => DetalhesTurmaScreen(
@@ -253,6 +253,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                       ),
                                     );
+                                    if(resultado){
+                                      _refreshData();
+                                    }
                                   },
                                   child: TurmaCard(
                                     nomeTurma: turma.nome,

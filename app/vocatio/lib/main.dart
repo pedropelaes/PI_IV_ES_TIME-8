@@ -3,9 +3,11 @@ import 'dart:ui';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:vocattio/screens/settings_screen.dart';
 import 'package:vocattio/screens/welcome_screen.dart';
 import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
@@ -14,7 +16,9 @@ import 'package:vocattio/theme/theme_notifier.dart';
 import 'package:vocattio/theme/util.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vocattio/widgets/dialog_exc.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
@@ -37,7 +41,14 @@ void main() async {
 
   setupLocator();
 
-  runApp(
+  await initializeDateFormatting('pt_BR', null);
+  Intl.defaultLocale = 'pt_BR';
+
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((_){
+    runApp(
     Phoenix(
       child: MultiProvider(
         providers: [
@@ -50,6 +61,7 @@ void main() async {
       ),
     ),
   );
+  });
 }
 
 class MainApp extends StatefulWidget {
@@ -61,11 +73,79 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   late final AppLifecycleListener _appLifecycleListener;
+  bool _connDialogShowing = false;
 
   @override
   void initState() {
     super.initState();
     _appLifecycleListener = AppLifecycleListener(onExitRequested: _onExitRequested);
+
+    getIt<SocketService>().onConnectionLost = () async {
+      int attempts = 0;
+      const int maxAttempts = 3;
+      while(attempts < maxAttempts && !getIt<SocketService>().isConnected){
+        attempts++;
+        try{
+          await getIt<SocketService>().connect();
+          print('Reconectado após perda de conexão (tentativa $attempts).');
+          return;
+        }catch(e){
+          print("Falha ao reconectar (tentativa :$attempts): $e");
+          await Future.delayed(Duration(seconds: 2 * attempts));
+        }
+      }
+
+      final ctx = navigatorKey.currentState?.overlay?.context ?? navigatorKey.currentState?.context;
+      if(ctx == null) return;
+      if(_connDialogShowing) return;
+      showCustomDialog(
+        ctx, 
+        Icons.wifi_tethering_error_outlined,
+        'Conexão perdida', 
+        'Não foi possível reconectar ao servidor. Tente novamente mais tarde.', 
+        (){
+          final nav = navigatorKey.currentState;
+          if (nav == null) return;
+          try {
+            nav.pop();
+          } catch (e) {
+            print('Erro ao fechar dialog: $e');
+          }
+
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            try {
+              print('Resetando locator antes de reiniciar tela inicial...');
+              await getIt.reset(dispose: true);
+              setupLocator(); // re-registra serviços necessários
+            } catch (e) {
+              print("Falha ao resetar locator: $e");
+            }
+
+            final nav2 = navigatorKey.currentState;
+            if (nav2 == null) {
+              print('Navigator nulo — não foi possível navegar para WelcomeScreen');
+              return;
+            }
+            try {
+              // navega para WelcomeScreen, removendo tudo da pilha
+              nav2.pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+                (route) => false,
+              );
+            } catch (e) {
+              print('Erro ao navegar para WelcomeScreen após reset: $e');
+            }
+          });
+        }, 
+        'Ok'
+      ).then((_) => _connDialogShowing = false);
+    };
+
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      getIt<SocketService>().connect().catchError((_){
+        // onConnectionLost cuida do dialog e retrys
+      });
+    });
   }
 
   Future<AppExitResponse> _onExitRequested() async {
@@ -77,6 +157,7 @@ class _MainAppState extends State<MainApp> {
   @override
   void dispose() {
     _appLifecycleListener.dispose();
+    getIt<SocketService>().onConnectionLost = null;
     super.dispose();
   }
 
@@ -89,15 +170,9 @@ class _MainAppState extends State<MainApp> {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final isHighContrast = themeNotifier.isHighContrast;
 
-    getIt<SocketService>().onConnectionLost = () {
-      if (mounted) {
-        print("Reiniciando o app via phoenix");
-        Phoenix.rebirth(context);
-      }
-    };
-
     return MaterialApp(
       builder: DevicePreview.appBuilder,
+      navigatorKey: navigatorKey,
       theme: isHighContrast ? lightScheme.lightHighContrast() : lightScheme.light(),
       darkTheme: isHighContrast ? darkScheme.darkHighContrast() : darkScheme.dark(),
       themeMode: themeNotifier.themeMode,

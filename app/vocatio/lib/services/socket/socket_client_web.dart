@@ -30,8 +30,9 @@ class SocketClientWeb implements SocketClient {
     }.toJS);
 
     _webSocket?.addEventListener('close', (web.CloseEvent event) {
+      print('WebSocket fechado. code=${event.code} reason=${event.reason}');
       _webSocket = null;
-      _controller.close();
+      _controller.addError(Exception('WebSocket fechado: code=${event.code} reason=${event.reason}'));
     }.toJS);
 
     _webSocket?.addEventListener('error', (web.Event event) {
@@ -39,9 +40,7 @@ class SocketClientWeb implements SocketClient {
       if (!completer.isCompleted) {
         completer.completeError(error);
       }
-      if (!_controller.isClosed) {
-        _controller.addError(error);
-      }
+      _controller.addError(error);
     }.toJS);
 
     return completer.future;
