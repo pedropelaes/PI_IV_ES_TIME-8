@@ -86,7 +86,7 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                 double screenHeight = constraints.maxHeight;
                 double scale = (screenHeight / 700).clamp(1.0, 1.5);
                 double smallSpacing = (screenHeight * 0.015 * scale).clamp(6, 28);
-                //double largeSpacing = (screenHeight * 0.03 * scale).clamp(12, 72);        
+                //double largeSpacing = (screenHeight * 0.03 * scale).clamp(12, 72);        
 
                 Widget listaPresentes = 
                   primaryFixedGradientContainer(
@@ -141,7 +141,7 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                         ListView.builder(
                           itemCount: _alunosPresentes.length,
                           cacheExtent: 1,
-                          //physics: const BouncingScrollPhysics(),
+                          physics: const BouncingScrollPhysics(),
                           itemBuilder: (context, index) {
                             final aluno = _alunosPresentes[index];
                             final bool presenteTemp = _presencasTemporarias[aluno.alunoId] ?? aluno.presente;
@@ -161,7 +161,7 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                                 size: 28,
                               );
                             }
-                  
+                    
                             return Padding(
                               padding: const EdgeInsets.only(right: 10.0, left: 10.0, top: 4.0),
                               child: Column(
@@ -188,24 +188,14 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                                         }
                                       }
                                     },
-                                  ).animate().fadeIn()
-                  
-                                  /*.animate(
-                                    target: _editando ? 1.0 : 0.0, 
-                                    onComplete: (controller) {
-                                      if(_editando) controller.repeat();
-                                    },
-                                  ).tint(
-                                    color: theme.colorScheme.onPrimaryFixed.withOpacity(0.1),
-                                    duration: 1.seconds
-                                  )*/
-                                  ,
+                                  ),
+                    
                                   if(index + 1 != _alunosPresentes.length)
                                   Divider(
                                     color: theme.colorScheme.primaryFixed,
                                     thickness: 2,
                                   )
-                                ],
+                                ].animate(delay: (100 * index).ms).flipH(perspective: !isLargeScreen ? -0.5 : 0, begin: 0.3).fadeIn(),
                               ),
                             );
                           },
@@ -226,7 +216,7 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                         blurStyle: BlurStyle.outer
                       ) : null
                   );
-      
+            
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -269,35 +259,6 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                           padding: EdgeInsets.only(left: smallSpacing),
                           child: InkWell(
                             onTap: () async {
-                              /*final bool confirmar = await showDialog<bool>(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: Text(
-                                    'Confirmar exclusão',
-                                    style: textTheme.titleLarge?.copyWith(
-                                      color: theme.colorScheme.error,
-                                    ),
-                                  ),
-                                  content: Text(
-                                    'Tem certeza que deseja excluir esta chamada? Esta ação não pode ser desfeita.',
-                                    style: textTheme.bodyMedium,
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context, false),
-                                      child: Text('Cancelar'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context, true),
-                                      style: TextButton.styleFrom(
-                                        foregroundColor: theme.colorScheme.error,
-                                      ),
-                                      child: Text('Excluir'),
-                                    ),
-                                  ],
-                                ),
-                              ) ?? false;*/
-
                               final bool confirmar = await showCustomDialog(
                                 isCritical: true,
                                 context, 
@@ -305,7 +266,6 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                                 'Confirmar exclusão', 
                                 'Tem certeza que deseja excluir esta chamada? Esta ação não pode ser desfeita.', 
                                 () { 
-                                  showSuccessSnackBar('Chamada apagada com sucesso!', context);
                                   Navigator.pop(context, true);
                                 }, 
                                 'Excluir'
@@ -362,13 +322,13 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                           enabled: widget.isEditavel,
                           onTap: ()async {
                               _editados.clear();
-      
+          
                               final List<Presenca> novaListaPrincipal = [];
-      
+          
                               for (final aluno in _alunosPresentes) {
                                 // Pega o valor mais recente (editado ou não)
                                 final bool novoValor = _presencasTemporarias[aluno.alunoId] ?? aluno.presente;
-      
+          
                                 if (novoValor != aluno.presente) {
                                   final Presenca alunoEditado = aluno.copyWith(presente: novoValor);
                                   
@@ -379,15 +339,15 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                                   novaListaPrincipal.add(aluno); // aluno não mudou, mantém presença igual
                                 }
                               }
-      
+          
                               final List<Presenca> backup = List.from(_alunosPresentes);
-      
+          
                               setState(() { // update otimista
                                 _editando = false;
                                 _alunosPresentes.clear();
                                 _alunosPresentes.addAll(novaListaPrincipal);
                               });
-      
+          
                               if(_editados.isNotEmpty){
                                 bool resultado = await _editarPresencas(_editados);
                                 if(!resultado){ // restaura a lista em caso de erro
@@ -400,7 +360,7 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                                   });
                                 }
                               }
-                           
+                            
                           }, 
                           width: 150,
                           height: 55)
@@ -441,11 +401,11 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
       final responseJson = jsonDecode(responseData is String ? responseData : utf8.decode(responseData));
       final resultado = responseJson['resultado'];
 
-       if(resultado == true || resultado == 'true'){
-         if(mounted) showSuccessSnackBar('Presenças editadas com sucesso.', context);
-         _mudancasSalvas = true;
-         return true;
-       }
+        if(resultado == true || resultado == 'true'){
+          if(mounted) showSuccessSnackBar('Presenças editadas com sucesso.', context);
+          _mudancasSalvas = true;
+          return true;
+        }
       return false;
     }on TimeoutException{
       print("Erro: Tempo de resposta para editar lista");
@@ -492,12 +452,12 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
         });
       }
 
-       if(resultado == true || resultado == 'true'){
-         if(mounted) showSuccessSnackBar('Chamada excluída com sucesso.', context);
-         _mudancasSalvas = true;
-         return true;
-       }
-       if(mounted) showErrorSnackBar('Erro ao excluir chamada.', context);
+        if(resultado == true || resultado == 'true'){
+          if(mounted) showSuccessSnackBar('Chamada excluída com sucesso.', context);
+          _mudancasSalvas = true;
+          return true;
+        }
+        if(mounted) showErrorSnackBar('Erro ao excluir chamada.', context);
       return false;
     }on TimeoutException{
       print("Erro: Tempo de resposta para deletar chamada");
