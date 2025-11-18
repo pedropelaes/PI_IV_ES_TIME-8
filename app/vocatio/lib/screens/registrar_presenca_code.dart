@@ -43,7 +43,7 @@ class _ViaCodeState extends State<ViaCode> with AttendanceHandler {
       List<CameraDescription> cameras = [];
       try {
         final result = await availableCameras();
-        cameras = result ?? [];
+        cameras = result;
       } catch (e) {
         print('Erro ao obter câmeras: $e');
         cameras = [];

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:vocattio/screens/login_screen.dart';
 import 'package:vocattio/screens/signup_screen.dart';
@@ -6,7 +5,6 @@ import 'package:vocattio/services/locator.dart';
 import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
-import 'package:vocattio/widgets/dialog_exc.dart';
 
 class WelcomeScreen extends StatefulWidget{
   const WelcomeScreen({super.key});
@@ -96,6 +94,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     style: textTheme.headlineLarge?.copyWith(
                       color: theme.colorScheme.error
                     ),
+                    textAlign: TextAlign.center,
                   )
                 ],
               ),

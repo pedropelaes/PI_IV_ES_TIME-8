@@ -11,7 +11,7 @@ import 'socket_client.dart';
 enum ConnectionStatus {connected, connecting, disconnected, reconnecting}
 
 class SocketService {
-  static const String host = 'localhost'; 
+  static const String host = '10.147.19.224'; 
   static int  get port => kIsWeb ? 3001 : 3000;
 
   final SocketClient _client = getSocketClient();

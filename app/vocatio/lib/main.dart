@@ -107,7 +107,29 @@ class _MainAppState extends State<MainApp> {
           }
 
           WidgetsBinding.instance.addPostFrameCallback((_) async {
-            
+            try {
+              print('Resetando locator antes de reiniciar tela inicial...');
+              await getIt.reset(dispose: true);
+              setupLocator(); // re-registra serviços necessários
+            } catch (e) {
+              print("Falha ao resetar locator: $e");
+            }
+
+            final nav2 = navigatorKey.currentState;
+            if (nav2 == null) {
+              print('Navigator nulo — não foi possível navegar para WelcomeScreen');
+              return;
+            }
+            try {
+              // navega para WelcomeScreen, removendo tudo da pilha
+              nav2.pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+                (route) => false,
+              );
+            } catch (e) {
+              print('Erro ao navegar para WelcomeScreen após reset: $e');
+            }
+          });
         }, 
         'Ok'
       ).then((_) => _connDialogShowing = false);
