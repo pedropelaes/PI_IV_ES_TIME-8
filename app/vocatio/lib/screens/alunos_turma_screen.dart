@@ -10,6 +10,7 @@ import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/app_drawer.dart';
 import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
+import 'package:flutter_animate/flutter_animate.dart'; // Importação do pacote de animação
 
 class AlunosTurmaScreen extends StatefulWidget{
   final String nomeTurma;
@@ -193,6 +194,8 @@ class _AlunosTurmaScreenState extends State<AlunosTurmaScreen> {
                 )
                 :
                 ListView.builder(
+                  cacheExtent: 1, 
+                  physics: const BouncingScrollPhysics(), 
                   itemCount: _alunos.length,
                   itemBuilder: (context, index) {
                     final aluno = _alunos[index];
@@ -233,7 +236,7 @@ class _AlunosTurmaScreenState extends State<AlunosTurmaScreen> {
                             color: theme.colorScheme.primaryFixed,
                             thickness: 2,
                           )
-                        ],
+                        ].animate().flipH(perspective: !isLargeScreen ? -0.5 : 0, begin: 0.3).fadeIn(), 
                       ),
                     );
                   },
