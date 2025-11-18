@@ -19,7 +19,10 @@ class SocketClientMobile implements SocketClient {
       _socket = await Socket.connect(host, port);
       _socket!.listen(
         (data) => _controller.add(utf8.decode(data)),
-        onDone: disconnect,
+        onDone:(){ 
+          _controller.addError(Exception('Socket fechado pelo servidor'));
+          disconnect();
+        },
         onError: (error) => _controller.addError(error),
       );
     } catch (e) {
@@ -35,9 +38,8 @@ class SocketClientMobile implements SocketClient {
 
   @override
   void disconnect() {
-    _socket?.close();
+    _socket?.destroy();
     _socket = null;
-    _controller.close();
   }
 }
 

@@ -39,36 +39,38 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       }
     }catch(e){
       print("Falha ao conectar $e");
-
-      if (!mounted) return;
-
-      final bool? retry = await showCustomDialog(
-        context, 
-        Icons.error_outline,
-        'Erro ao conectar com o servidor!', 
-        'Por favor, reinicie o aplicativo! Caso não tenha êxito, verifique sua conexão com a internet.', 
-        () {}, 
-        'Tentar novamente',
-      );
-
-      if (!mounted) return;
-
-      if (retry == true) {
-        _initConnection(); 
-      } else {
-        setState(() {
-          _connectionError = true;
-          _isConnecting = false;
-        });
-      }
-    } 
-
+    }
   }
 
   @override
   void initState(){
     super.initState();
+
+    _socketService.connectionStatus.addListener((){
+      final s = _socketService.connectionStatus.value;
+      if(!mounted) return;
+      setState(() {
+        _isConnecting = (s == ConnectionStatus.connecting || s == ConnectionStatus.reconnecting);
+        _connectionError = (s == ConnectionStatus.disconnected);
+      });
+    });
+
+    _socketService.onConnected = (){
+      if(!mounted) return;
+      setState(() {
+        _isConnecting = false;
+        _connectionError = false;
+      });
+    };
+
     _initConnection();
+  }
+
+  @override
+  void dispose() {
+    _socketService.onConnected = null;
+    _socketService.connectionStatus.removeListener((){});
+    super.dispose();
   }
 
   @override
@@ -90,7 +92,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     color: theme.colorScheme.errorContainer,
                   ),
                   Text(
-                    'Erro ao conectar com servidor. Por favor, reinicie o app.',
+                    'Erro ao conectar com servidor. Tentando novamente...',
                     style: textTheme.headlineLarge?.copyWith(
                       color: theme.colorScheme.error
                     ),

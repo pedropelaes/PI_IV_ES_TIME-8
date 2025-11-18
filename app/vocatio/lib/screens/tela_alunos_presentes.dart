@@ -11,6 +11,7 @@ import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/app_drawer.dart';
+import 'package:vocattio/widgets/dialog_exc.dart';
 import 'package:vocattio/widgets/snackbars.dart';
 
 class TelaAlunosPresentes extends StatefulWidget{
@@ -268,7 +269,7 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                           padding: EdgeInsets.only(left: smallSpacing),
                           child: InkWell(
                             onTap: () async {
-                              final bool confirmar = await showDialog<bool>(
+                              /*final bool confirmar = await showDialog<bool>(
                                 context: context,
                                 builder: (context) => AlertDialog(
                                   title: Text(
@@ -295,6 +296,19 @@ class _TelaAlunosPresentesState extends State<TelaAlunosPresentes> {
                                     ),
                                   ],
                                 ),
+                              ) ?? false;*/
+
+                              final bool confirmar = await showCustomDialog(
+                                isCritical: true,
+                                context, 
+                                Icons.delete_forever_outlined,
+                                'Confirmar exclusão', 
+                                'Tem certeza que deseja excluir esta chamada? Esta ação não pode ser desfeita.', 
+                                () { 
+                                  showSuccessSnackBar('Chamada apagada com sucesso!', context);
+                                  Navigator.pop(context, true);
+                                }, 
+                                'Excluir'
                               ) ?? false;
 
                               if(confirmar){

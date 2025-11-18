@@ -3,6 +3,7 @@ package src.processing;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.bson.Document;
+import src.Servidor;
 import src.connection.IParceiro;
 import src.domain.*;
 import src.protocol.requests.*;
@@ -70,12 +71,8 @@ public class ProcessadorDeOperacao {
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoRegistrarPresenca", mensagem));
                     break;
                 case "FecharChamada":
-                    System.out.println("CASE FecharChamada ACIONADO! JSON: " + json);
                     FecharChamada fecharChamada = gson.fromJson(json, FecharChamada.class);
-                    System.out.println("Parsing FecharChamada concluído. Código: " + fecharChamada.getCodigoChamada());
-                    resultado = fecharChamada.fechar();
-                    System.out.println("Resultado FecharChamada: " + resultado);
-                    remetente.receba(new ResultadoOperacao(resultado, "ResultadoFecharChamada"));
+                    fecharChamadaInterno(fecharChamada, remetente);
                     break;
                 case "GetPresencas":
                     GetPresencas getPresencas = gson.fromJson(json, GetPresencas.class);
@@ -109,6 +106,10 @@ public class ProcessadorDeOperacao {
                     GetCodigoTemporario getCodigoTemporario = gson.fromJson(json, GetCodigoTemporario.class);
                     String codigoTemporario = getCodigoTemporario.getCodigo();
                     resultado = codigoTemporario != null;
+
+                    // registrando o 'heartBeat' do cliente
+                    Servidor.registrarHeartbeat(getCodigoTemporario.getCodigoChamada(), System.currentTimeMillis());
+
                     remetente.receba(new ResultadoGetCodigoTemporario(
                             resultado,
                             "ResultadoGetCodigoTemporario",
@@ -152,6 +153,35 @@ public class ProcessadorDeOperacao {
         }
 
         return false;
+    }
+
+
+    // requisicao de fechar chamada reutilizavel para cliente e heartBeat do serivodr
+    private static boolean fecharChamadaInterno(FecharChamada req, IParceiro remetente) {
+        try {
+            boolean resultado = req.fechar();
+            if (remetente != null) {
+                remetente.receba(new ResultadoOperacao(resultado, "ResultadoFecharChamada"));
+            }
+            if (resultado) {
+                Servidor.removerHeartbeat(req.getCodigoChamada());
+            }
+            return resultado;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean fecharChamadaPorCodigo(String codigoChamada) {
+        try {
+            FecharChamada req = new FecharChamada();
+            req.setCodigoChamada(codigoChamada); // certifique-se de ter esse setter em FecharChamada
+            return fecharChamadaInterno(req, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }
