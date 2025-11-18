@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -43,7 +44,11 @@ void main() async {
   await initializeDateFormatting('pt_BR', null);
   Intl.defaultLocale = 'pt_BR';
 
-  runApp(
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((_){
+    runApp(
     Phoenix(
       child: MultiProvider(
         providers: [
@@ -56,6 +61,7 @@ void main() async {
       ),
     ),
   );
+  });
 }
 
 class MainApp extends StatefulWidget {

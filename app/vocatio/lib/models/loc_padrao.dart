@@ -20,4 +20,9 @@ class LocPadrao {
       'longitude': longitude,
     };
   }
+
+  @override
+  String toString(){
+    return "$latitude, $longitude";
+  }
 }

@@ -12,7 +12,7 @@ public class RelatorioMensalAluno {
         this.alunoNome = alunoNome;
         this.totalDeAulas = totalDeAulas;
         this.totalDeFaltas = 0;
-        this.porcentagemPresenca = 100.0;
+        this.porcentagemPresenca = 1.0;
     }
 
     public void setTotalDeFaltas(int totalDeFaltas){
@@ -21,7 +21,7 @@ public class RelatorioMensalAluno {
             int presencas = this.totalDeAulas - totalDeFaltas;
             this.porcentagemPresenca = ((double) presencas / this.totalDeAulas);
         }else{
-            this.porcentagemPresenca = 100.0;
+            this.porcentagemPresenca = 1.0;
         }
     }
 

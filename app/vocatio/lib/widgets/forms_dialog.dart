@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 
-Future showFormsDialog(
+Future<T?> showFormsDialog<T>(
   BuildContext context,
   List<Widget> Function(StateSetter dialogSetState) content,
 ){
   final ThemeData theme = Theme.of(context);
 
-  return showDialog(
+  return showDialog<T>(
     context: context, 
     builder: (context){
       return Center(
