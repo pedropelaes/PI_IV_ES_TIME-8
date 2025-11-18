@@ -99,10 +99,12 @@ public class ProcessadorDeOperacao {
                     ApagarTurma apagarTurma = gson.fromJson(json, ApagarTurma.class);
                     resultado = apagarTurma.apagarTurma();
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoApagarTurma"));
+                    break;
                 case "EditarTurma":
                     EditarTurma editarTurma = gson.fromJson(json, EditarTurma.class);
                     resultado = editarTurma.editarTurma();
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoEditarTurma"));
+                    break;
                 case "GetCodigoTemporario":
                     GetCodigoTemporario getCodigoTemporario = gson.fromJson(json, GetCodigoTemporario.class);
                     String codigoTemporario = getCodigoTemporario.getCodigo();
@@ -122,6 +124,11 @@ public class ProcessadorDeOperacao {
                     EditarChamada editarChamada = gson.fromJson(json, EditarChamada.class);
                     resultado = editarChamada.editar();
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoEditarChamada"));
+                    break;
+                case "DeletarChamada":
+                    DeletarChamada deletarChamada = gson.fromJson(json, DeletarChamada.class);
+                    resultado = deletarChamada.deletar();
+                    remetente.receba(new ResultadoOperacao(resultado, "ResultadoDeletarChamada"));
                     break;
                 case "GetRelatorioMensal":
                     GetRelatorioMensal getRelatorioMensal = gson.fromJson(json, GetRelatorioMensal.class);
