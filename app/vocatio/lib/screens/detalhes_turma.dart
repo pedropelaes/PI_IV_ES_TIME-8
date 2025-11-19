@@ -241,7 +241,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                                 } else if (resultadoEdicao == false && mounted) {
                                   showErrorSnackBar("Erro ao editar turma: Permissão negada ou falha na validação.", context);
                                 } else if (resultadoEdicao == null && mounted) {
-                                  showErrorSnackBar("Erro de conexão ao editar turma.", context);
+                                  showErrorSnackBar("Edição cancelada", context);
                                 }
                               },
                               icon: Icon(

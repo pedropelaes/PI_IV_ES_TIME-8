@@ -147,18 +147,22 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            showCustomDialog(
-              isCritical: true,  
-              context, 
-              Icons.close, 
-              'Fechando chamada', 
-              'Tem certeza que deseja sair desta página? Ao sair, a chamada será fechada.', 
-              (){
-                showSuccessSnackBar("Chamada fechada.", context);
-                Navigator.pop(context);
-              }, 
-              'Confirmar'
-            );
+            if(gerar || codigoChamada != null && !_chamadaFechada){
+              showCustomDialog(
+                isCritical: true,  
+                context, 
+                Icons.close, 
+                'Fechando chamada', 
+                'Tem certeza que deseja sair desta página? Ao sair, a chamada será fechada.', 
+                (){
+                  showSuccessSnackBar("Chamada fechada.", context);
+                  Navigator.pop(context);
+                }, 
+                'Confirmar'
+              );
+            }else{
+              Navigator.pop(context);
+            }
           },
         ),
         title: Text(
@@ -403,11 +407,9 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
 
   // Obtém localização do professor automaticamente
   try {
-    bool hasPermission = await _locationService.checkLocationPermission();
-    if (!hasPermission) throw Exception('Permissão de localização negada');
-    final position = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
-    );
+    // A nova função já lida com permissões e serviço desativado.
+    final position = await _locationService.getCurrentPositionWithPermissions();
+
     if(position.accuracy > 100){ 
       _profLocation = null;
       if(mounted) showErrorSnackBar('Não foi possível obter a sua localização atual. A localização da turma será usada no lugar.', context);
@@ -415,6 +417,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
       _profLocation = position;
     }
   } catch (e) {
+    // O erro agora pode ser mais específico (permissão, serviço desativado, etc.)
     if (mounted) {
       showErrorSnackBar('Não foi possível obter a sua localização atual. A localização da turma será usada no lugar.', context);
     }

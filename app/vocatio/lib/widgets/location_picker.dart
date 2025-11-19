@@ -34,13 +34,15 @@ class _LocationPickerWidgetState extends State<LocationPickerWidget> {
 
   final TextEditingController _latController = TextEditingController();
   final TextEditingController _lonController = TextEditingController();
-
+  final locationService = LocationService();
+  
   @override
   void initState() {
     super.initState();
     _isDisposed = false;
     _updateLocation(widget.initialLocation, shouldNotifyParent: false);
     
+    locationService.checkLocationPermission();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadInitialMapPosition();
     });
@@ -268,10 +270,9 @@ class _LocationPickerWidgetState extends State<LocationPickerWidget> {
 
 class ValidadorLocalizacao {
   static Future<Position?> obterPosicaoAtual() async {
+    final locationService = LocationService();
     try {
-      return await Geolocator.getCurrentPosition(
-        timeLimit: Duration(seconds: 10)
-      );
+      return await locationService.getCurrentPositionWithPermissions();
     } catch (e) {
       return null;
     }
