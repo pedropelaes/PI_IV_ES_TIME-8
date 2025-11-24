@@ -18,6 +18,23 @@ public class ProcessadorDeOperacao {
 
     public static boolean processar(String json, IParceiro remetente, ArrayList<IParceiro> usuarios){
         try{
+            /**
+             * Espera-se um json com um campo "operacao", especificando qual a a requisicao desejada pelo cliente
+             * Para cada requisicao, há um caso no switch abaixo, onde eh instanciado a partir da desserializacao do
+             * json vindo do cliente um objeto da classe da requisicao desejada.
+             * Portanto, se torna necessario que haja no json um campo e valor para cada atributo private da classe da
+             * requisicao.
+             * Para cada requisicao, a resposta enviada para o app eh um Comunicado.
+             * Para requisicoes de comando (ex: Registrar), eh retornado um objeto da classe ResultadoDeOperacao,
+             * que apenas informa qual operacao foi realizada e o seu resultado.
+             * Para requisicoes de consulta (ex: Login), elas recebem um objeto da sua respectiva classe de resposta, sendo
+             * uma classe Resultado<nome da operacao>.
+             * Os objetos sao serializados para json antes de serem realmente enviados para o cliente.
+             * <p>
+             * Sobre as classes de dominio(src/domain):
+             * Essas classes atuam como Espelhos das classes do cliente. Elas garantem que o Json recebido/enviado seja
+             * serializado corretamente, e ajudam na padronizacao e organizacao do servidor.
+             * */
             JsonObject obj = gson.fromJson(json, JsonObject.class);
             String tipo = obj.get("operacao").getAsString();
             System.out.println("Operação recebida: '" + tipo + "'");

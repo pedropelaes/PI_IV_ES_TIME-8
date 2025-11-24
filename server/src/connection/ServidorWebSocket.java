@@ -8,6 +8,13 @@ import src.processing.ProcessadorDeOperacao;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
+/**
+ * Essa classe gerencia conexoes web. Alguns elementos dela sao baseados de uma versao antiga do servidor que funcionava
+ * apenas para protocolo Socket tcp.
+ * Ela lida com o protocolo de baixo nivel (handshake, frames, ping/pong). Ela atua como uma interface entre a biblioteca
+ * de WebSocket e a logica de negocio do servidor.
+ */
+
 public class ServidorWebSocket extends WebSocketServer {
     private ArrayList<IParceiro> usuarios;
 

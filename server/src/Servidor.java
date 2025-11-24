@@ -114,7 +114,7 @@ public class Servidor
         heartbeatScheduler.scheduleAtFixedRate(() -> {
             try {
                 long now = System.currentTimeMillis();
-                long timeoutMs = 30_000L; // timeout: 30s
+                long timeoutMs = 30_000L; // timeout: 30s, o codigo temporario deve ser requisitado de 20 em 20 segundos, logo, há uma margem de 10 segundos
                 List<String> stale = new ArrayList<>();
                 for (Map.Entry<String, Long> e : chamadaHeartbeats.entrySet()) {
                     if (now - e.getValue() > timeoutMs) {
