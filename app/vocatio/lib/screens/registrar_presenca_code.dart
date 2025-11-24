@@ -43,7 +43,7 @@ class _ViaCodeState extends State<ViaCode> with AttendanceHandler {
       List<CameraDescription> cameras = [];
       try {
         final result = await availableCameras();
-        cameras = result ?? [];
+        cameras = result;
       } catch (e) {
         print('Erro ao obter câmeras: $e');
         cameras = [];
@@ -150,6 +150,7 @@ class _ViaCodeState extends State<ViaCode> with AttendanceHandler {
 
   // Método para lidar com a conclusão da chamada
   Future<void> _handleCompleteAttendance() async {
+    final location = await getCurrentLocation();
     // Verificar se os campos estão preenchidos
     if (_codeController.text.isEmpty || _tempCodeController.text.isEmpty) {
       if(mounted) showErrorSnackBar('Por favor, preencha todos os campos.', context);
@@ -157,6 +158,7 @@ class _ViaCodeState extends State<ViaCode> with AttendanceHandler {
     }
 
     if(_imagemBase64 == null) return;
+    if(location == null) return;
 
     // Envia presença ao servidor; validação de 100m ocorre no backend
     final sucesso = await registrarPresenca(

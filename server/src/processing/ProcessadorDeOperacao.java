@@ -3,6 +3,7 @@ package src.processing;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.bson.Document;
+import src.Servidor;
 import src.connection.IParceiro;
 import src.domain.*;
 import src.protocol.requests.*;
@@ -17,6 +18,23 @@ public class ProcessadorDeOperacao {
 
     public static boolean processar(String json, IParceiro remetente, ArrayList<IParceiro> usuarios){
         try{
+            /**
+             * Espera-se um json com um campo "operacao", especificando qual a a requisicao desejada pelo cliente
+             * Para cada requisicao, há um caso no switch abaixo, onde eh instanciado a partir da desserializacao do
+             * json vindo do cliente um objeto da classe da requisicao desejada.
+             * Portanto, se torna necessario que haja no json um campo e valor para cada atributo private da classe da
+             * requisicao.
+             * Para cada requisicao, a resposta enviada para o app eh um Comunicado.
+             * Para requisicoes de comando (ex: Registrar), eh retornado um objeto da classe ResultadoDeOperacao,
+             * que apenas informa qual operacao foi realizada e o seu resultado.
+             * Para requisicoes de consulta (ex: Login), elas recebem um objeto da sua respectiva classe de resposta, sendo
+             * uma classe Resultado<nome da operacao>.
+             * Os objetos sao serializados para json antes de serem realmente enviados para o cliente.
+             * <p>
+             * Sobre as classes de dominio(src/domain):
+             * Essas classes atuam como Espelhos das classes do cliente. Elas garantem que o Json recebido/enviado seja
+             * serializado corretamente, e ajudam na padronizacao e organizacao do servidor.
+             * */
             JsonObject obj = gson.fromJson(json, JsonObject.class);
             String tipo = obj.get("operacao").getAsString();
             System.out.println("Operação recebida: '" + tipo + "'");
@@ -70,12 +88,8 @@ public class ProcessadorDeOperacao {
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoRegistrarPresenca", mensagem));
                     break;
                 case "FecharChamada":
-                    System.out.println("CASE FecharChamada ACIONADO! JSON: " + json);
                     FecharChamada fecharChamada = gson.fromJson(json, FecharChamada.class);
-                    System.out.println("Parsing FecharChamada concluído. Código: " + fecharChamada.getCodigoChamada());
-                    resultado = fecharChamada.fechar();
-                    System.out.println("Resultado FecharChamada: " + resultado);
-                    remetente.receba(new ResultadoOperacao(resultado, "ResultadoFecharChamada"));
+                    fecharChamadaInterno(fecharChamada, remetente);
                     break;
                 case "GetPresencas":
                     GetPresencas getPresencas = gson.fromJson(json, GetPresencas.class);
@@ -99,14 +113,20 @@ public class ProcessadorDeOperacao {
                     ApagarTurma apagarTurma = gson.fromJson(json, ApagarTurma.class);
                     resultado = apagarTurma.apagarTurma();
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoApagarTurma"));
+                    break;
                 case "EditarTurma":
                     EditarTurma editarTurma = gson.fromJson(json, EditarTurma.class);
                     resultado = editarTurma.editarTurma();
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoEditarTurma"));
+                    break;
                 case "GetCodigoTemporario":
                     GetCodigoTemporario getCodigoTemporario = gson.fromJson(json, GetCodigoTemporario.class);
                     String codigoTemporario = getCodigoTemporario.getCodigo();
                     resultado = codigoTemporario != null;
+
+                    // registrando o 'heartBeat' do cliente
+                    Servidor.registrarHeartbeat(getCodigoTemporario.getCodigoChamada(), System.currentTimeMillis());
+
                     remetente.receba(new ResultadoGetCodigoTemporario(
                             resultado,
                             "ResultadoGetCodigoTemporario",
@@ -122,6 +142,11 @@ public class ProcessadorDeOperacao {
                     EditarChamada editarChamada = gson.fromJson(json, EditarChamada.class);
                     resultado = editarChamada.editar();
                     remetente.receba(new ResultadoOperacao(resultado, "ResultadoEditarChamada"));
+                    break;
+                case "DeletarChamada":
+                    DeletarChamada deletarChamada = gson.fromJson(json, DeletarChamada.class);
+                    resultado = deletarChamada.deletar();
+                    remetente.receba(new ResultadoOperacao(resultado, "ResultadoDeletarChamada"));
                     break;
                 case "GetRelatorioMensal":
                     GetRelatorioMensal getRelatorioMensal = gson.fromJson(json, GetRelatorioMensal.class);
@@ -145,6 +170,35 @@ public class ProcessadorDeOperacao {
         }
 
         return false;
+    }
+
+
+    // requisicao de fechar chamada reutilizavel para cliente e heartBeat do serivodr
+    private static boolean fecharChamadaInterno(FecharChamada req, IParceiro remetente) {
+        try {
+            boolean resultado = req.fechar();
+            if (remetente != null) {
+                remetente.receba(new ResultadoOperacao(resultado, "ResultadoFecharChamada"));
+            }
+            if (resultado) {
+                Servidor.removerHeartbeat(req.getCodigoChamada());
+            }
+            return resultado;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean fecharChamadaPorCodigo(String codigoChamada) {
+        try {
+            FecharChamada req = new FecharChamada();
+            req.setCodigoChamada(codigoChamada); // certifique-se de ter esse setter em FecharChamada
+            return fecharChamadaInterno(req, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:vocattio/services/auth_service.dart';
-import 'package:vocattio/widgets/app_header.dart';
 import 'package:vocattio/widgets/background_containers.dart';
 import 'package:vocattio/widgets/button_design.dart';
 import 'package:vocattio/widgets/snackbars.dart';

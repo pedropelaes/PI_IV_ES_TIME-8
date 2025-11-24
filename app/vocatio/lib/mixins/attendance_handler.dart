@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:geolocator/geolocator.dart';
@@ -180,7 +179,7 @@ mixin AttendanceHandler<T extends StatefulWidget> on State<T> {
         return null;
       }
 
-      final bytes = await File(pickedFile.path).readAsBytes();
+      final bytes = await pickedFile.readAsBytes();
       final base64Image = base64Encode(bytes);
       return base64Image;
     } catch (e) {

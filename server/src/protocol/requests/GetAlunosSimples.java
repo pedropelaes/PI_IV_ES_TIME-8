@@ -12,6 +12,7 @@ import org.bson.types.ObjectId;
 import src.domain.AlunoSimples;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class GetAlunosSimples {
@@ -57,6 +58,7 @@ public class GetAlunosSimples {
                 );
                 alunos.add(aluno);
             }
+            alunos.sort(Comparator.comparing(AlunoSimples::getNome, String.CASE_INSENSITIVE_ORDER));
 
             return alunos;
         } catch (Exception e) {

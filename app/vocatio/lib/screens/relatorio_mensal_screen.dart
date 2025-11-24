@@ -48,45 +48,64 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
     final DateTime? picked = await showDialog<DateTime>(
       context: context,
       builder: (BuildContext context) {
-
-        return Dialog(
-          backgroundColor: Colors.transparent, 
-          insetPadding: EdgeInsets.all(20),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: 400),
-            child: primaryFixedGradientContainer(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min, 
-                children: [
-                  MonthPicker(
-                    minDate: DateTime(2020),
-                    maxDate: DateTime.now(),
-                    initialDate: _selectedDate ?? DateTime.now(),
-                    onDateSelected: (date) {
-                      tempDate = date;
-                    },
-                  ),
-                    
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        child: Text("Cancelar"),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      TextButton(
-                        child: Text("Confirmar"),
-                        onPressed: () async {
-                          Navigator.of(context).pop(tempDate); 
-                        },
-                      ),
-                    ],
-                  )
-                ],
-              ), theme: theme,
+        final colorToUse = theme.colorScheme.primaryFixed;
+        final contrastColor = theme.colorScheme.onPrimaryFixed;
+        return Theme(
+          data: theme.copyWith(
+            textTheme : theme.textTheme.apply(
+              bodyColor: colorToUse,
+              displayColor: colorToUse,
+            ),
+            iconTheme: theme.iconTheme.copyWith(color: colorToUse),
+            colorScheme: theme.colorScheme.copyWith(
+              onSurface: colorToUse,
+              primary: colorToUse,
+              onPrimary: contrastColor,
+              secondary: theme.colorScheme.tertiaryFixed
+            )
+          ),
+          child: Dialog(
+            backgroundColor: Colors.transparent, 
+            insetPadding: EdgeInsets.all(20),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 400),
+              child: primaryFixedGradientContainer(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min, 
+                  children: [
+                    MonthPicker(
+                      //splashColor: theme.colorScheme.primaryFixed,
+                      //highlightColor: theme.colorScheme.primaryFixedDim,
+                      //slidersColor: theme.colorScheme.tertiaryFixed,
+                      minDate: DateTime(2020),
+                      maxDate: DateTime.now(),
+                      initialDate: _selectedDate ?? DateTime.now(),
+                      onDateSelected: (date) {
+                        tempDate = date;
+                      },
+                    ),
+                      
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          child: Text("Cancelar"),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        TextButton(
+                          child: Text("Confirmar"),
+                          onPressed: () async {
+                            Navigator.of(context).pop(tempDate); 
+                          },
+                        ),
+                      ],
+                    )
+                  ],
+                ), theme: theme,
+              ),
             ),
           ),
         );
@@ -375,7 +394,7 @@ class _RelatorioMensalScreenState extends State<RelatorioMensalScreen> {
                                     ),
                                     SizedBox(width: smallSpacing),
                                     Text(
-                                      '${((relatorioTurma?.mediaDaTurma ?? 0.0)* 100).toStringAsFixed(0)}%',
+                                      '${((relatorioTurma?.mediaDaTurma ?? 0.0)*100).toStringAsFixed(0)}%',
                                       style: textTheme.titleMedium?.copyWith(
                                         color: theme.colorScheme.primaryFixed,
                                         fontWeight: FontWeight.bold,

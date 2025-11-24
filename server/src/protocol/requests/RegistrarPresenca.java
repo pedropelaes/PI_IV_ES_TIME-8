@@ -7,6 +7,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
 import dev.samstevens.totp.code.*;
@@ -22,6 +23,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class RegistrarPresenca {
@@ -96,7 +98,7 @@ public class RegistrarPresenca {
             double distancia = haversineMeters(latProfessor, lonProfessor, latitude, longitude);
             System.out.println("Distância aluno-professor: " + distancia + "m");
             if (distancia > 80.0) {
-                this.mensagem = "Fora do raio permitido (100m)";
+                this.mensagem = "Fora do raio permitido";
                 System.out.println(this.mensagem);
                 return false;
             }
@@ -112,14 +114,14 @@ public class RegistrarPresenca {
             };
 
             UpdateResult updateResult = aulas.updateOne(
-                    Filters.and(
-                            Filters.eq("_id", aulaObjectId), // Filtra a aula correta
-                            Filters.eq("presentes.alunoId", alunoObjectId), // Encontra o aluno no array
-                            Filters.eq("presentes.presente", false) // SÓ atualiza se ele ainda não marcou
-                    ),
-                    Updates.combine(
-                            Updates.set("presentes.$.presente", true)
-                    )
+                    Filters.eq("_id", aulaObjectId),
+                    Updates.set("presentes.$[al].presente", true),
+                    new UpdateOptions().arrayFilters(List.of(
+                            Filters.and(
+                                    Filters.eq("al.alunoId", alunoObjectId),
+                                    Filters.eq("al.presente", false)
+                            )
+                    ))
             );
 
             if (updateResult.getModifiedCount() > 0) {

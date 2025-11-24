@@ -325,6 +325,7 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                     final aula = _aulasFiltradas[index];
                                     final Duration diferenca = DateTime.now().difference(aula.dataAbertura);
                                     final bool isEditavel = diferenca.inDays < 14;
+                                    final bool isDeletavel = diferenca.inDays < 7;
 
                                     Widget trailingIcon;
                                     if (widget.userType == 'professor') {
@@ -365,7 +366,7 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                                   Icon(
                                                     Icons.circle,
                                                     size: 18,
-                                                    color: isEditavel ? theme.colorScheme.primaryFixed : theme.colorScheme.primary,
+                                                    color: isEditavel ? theme.colorScheme.primaryFixed : theme.colorScheme.primaryFixedDim,
                                                   ),
                                                   Icon(
                                                     Icons.assignment,
@@ -391,7 +392,9 @@ class _PresencasScreenState extends State<PresencasScreen> {
                                                       nomeTurma: widget.nomeTurma!,
                                                       data: formatarDataAula(aula.dataAbertura),
                                                       alunosPresentes: aula.presentes,
-                                                      isEditavel: isEditavel
+                                                      isEditavel: isEditavel,
+                                                      isDeletavel: isDeletavel
+                                                    
                                                     )
                                                   )
                                                 );

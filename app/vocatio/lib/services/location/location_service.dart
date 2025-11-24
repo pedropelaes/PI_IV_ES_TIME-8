@@ -111,6 +111,29 @@ class LocationService {
     }
   }
 
+  /// Tenta obter a posição atual com alta precisão, lidando com permissões.
+  /// Retorna a posição ou lança uma exceção se a permissão for negada.
+  Future<Position> getCurrentPositionWithPermissions() async {
+    // 1. Verifica e solicita permissão
+    bool hasPermission = await checkLocationPermission();
+    if (!hasPermission) {
+      throw Exception('Permissão de localização negada pelo usuário.');
+    }
+
+    // 2. Verifica se o serviço de localização está ativo
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      throw Exception('O serviço de localização está desativado.');
+    }
+
+    // 3. Obtém a posição atual
+    return await Geolocator.getCurrentPosition(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+      ),
+    );
+  }
+
 }
 
 class ValidadorLocalizacao {

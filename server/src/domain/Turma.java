@@ -31,10 +31,10 @@ public class Turma {
 
     @Override
     public String toString() {
-        return "Turma{" + "_id=" + _id + ", nome=" + nome + '}' +
+        return "Turma{" + "_id=" + _id + ", nome=" + nome +
                 descricao + ", codigo=" + codigo + ", professor=" +
-                professor + '}' +  alunos + '}' +  localizacaoPadrao +
-                "Criado em: " + criadoEm + "Atualizado em: " + atualizadaEm;
+                professor  +  alunos  +  localizacaoPadrao +
+                "Criado em: " + criadoEm + "Atualizado em: " + atualizadaEm + '}';
     }
 
     @Override
@@ -58,7 +58,8 @@ public class Turma {
         ret = ret * 31 + this.localizacaoPadrao.hashCode();
         ret = ret * 31 + this.criadoEm.hashCode();
         ret = ret * 31 + this.atualizadaEm.hashCode();
-        ret = ret * 31 + this.alunos.hashCode();
+
+        if(ret<0) ret = -ret;
         return ret;
     }
 

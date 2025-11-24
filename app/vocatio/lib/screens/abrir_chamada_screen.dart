@@ -10,6 +10,8 @@ import 'package:vocattio/services/socket/socket_service.dart';
 import 'package:vocattio/widgets/animated_button.dart';
 import 'package:vocattio/utils/responsive_helper.dart';
 import 'package:vocattio/widgets/background_containers.dart';
+import 'package:vocattio/widgets/button_design.dart';
+import 'package:vocattio/widgets/dialog_exc.dart';
 import 'package:vocattio/widgets/snackbars.dart';
 
 class GerarQRCodeScreen extends StatefulWidget {
@@ -25,6 +27,7 @@ class GerarQRCodeScreen extends StatefulWidget {
 }
 
 class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
+  bool gerar = false;
   final SocketService _socketService = getIt<SocketService>();
   String? codigoChamada; // o código/ID que vem do servidor
   String? codigoTemporario;
@@ -46,7 +49,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
   void initState() {
     super.initState();
     _setupSocketListener();
-    _gerarChamada(); // assim que a tela abre, já pede o QR Code
+    //_gerarChamada(); // assim que a tela abre, já pede o QR Code
   }
 
   @override
@@ -144,7 +147,22 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context);
+            if(gerar || codigoChamada != null && !_chamadaFechada){
+              showCustomDialog(
+                isCritical: true,  
+                context, 
+                Icons.close, 
+                'Fechando chamada', 
+                'Tem certeza que deseja sair desta página? Ao sair, a chamada será fechada.', 
+                (){
+                  showSuccessSnackBar("Chamada fechada.", context);
+                  Navigator.pop(context);
+                }, 
+                'Confirmar'
+              );
+            }else{
+              Navigator.pop(context);
+            }
           },
         ),
         title: Text(
@@ -165,7 +183,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
             child: Padding(
               padding: EdgeInsets.all(ResponsiveHelper.getResponsivePadding(context)),
               child: SingleChildScrollView(
-                child: Column(
+                child: gerar ? Column(
                   children: [
                     if (codigoChamada != null && !_chamadaFechada)
                       Container(
@@ -346,8 +364,8 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
                     // Botão Concluir Chamada
                     AnimatedButton(
                       text: _chamadaFechada ? 'Voltar' : 'Concluir Chamada',
-                      backgroundColor: _chamadaFechada ? Colors.grey : const Color(0xFFD5BBFC),
-                      textColor: _chamadaFechada ? Colors.white : const Color(0xFF3A255B),
+                      backgroundColor: _chamadaFechada ? Colors.grey : theme.colorScheme.primary,
+                      textColor: _chamadaFechada ? Colors.white : theme.colorScheme.onPrimary,
                       borderRadius: 12,
                       onPressed: _chamadaFechada
                           ? () {
@@ -360,6 +378,17 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
                     
                     const SizedBox(height: 20),
                   ],
+                ) : primaryButtonDesign(
+                  context: context, 
+                  label: 'Abrir Chamada', 
+                  onTap: (){
+                    setState(() {
+                      gerar = true;
+                    });
+                    _gerarChamada();
+                  }, 
+                  width: 255, 
+                  height: 55
                 ),
               ),
             ),
@@ -378,11 +407,9 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
 
   // Obtém localização do professor automaticamente
   try {
-    bool hasPermission = await _locationService.checkLocationPermission();
-    if (!hasPermission) throw Exception('Permissão de localização negada');
-    final position = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
-    );
+    // A nova função já lida com permissões e serviço desativado.
+    final position = await _locationService.getCurrentPositionWithPermissions();
+
     if(position.accuracy > 100){ 
       _profLocation = null;
       if(mounted) showErrorSnackBar('Não foi possível obter a sua localização atual. A localização da turma será usada no lugar.', context);
@@ -390,6 +417,7 @@ class _GerarQRCodeScreenState extends State<GerarQRCodeScreen> {
       _profLocation = position;
     }
   } catch (e) {
+    // O erro agora pode ser mais específico (permissão, serviço desativado, etc.)
     if (mounted) {
       showErrorSnackBar('Não foi possível obter a sua localização atual. A localização da turma será usada no lugar.', context);
     }

@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vocattio/models/loc_padrao.dart';
 import 'package:vocattio/models/user.dart';
@@ -129,7 +130,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
         },
         hasGoBack: true,
         onGoBack: () {
-          Navigator.pop(context);
+          Navigator.of(context).pop(false);
         },
       ),
       drawer: AppDrawer(
@@ -150,7 +151,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                   // Código da turma
                   primaryFixedGradientContainer(
                     width: double.infinity,
-                    padding: EdgeInsets.all(ResponsiveHelper.isDesktop(context) ? 24 : 20),
+                    padding: EdgeInsets.all(16),
                     theme: theme,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,15 +168,15 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                             ),
                             if(widget.user.tipo == 'professor')
                             IconButton(
-                              onPressed: (){
+                              onPressed: () async {
                                 editNameController.text = widget.nomeTurma;
                                 editDescController.text = widget.descricao;
                                 setState(() {
                                   _editedLocPadrao = widget.locPadrao;
                                 });
-
+                                bool? resultadoEdicao;
                                 if(!kIsWeb){
-                                  showModalBottomSheet(
+                                  resultadoEdicao = await showModalBottomSheet<bool?>(
                                     context: context, 
                                     isScrollControlled: true,
                                     backgroundColor: Colors.transparent,
@@ -208,9 +209,7 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                                                               theme: theme, 
                                                               textTheme: textTheme,
                                                               dialogSetState: dialogSetState, 
-                                                              onConfirm: () async{
-                                                                await _editarTurma();
-                                                              }
+                                                              onConfirm: _editarTurma
                                                             )
                                                           ),
                                                         ),
@@ -227,16 +226,23 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                                     }
                                   );
                                 }else{
-                                  showFormsDialog(
+                                 resultadoEdicao = await showFormsDialog<bool?>(
                                     context, 
                                     (dialogSetState) => _buildFormWidgets(context: context, theme: theme, textTheme: textTheme, 
                                       dialogSetState: dialogSetState, 
-                                      onConfirm: () async{
-                                        await _editarTurma();
-                                      }
+                                      onConfirm: _editarTurma
                                     )
                                   );
                                 } 
+
+                                if (resultadoEdicao == true && mounted) {
+                                  showSuccessSnackBar("Turma editada!", context);
+                                  Navigator.of(context).pop(true); 
+                                } else if (resultadoEdicao == false && mounted) {
+                                  showErrorSnackBar("Erro ao editar turma: Permissão negada ou falha na validação.", context);
+                                } else if (resultadoEdicao == null && mounted) {
+                                  showErrorSnackBar("Edição cancelada", context);
+                                }
                               },
                               icon: Icon(
                                 Icons.edit,
@@ -263,11 +269,33 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                             fontSize: ResponsiveHelper.getResponsiveFontSize(context, 16),
                           ),
                         ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: SelectableText(
+                                'Localização: ${widget.locPadrao.toString()}',
+                                style: textTheme.labelMedium?.copyWith(
+                                  color: theme.colorScheme.primaryFixed.withValues(alpha: 0.9),
+                                ),
+                              ),
+                            ),
+                              IconButton(onPressed: (){
+                                final textToCopy = widget.locPadrao.toString();
+                                Clipboard.setData(ClipboardData(text: textToCopy));
+                                showSuccessSnackBar('Localização copiada!', context);
+                              }, 
+                            icon: Icon(Icons.copy, size: 18, color: theme.colorScheme.primaryFixed,)
+                            )
+                          ],
+                        ),
                       ],
                     ),
                   ),
                   
-                  SizedBox(height: ResponsiveHelper.isDesktop(context) ? 50 : 40),
+                  SizedBox(height: 20),
                   
                   // Botões de ação
                   Expanded(
@@ -320,19 +348,6 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                         ),
                         
                         const SizedBox(height: 16),
-                        
-                        if(widget.user.tipo == 'professor') AnimatedButton(
-                          text: 'Exportar Lista de Presença',
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Funcionalidade de exportação será implementada'),
-                              ),
-                            );
-                          },
-                        ),
-                        
-                        if(widget.user.tipo == 'professor') const SizedBox(height: 16),
                         
                         if(widget.user.tipo == 'professor') AnimatedButton(
                           text: 'Relatório Mensal',
@@ -451,7 +466,7 @@ List<Widget> _buildFormWidgets({
   required ThemeData theme,
   required TextTheme textTheme,
   required StateSetter dialogSetState,
-  required VoidCallback onConfirm
+  required Future<bool?> Function() onConfirm
 }){
   return [
     Text(
@@ -481,6 +496,7 @@ List<Widget> _buildFormWidgets({
     ),
     SizedBox(height: 12),
     LocationPickerWidget(
+      isEditing: true,
       initialLocation: LatLng(
         _editedLocPadrao.latitude,
         _editedLocPadrao.longitude),
@@ -514,18 +530,18 @@ List<Widget> _buildFormWidgets({
           onPressed: () async {
             if (_isLoadingEdit) return;
                                                     
-            final resultado = onConfirm;
+            final resultado = await onConfirm();
             
-            if (mounted) {
-              Navigator.pop(context); // Fecha o modal
-            }
-            
-            if (resultado == true && mounted) {
+            /*if (resultado == true && mounted) {
               showSuccessSnackBar("Turma editada! Recarregando...", context);
-              Navigator.of(context).pop();
             } else if (mounted) {
               showErrorSnackBar("Erro ao editar turma.", context);
+            }*/
+
+            if (mounted) {
+              Navigator.of(context).pop(resultado);
             }
+            
           },
           child: Text(
             "Confirmar",
