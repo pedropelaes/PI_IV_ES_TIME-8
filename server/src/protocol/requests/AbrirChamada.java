@@ -62,19 +62,31 @@ public class AbrirChamada {
             }
 
             ArrayList<ObjectId> alunosIds = turma.get("alunos", ArrayList.class);
+            alunosIds.sort((a, b) -> a.toHexString().compareTo(b.toHexString()));
 
-            // 3. [NOVO] Cria a lista de presença (o "snapshot")
+            // cria a lista de presença
             ArrayList<Document> listaPresenca = new ArrayList<>();
             if (alunosIds != null) {
+                ArrayList<Document> alunosData = new ArrayList<>();
+
                 for (ObjectId alunoId : alunosIds) {
                     Document aluno = users.find(Filters.eq("_id", alunoId))
                                         .projection(new Document("nome", 1))
                                         .first();
-                    String nomeAluno = (aluno != null) ? aluno.getString("nome") : "";
 
-                    listaPresenca.add(new Document("alunoId", alunoId)
-                                    .append("nome", nomeAluno)
-                            .append("presente", false)
+                    if(aluno!=null){
+                        aluno.append("alunoId", alunoId);
+                        alunosData.add(aluno);
+                    }
+                }
+                alunosData.sort((a, b) -> a.getString("nome").compareToIgnoreCase(b.getString("nome")));
+
+
+                for (Document aluno : alunosData) {
+                    listaPresenca.add(
+                            new Document("alunoId", aluno.getObjectId("alunoId"))
+                                    .append("nome", aluno.getString("nome"))
+                                    .append("presente", false)
                     );
                 }
             }
