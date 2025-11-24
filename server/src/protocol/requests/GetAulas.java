@@ -16,6 +16,7 @@ import src.domain.User;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,6 +52,8 @@ public class GetAulas {
                         listaDePresenca.add(new Presenca(alunoId, nome, presente));
                     }
                 }
+                listaDePresenca.sort(Comparator.comparing(Presenca::getNome, String.CASE_INSENSITIVE_ORDER));
+
 
                 Date dataAbertura = null;
                 Object dataAberturaObj = doc.get("dataAbertura");

@@ -7,9 +7,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 import dev.samstevens.totp.secret.DefaultSecretGenerator;
 import dev.samstevens.totp.secret.SecretGenerator;
@@ -61,8 +59,8 @@ public class AbrirChamada {
                 }
             }
 
-            ArrayList<ObjectId> alunosIds = turma.get("alunos", ArrayList.class);
-            alunosIds.sort((a, b) -> a.toHexString().compareTo(b.toHexString()));
+            List<ObjectId> alunosIds = turma.getList("alunos", ObjectId.class);
+            alunosIds.sort(Comparator.comparing(ObjectId::toHexString));
 
             // cria a lista de presença
             ArrayList<Document> listaPresenca = new ArrayList<>();

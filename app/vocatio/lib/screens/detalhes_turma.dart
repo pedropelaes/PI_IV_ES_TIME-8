@@ -349,17 +349,6 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                         
                         const SizedBox(height: 16),
                         
-                        if(widget.user.tipo == 'professor') AnimatedButton(
-                          text: 'Exportar Lista de Presença',
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Funcionalidade de exportação será implementada'),
-                              ),
-                            );
-                          },
-                        ),
-                        
                         if(widget.user.tipo == 'professor') const SizedBox(height: 16),
                         
                         if(widget.user.tipo == 'professor') AnimatedButton(
