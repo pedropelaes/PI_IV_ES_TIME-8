@@ -349,8 +349,6 @@ class _DetalhesTurmaScreenState extends State<DetalhesTurmaScreen> {
                         
                         const SizedBox(height: 16),
                         
-                        if(widget.user.tipo == 'professor') const SizedBox(height: 16),
-                        
                         if(widget.user.tipo == 'professor') AnimatedButton(
                           text: 'Relatório Mensal',
                           onPressed: () {
